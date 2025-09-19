@@ -40,11 +40,11 @@ suspend fun Application.module() {
         provide { database }
     }
 
-    configureRouting()
     routing {
         get("/3") {
             print("hi")
             call.respond(HttpStatusCode.OK,"Whats up")
         }
     }
+    configureRouting()
 }

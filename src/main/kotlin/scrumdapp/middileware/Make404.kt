@@ -1,14 +1,14 @@
 package com.jeroenvdg.scrumdapp.middileware
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.application.createRouteScopedPlugin
 import io.ktor.server.response.respond
-import kotlinx.coroutines.async
 import java.lang.Thread.sleep
 
-val Make404 = createApplicationPlugin("Return 404") {
+val Make404 = createRouteScopedPlugin("Return 404") {
     onCall { call ->
-        sleep(500)
+        print("plugin")
+        sleep(5000)
         call.respond(HttpStatusCode.NotFound, "Fuck you")
     }
 }
