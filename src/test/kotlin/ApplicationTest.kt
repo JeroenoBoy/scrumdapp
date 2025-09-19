@@ -1,5 +1,6 @@
 package com.jeroenvdg
 
+import com.jeroenvdg.scrumdapp.module
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*

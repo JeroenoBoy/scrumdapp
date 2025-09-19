@@ -1,4 +1,4 @@
-package com.jeroenvdg
+package com.jeroenvdg.scrumdapp
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
