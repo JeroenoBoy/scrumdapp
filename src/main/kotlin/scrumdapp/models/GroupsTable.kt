@@ -2,8 +2,10 @@ package com.jeroenvdg.scrumdapp.models
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class GroupsTable(database: Database) {
     object Groups: Table() {
@@ -42,5 +44,11 @@ class GroupsTable(database: Database) {
         val password = varchar("password", 255).nullable()
 
         override val primaryKey = PrimaryKey(id)
+    }
+
+    init {
+        transaction(database) {
+            SchemaUtils.create(Groups, UserGroups, GroupCheckin, GroupInvite)
+        }
     }
 }

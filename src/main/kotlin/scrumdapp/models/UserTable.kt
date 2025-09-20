@@ -24,7 +24,7 @@ class UserTable(database: Database) {
 
     init {
         transaction(database) {
-            SchemaUtils.create(Users)
+            SchemaUtils.create(Users, UserSessions)
         }
     }
 }
