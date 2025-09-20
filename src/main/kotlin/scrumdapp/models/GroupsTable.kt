@@ -1,6 +1,5 @@
 package com.jeroenvdg.scrumdapp.models
 
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
@@ -32,6 +31,15 @@ class GroupsTable(database: Database) {
         val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 5) }
         val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 5) }
         val comment = text("comment")
+
+        override val primaryKey = PrimaryKey(id)
+    }
+
+    object GroupInvite: Table() {
+        val id = integer("id").autoIncrement()
+        val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
+        val token = varchar("token", 64)
+        val password = varchar("password", 255).nullable()
 
         override val primaryKey = PrimaryKey(id)
     }

@@ -1,6 +1,7 @@
 package com.jeroenvdg.scrumdapp.models
 
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -17,7 +18,8 @@ class UserTable(database: Database) {
 
     object UserSessions: Table() {
         val id = integer("id").autoIncrement()
-        //
+        val user_id = optReference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
+        val token = varchar("token", 255)
     }
 
     init {
