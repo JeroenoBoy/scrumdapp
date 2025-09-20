@@ -9,7 +9,7 @@ class UserTable(database: Database) {
     object Users : Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", length = 50)
-        val email = varchar("name", length = 100)
+        val email = varchar("email", length = 128)
 
         override val primaryKey = PrimaryKey(id)
     }
