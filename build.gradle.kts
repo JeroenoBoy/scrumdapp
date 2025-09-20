@@ -13,7 +13,7 @@ group = "com.jeroenvdg"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
 }
 
 dependencies {

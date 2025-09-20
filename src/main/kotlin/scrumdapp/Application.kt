@@ -15,6 +15,7 @@ import io.ktor.server.sessions.Sessions
 import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>) {
+    println("Starting Scrumdapp")
     EngineMain.main(args)
 }
 

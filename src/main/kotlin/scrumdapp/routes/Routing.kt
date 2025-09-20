@@ -17,16 +17,9 @@ suspend fun Application.configureRouting() {
     val users = dependencies.resolve<UserTable>()
 
     routing {
-        get("/1") {
+        get("/") {
             call.respond(MustacheContent("index.hbs", mapOf("user" to MustacheUser(1, "user1"))))
         }
         staticResources("/static", "static")
-
-        route("/2") {
-            install(Make404)
-            get {
-                call.respond(MustacheContent("index.hbs", mapOf("user" to MustacheUser(1, "user1"))))
-            }
-        }
     }
 }
