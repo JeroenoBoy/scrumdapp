@@ -1,6 +1,7 @@
 package com.jeroenvdg.scrumdapp
 
 import com.github.mustachejava.DefaultMustacheFactory
+import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
@@ -15,7 +16,6 @@ import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
-    print("hi")
 }
 
 suspend fun Application.module() {
@@ -38,6 +38,7 @@ suspend fun Application.module() {
 
     dependencies {
         provide { database }
+        provide { UserTable(database) }
     }
 
     routing {
