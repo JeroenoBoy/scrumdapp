@@ -21,6 +21,5 @@ suspend fun Application.configureRouting() {
             call.respond(MustacheContent("index.hbs", mapOf("user" to MustacheUser(1, "user1"))))
         }
         staticResources("/static", "static")
-
     }
 }
