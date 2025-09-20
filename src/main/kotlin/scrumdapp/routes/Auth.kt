@@ -1,6 +1,8 @@
 package com.jeroenvdg.scrumdapp.routes
 
+import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordGuild
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
+import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
 import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -32,6 +34,8 @@ import io.ktor.server.routing.routing
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.p
@@ -40,7 +44,7 @@ import org.h2.engine.User
 import java.util.Optional
 
 @Serializable
-data class UserSession(val state: String, val token: String)
+data class UserSession(val state: String, val token: String, val user: DiscordUser)
 
 suspend fun Application.authRouting() {
     val dotenv = dependencies.resolve<Dotenv>()
@@ -77,21 +81,39 @@ suspend fun Application.authRouting() {
                     if (currentPrincipal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
 
-                    call.sessions.set(UserSession(state, currentPrincipal.accessToken))
+                    val guildsResponse: Result<List<DiscordGuild>> = discordService.getGuilds(currentPrincipal.accessToken)
+                    if (guildsResponse.isFailure) {
+                        return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    }
+
+                    val guilds = guildsResponse.getOrThrow()
+                    var guildFound = false
+                    for (guild in guilds.reversed()) {
+                        if (guild.id == authorizationServerId) {
+                            guildFound = true
+                            break
+                        }
+                    }
+                    if (!guildFound) {
+                        return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    }
+
+                    val user: DiscordUser = discordService.getUser(currentPrincipal.accessToken).getOrThrow()
+
+                    call.sessions.set(UserSession(state, currentPrincipal.accessToken, user))
                     call.respondRedirect("/home")
                 }
             }
         }
 
         get("/home") {
-            val user = call.tryGetUserSession() ?: return@get
-            val discordUser = discordService.getUser(user.token)
-            call.respondText("Hello, ${discordUser.global_name}")
+            val session = call.tryGetUserSession() ?: return@get
+            call.respondText("Hello, ${session.user.global_name}")
         }
 
         get("/guilds") {
             val user = call.tryGetUserSession() ?: return@get
-            val guilds = discordService.getGuilds(user.token)
+            val guilds = discordService.getGuilds(user.token).getOrThrow()
             call.respondText("Hello, ${guilds.joinToString(", ") { it.name }}")
         }
 

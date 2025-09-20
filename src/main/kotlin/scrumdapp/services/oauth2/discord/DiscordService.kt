@@ -27,25 +27,24 @@ data class DiscordUser(var id: String, var username: String, var avatar: String,
 data class DiscordGuild(var id: String, var name: String, var icon: String?)
 
 interface DiscordService {
-    suspend fun getUser(token: String): DiscordUser
-    suspend fun getGuilds(token: String): List<DiscordGuild>
+    suspend fun getUser(token: String): Result<DiscordUser>
+    suspend fun getGuilds(token: String): Result<List<DiscordGuild>>
 }
 
 class DiscordServiceImpl(val client: HttpClient) : DiscordService {
-    override suspend fun getUser(token: String): DiscordUser {
+    override suspend fun getUser(token: String): Result<DiscordUser> {
         val response = client.get("https://discord.com/api/v10/users/@me") {
             header("authorization", "Bearer $token")
         }
         val body = Json.decodeFromString<DiscordUser>(response.bodyAsText())
-        return body
+        return Result.success(body)
     }
 
-    override suspend fun getGuilds(token: String): List<DiscordGuild> {
+    override suspend fun getGuilds(token: String): Result<List<DiscordGuild>> {
         val response = client.get("https://discord.com/api/v10/users/@me/guilds") {
             header("authorization", "Bearer $token")
         }
-        println(response.bodyAsText())
         val body = Json.decodeFromString<List<DiscordGuild>>(response.bodyAsText())
-        return body
+        return Result.success(body)
     }
 }
