@@ -42,7 +42,6 @@ suspend fun Application.module() {
 
     routing {
         get("/3") {
-            print("hi")
             call.respond(HttpStatusCode.OK,"Whats up")
         }
     }

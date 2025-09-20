@@ -7,8 +7,6 @@ import java.lang.Thread.sleep
 
 val Make404 = createRouteScopedPlugin("Return 404") {
     onCall { call ->
-        print("plugin")
-        sleep(5000)
         call.respond(HttpStatusCode.NotFound, "Fuck you")
     }
 }
