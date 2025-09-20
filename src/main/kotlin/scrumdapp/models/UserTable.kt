@@ -10,8 +10,14 @@ class UserTable(database: Database) {
         val id = integer("id").autoIncrement()
         val name = varchar("name", length = 50)
         val email = varchar("email", length = 128)
+        val profileImage = varchar("profile_image", length = 255) // Possible need to change this
 
         override val primaryKey = PrimaryKey(id)
+    }
+
+    object UserSessions: Table() {
+        val id = integer("id").autoIncrement()
+        //
     }
 
     init {
