@@ -1,5 +1,6 @@
 package com.jeroenvdg.scrumdapp.models
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
@@ -17,7 +18,7 @@ class GroupsTable(database: Database) {
         val id = integer("id").autoIncrement()
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val userId = optReference("user_id", UserTable.Users.id, onDelete = ReferenceOption.CASCADE)
-        val permissions = integer("permissions")
+        val permissions = integer("permissions").default(69)
 
         override val primaryKey = PrimaryKey(id)
     }
@@ -34,5 +35,4 @@ class GroupsTable(database: Database) {
 
         override val primaryKey = PrimaryKey(id)
     }
-
 }
