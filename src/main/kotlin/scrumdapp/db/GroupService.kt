@@ -1,17 +1,21 @@
 package com.jeroenvdg.scrumdapp.db
 
-import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.models.UserTable
+
+data class Group(
+    val id: Int,
+    val name: String,
+)
 
 interface GroupService {
-    suspend fun allGroup(): List<GroupsTable.Groups>
-    suspend fun getGroup(id: Int): GroupsTable.Groups?
-    suspend fun getGroupMembers(id: Int): List<UserTable.Users>
-    suspend fun addGroupMember(groupId: Int, user: UserTable)
+    suspend fun allGroup(): List<Group>
+    suspend fun getGroup(id: Int): Group?
+    suspend fun getGroupMembers(id: Int): List<User>
+    suspend fun createGroup(group: Group): Group?
+    suspend fun addGroupMember(groupId: Int, user: User)
     suspend fun alterGroupMemberPerms(userId: Int, permission: UserPermissions)
-    suspend fun deleteGroupMember(groupId: Int, user: UserTable)
+    suspend fun deleteGroupMember(groupId: Int, user: User)
 
     suspend fun createGroupInvite(groupId: Int, password: String): String
-    suspend fun deleteGroupInvite(groupId: Int, user: UserTable)
+    suspend fun deleteGroupInvite(groupId: Int, user: User)
 }
