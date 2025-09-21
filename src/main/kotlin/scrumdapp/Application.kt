@@ -1,6 +1,7 @@
 package com.jeroenvdg.scrumdapp
 
 import com.github.mustachejava.DefaultMustacheFactory
+import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.UserSession
 import com.jeroenvdg.scrumdapp.routes.authRouting
@@ -46,8 +47,8 @@ suspend fun Application.module() {
     }
 
     install(Sessions) {
-        cookie<UserSession>("SCRUM_DADDY_SESSIE") {
-        }
+        cookie<UserSession>("SCRUM_DADDY_SESSIE")
+        cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
 //        cookie<MySession>("SCRUM_SES") {
 //            cookie.extensions["SameSite"] = "strict"
 //        }

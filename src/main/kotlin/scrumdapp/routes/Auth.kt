@@ -1,5 +1,8 @@
 package com.jeroenvdg.scrumdapp.routes
 
+import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
+import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
+import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordGuild
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
@@ -34,6 +37,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.header
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
@@ -128,39 +132,24 @@ suspend fun Application.authRouting() {
                     val avatar = guildMember.avatar ?: user.avatar
 
                     call.sessions.set(UserSession(tokenData, UserData(name, user.id, avatar)))
-                    call.respondRedirect("/home")
-                }
-            }
-        }
-
-        get("/home") {
-            val session = call.tryGetUserSession() ?: return@get
-            call.respondHtml {
-                mainLayout(PageData("Home")) {
-                    h1 {
-                        +"Scrumdapp"
-                    }
-                    p {
-                        +"Hello "
-                        strong { +session.userData.name }
-                    }
-                    if (session.userData.avatar != null) {
-                        img(alt="User profile picture", "https://cdn.discordapp.com/avatars/${session.userData.discordId}/${session.userData.avatar}.png")
+                    val redirect = call.sessions.get<RedirectCookie>()
+                    if (redirect != null) {
+                        call.sessions.clear<RedirectCookie>()
+                        call.respondRedirect(redirect.to)
+                    } else {
+                        call.respondRedirect("/home")
                     }
                 }
             }
         }
 
-        get("/guilds") {
-            val user = call.tryGetUserSession() ?: return@get
-            val guilds = discordService.getGuilds(user.tokenData.accessToken).getOrThrow()
-            call.respondText("Hello, ${guilds.joinToString(", ") { it.name }}")
-        }
-
-        get("/login") {
-            call.respondHtml {
-                mainLayout(PageData("Login")) {
-                    loginPage()
+        route("/login") {
+            install(IsLoggedOut)
+            get {
+                call.respondHtml {
+                    mainLayout(PageData("Login")) {
+                        loginPage()
+                    }
                 }
             }
         }
