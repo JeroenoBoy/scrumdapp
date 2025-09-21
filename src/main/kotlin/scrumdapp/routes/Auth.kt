@@ -3,6 +3,9 @@ package com.jeroenvdg.scrumdapp.routes
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordGuild
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
+import com.jeroenvdg.scrumdapp.views.PageData
+import com.jeroenvdg.scrumdapp.views.loginPage
+import com.jeroenvdg.scrumdapp.views.mainLayout
 import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -133,10 +136,7 @@ suspend fun Application.authRouting() {
         get("/home") {
             val session = call.tryGetUserSession() ?: return@get
             call.respondHtml {
-                head {
-                    title("Scrum daddy app")
-                }
-                body {
+                mainLayout(PageData("Home")) {
                     h1 {
                         +"Scrumdapp"
                     }
@@ -157,12 +157,10 @@ suspend fun Application.authRouting() {
             call.respondText("Hello, ${guilds.joinToString(", ") { it.name }}")
         }
 
-        get("/") {
+        get("/login") {
             call.respondHtml {
-                body {
-                    p {
-                        a("/auth/login") { +"Login with Discord" }
-                    }
+                mainLayout(PageData("Login")) {
+                    loginPage()
                 }
             }
         }
