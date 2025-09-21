@@ -4,8 +4,12 @@ import com.jeroenvdg.scrumdapp.middileware.Make404
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.models.UserTable
+import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.PageData
+import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.mainLayout
+import com.jeroenvdg.scrumdapp.views.pages.aboutPage
+import com.jeroenvdg.scrumdapp.views.pages.homePage
 import io.ktor.server.application.*
 import io.ktor.server.html.respondHtml
 import io.ktor.server.http.content.*
@@ -33,26 +37,27 @@ suspend fun Application.configureRouting() {
         route("/home") {
             install(IsLoggedIn)
             get {
-                val session = call.tryGetUserSession() ?: return@get
                 call.respondHtml {
-                    mainLayout(PageData("Home")) {
-                        h1 {
-                            +"Scrumdapp"
-                        }
-                        p {
-                            +"Hello "
-                            strong { +session.userData.name }
-                        }
-                        if (session.userData.avatar != null) {
-                            img(alt="User profile picture", "https://cdn.discordapp.com/avatars/${session.userData.discordId}/${session.userData.avatar}.png")
-                        }
+                    dashboardLayout(DashboardPageData("Home", call)) {
+                        homePage()
+                    }
+                }
+            }
+        }
+
+        route("/about") {
+            install(IsLoggedIn)
+            get {
+                call.respondHtml {
+                    dashboardLayout(DashboardPageData("About", call)) {
+                        aboutPage()
                     }
                 }
             }
         }
 
         route("/epic") {
-            install(IsLoggedOut)
+            install(IsLoggedIn)
             get {
                 val session = call.tryGetUserSession() ?: return@get
                 call.respondHtml {

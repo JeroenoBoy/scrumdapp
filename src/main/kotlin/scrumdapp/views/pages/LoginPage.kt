@@ -1,8 +1,7 @@
-package com.jeroenvdg.scrumdapp.views
+package com.jeroenvdg.scrumdapp.views.pages
 
 import kotlinx.html.FlowContent
 import kotlinx.html.a
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.img

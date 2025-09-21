@@ -1,65 +1,24 @@
 package com.jeroenvdg.scrumdapp.routes
 
-import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordGuild
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
-import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
 import com.jeroenvdg.scrumdapp.views.PageData
-import com.jeroenvdg.scrumdapp.views.loginPage
+import com.jeroenvdg.scrumdapp.views.pages.loginPage
 import com.jeroenvdg.scrumdapp.views.mainLayout
 import io.github.cdimascio.dotenv.Dotenv
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.install
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.OAuthAccessTokenResponse
-import io.ktor.server.auth.OAuthAuthenticationProvider
-import io.ktor.server.auth.OAuthServerSettings
-import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.oauth
-import io.ktor.server.auth.principal
-import io.ktor.server.html.respondHtml
-import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.di.dependencies
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondRedirect
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.header
-import io.ktor.server.routing.route
-import io.ktor.server.routing.routing
-import io.ktor.server.sessions.clear
-import io.ktor.server.sessions.get
-import io.ktor.server.sessions.sessions
-import io.ktor.server.sessions.set
-import io.ktor.util.date.GMTDate
-import io.ktor.util.date.plus
-import jdk.internal.org.jline.keymap.KeyMap.alt
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.html.a
-import kotlinx.html.body
-import kotlinx.html.h1
-import kotlinx.html.head
-import kotlinx.html.img
-import kotlinx.html.p
-import kotlinx.html.strong
-import kotlinx.html.title
+import io.ktor.client.*
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.html.*
+import io.ktor.server.plugins.di.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
+import io.ktor.util.date.*
 import kotlinx.serialization.Serializable
-import org.h2.engine.User
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.Optional
-import kotlin.time.Duration
 
 @Serializable
 data class UserSession(val tokenData: TokenData, val userData: UserData)
@@ -97,6 +56,7 @@ suspend fun Application.authRouting() {
 
     routing {
         route("/auth") {
+            install(IsLoggedOut)
             authenticate("auth-oauth-discord") {
                 get("/login") { } // Magically redirects to the callback
                 get("/callback") {
