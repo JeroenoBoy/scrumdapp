@@ -16,19 +16,24 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 @Serializable
 @JsonIgnoreUnknownKeys
-data class DiscordUserResponse(var expires: String, var scopes: List<String>, var user: DiscordUser)
+data class DiscordUserResponse(val expires: String, val scopes: List<String>, val user: DiscordUser)
 
 @Serializable
 @JsonIgnoreUnknownKeys
-data class DiscordUser(var id: String, var username: String, var avatar: String, var global_name: String)
+data class DiscordUser(val id: String, val username: String, val avatar: String?, val global_name: String)
 
 @Serializable
 @JsonIgnoreUnknownKeys
-data class DiscordGuild(var id: String, var name: String, var icon: String?)
+data class DiscordGuild(val id: String, val name: String, val icon: String?)
+
+@Serializable
+@JsonIgnoreUnknownKeys
+data class DiscordGuildMember(val user: DiscordUser?, val nick: String?, val avatar: String?)
 
 interface DiscordService {
     suspend fun getUser(token: String): Result<DiscordUser>
     suspend fun getGuilds(token: String): Result<List<DiscordGuild>>
+    suspend fun getGuildMember(token: String, guildId: String): Result<DiscordGuildMember>
 }
 
 class DiscordServiceImpl(val client: HttpClient) : DiscordService {
@@ -45,6 +50,14 @@ class DiscordServiceImpl(val client: HttpClient) : DiscordService {
             header("authorization", "Bearer $token")
         }
         val body = Json.decodeFromString<List<DiscordGuild>>(response.bodyAsText())
+        return Result.success(body)
+    }
+
+    override suspend fun getGuildMember(token: String, guildId: String): Result<DiscordGuildMember> {
+        val response = client.get("https://discord.com/api/v10/users/@me/guilds/$guildId/member") {
+            header("authorization", "Bearer $token")
+        }
+        val body = Json.decodeFromString<DiscordGuildMember>(response.bodyAsText())
         return Result.success(body)
     }
 }

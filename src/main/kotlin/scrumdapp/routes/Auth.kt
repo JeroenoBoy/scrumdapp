@@ -34,17 +34,34 @@ import io.ktor.server.routing.routing
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import io.ktor.util.date.GMTDate
+import io.ktor.util.date.plus
+import jdk.internal.org.jline.keymap.KeyMap.alt
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.html.a
 import kotlinx.html.body
+import kotlinx.html.h1
+import kotlinx.html.head
+import kotlinx.html.img
 import kotlinx.html.p
+import kotlinx.html.strong
+import kotlinx.html.title
 import kotlinx.serialization.Serializable
 import org.h2.engine.User
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Optional
+import kotlin.time.Duration
 
 @Serializable
-data class UserSession(val state: String, val token: String, val user: DiscordUser)
+data class UserSession(val tokenData: TokenData, val userData: UserData)
+
+@Serializable
+data class TokenData(val accessToken: String, val tokenType: String, val refreshToken: String, val accessTokenExpiresAt: GMTDate)
+
+@Serializable
+data class UserData(val name: String, val discordId: String, val avatar: String?)
 
 suspend fun Application.authRouting() {
     val dotenv = dependencies.resolve<Dotenv>()
@@ -64,7 +81,7 @@ suspend fun Application.authRouting() {
                     requestMethod = HttpMethod.Post,
                     clientId = System.getenv("DISCORD_OAUTH_ID") ?: dotenv.get("DISCORD_OAUTH_ID"),
                     clientSecret = System.getenv("DISCORD_OAUTH_SECRET") ?: dotenv.get("DISCORD_OAUTH_SECRET"),
-                    defaultScopes = listOf("identify", "guilds", "email"),
+                    defaultScopes = listOf("identify", "guilds", "guilds.members.read"),
                 )
             }
             client = httpClient
@@ -81,6 +98,9 @@ suspend fun Application.authRouting() {
                     if (currentPrincipal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
 
+                    val tokenExpirationDate = GMTDate() + currentPrincipal.expiresIn * 1000
+                    val tokenData = TokenData(currentPrincipal.accessToken, currentPrincipal.tokenType, currentPrincipal.refreshToken!!, tokenExpirationDate)
+
                     val guildsResponse: Result<List<DiscordGuild>> = discordService.getGuilds(currentPrincipal.accessToken)
                     if (guildsResponse.isFailure) {
                         return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
@@ -94,13 +114,17 @@ suspend fun Application.authRouting() {
                             break
                         }
                     }
+
                     if (!guildFound) {
                         return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     }
 
-                    val user: DiscordUser = discordService.getUser(currentPrincipal.accessToken).getOrThrow()
+                    val user = discordService.getUser(currentPrincipal.accessToken).getOrThrow()
+                    val guildMember = discordService.getGuildMember(currentPrincipal.accessToken, authorizationServerId).getOrThrow()
+                    val name = guildMember.nick ?: user.global_name
+                    val avatar = guildMember.avatar ?: user.avatar
 
-                    call.sessions.set(UserSession(state, currentPrincipal.accessToken, user))
+                    call.sessions.set(UserSession(tokenData, UserData(name, user.id, avatar)))
                     call.respondRedirect("/home")
                 }
             }
@@ -108,12 +132,28 @@ suspend fun Application.authRouting() {
 
         get("/home") {
             val session = call.tryGetUserSession() ?: return@get
-            call.respondText("Hello, ${session.user.global_name}")
+            call.respondHtml {
+                head {
+                    title("Scrum daddy app")
+                }
+                body {
+                    h1 {
+                        +"Scrumdapp"
+                    }
+                    p {
+                        +"Hello "
+                        strong { +session.userData.name }
+                    }
+                    if (session.userData.avatar != null) {
+                        img(alt="User profile picture", "https://cdn.discordapp.com/avatars/${session.userData.discordId}/${session.userData.avatar}.png")
+                    }
+                }
+            }
         }
 
         get("/guilds") {
             val user = call.tryGetUserSession() ?: return@get
-            val guilds = discordService.getGuilds(user.token).getOrThrow()
+            val guilds = discordService.getGuilds(user.tokenData.accessToken).getOrThrow()
             call.respondText("Hello, ${guilds.joinToString(", ") { it.name }}")
         }
 
