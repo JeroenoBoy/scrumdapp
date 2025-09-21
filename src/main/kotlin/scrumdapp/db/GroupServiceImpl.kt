@@ -53,27 +53,43 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun addGroupMember(groupId: Int, user: User) {
+    override suspend fun addGroupMember(group: Group, user: User, permission: UserPermissions) {
+        return dbQuery {
+            UserGroups.insert {
+                it[groupId] = group.id
+                it[userId] = user.id
+                it[permissions] = permission.id
+            }
+        }
+    }
+
+    override suspend fun alterGroupMemberPerms(user: User, permission: UserPermissions): Boolean {
+        return dbQuery {
+            UserGroups.update({ UserGroups.userId eq user.id}) {
+                it[permissions]=permission.id
+            }>0
+        }
+    }
+
+    override suspend fun deleteGroupMember(group: Group, user: User): Boolean {
+        return dbQuery {
+            UserGroups.deleteWhere { UserGroups.groupId eq group.id and (UserGroups.userId eq user.id) }>0
+        }
+    }
+
+    override suspend fun createGroupInvite(
+        group: Group,
+        password: String
+    ): String {
         TODO("Not yet implemented")
     }
 
-    override suspend fun alterGroupMemberPerms(
-        userId: Int,
-        permission: UserPermissions
+    override suspend fun deleteGroupInvite(
+        group: Group,
+        user: User
     ) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteGroupMember(groupId: Int, user: User) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun createGroupInvite(groupId: Int, password: String): String {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteGroupInvite(groupId: Int, user: User) {
-        TODO("Not yet implemented")
-    }
 
 }
