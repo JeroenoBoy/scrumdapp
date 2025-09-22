@@ -2,6 +2,7 @@ val exposed_version: String by project
 val h2_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val exposed_kotlinxdatetime_version: String by project
 
 plugins {
     kotlin("jvm") version "2.2.20"
@@ -28,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-server-di")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposed_kotlinxdatetime_version")
     implementation("com.h2database:h2:$h2_version")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-client-cio:$exposed_version")
