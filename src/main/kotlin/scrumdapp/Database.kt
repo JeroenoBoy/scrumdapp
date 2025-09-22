@@ -1,16 +1,20 @@
 package com.jeroenvdg.scrumdapp
 
+import io.ktor.server.application.Application
+import io.ktor.server.plugins.di.dependencies
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import scrumdapp.services.EnvironmentService
 
 object Database {
-    fun initializeDatabase(): Database {
+    suspend fun Application.initializeDatabase(): Database {
+        val env = dependencies.resolve<EnvironmentService>()
         return Database.connect(
-            url = "",
-            user = "root",
-            driver = "org.sqlite.JDBC",
-            password = ""
+            url = env.getVariable("DATABASE_URL"),
+            driver = env.getVariable("DATABASE_DRIVER"),
+            user = env.getVariable("DATABASE_USER"),
+            password = env.getVariable("DATABASE_PASSWORD")
         )
     }
 

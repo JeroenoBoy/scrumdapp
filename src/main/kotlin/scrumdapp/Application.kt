@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import com.jeroenvdg.scrumdapp.Database.initializeDatabase
+import com.jeroenvdg.scrumdapp.models.GroupsTable
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.http.HttpStatusCode
@@ -55,6 +56,7 @@ suspend fun Application.module() {
     dependencies {
         provide { database }
         provide { UserTable(database) }
+        provide { GroupsTable(database) }
         provide { httpClient }
         provide<EnvironmentService> { env }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
