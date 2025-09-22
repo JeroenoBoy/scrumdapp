@@ -19,6 +19,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.date.*
 import kotlinx.serialization.Serializable
+import scrumdapp.services.EnvironmentService
 
 @Serializable
 data class UserSession(val tokenData: TokenData, val userData: UserData)
@@ -30,23 +31,23 @@ data class TokenData(val accessToken: String, val tokenType: String, val refresh
 data class UserData(val name: String, val discordId: String, val avatar: String?)
 
 suspend fun Application.authRouting() {
-    val dotenv = dependencies.resolve<Dotenv>()
+    val env = dependencies.resolve<EnvironmentService>()
     val httpClient = dependencies.resolve<HttpClient>()
     val discordService = dependencies.resolve<DiscordService>()
 
-    val authorizationServerId = System.getenv("AUTHORIZATION_SERVER_ID") ?: dotenv.get("AUTHORIZATION_SERVER_ID") ?: throw Exception("AUTHORIZATION_SERVER_ID is not defined")
+    val authorizationServerId = env.getVariable("AUTHORIZATION_SERVER_ID")
 
     install(Authentication) {
         oauth("auth-oauth-discord") {
-            urlProvider = { System.getenv("DISCORD_OAUTH_CALLBACK") ?: dotenv["DISCORD_OAUTH_CALLBACK"] }
+            urlProvider = { env.getVariable("DISCORD_OAUTH_CALLBACK") }
             providerLookup = {
                 OAuthServerSettings.OAuth2ServerSettings(
                     name = "discord",
                     authorizeUrl = "https://discord.com/oauth2/authorize",
                     accessTokenUrl = "https://discord.com/api/oauth2/token",
                     requestMethod = HttpMethod.Post,
-                    clientId = System.getenv("DISCORD_OAUTH_ID") ?: dotenv.get("DISCORD_OAUTH_ID"),
-                    clientSecret = System.getenv("DISCORD_OAUTH_SECRET") ?: dotenv.get("DISCORD_OAUTH_SECRET"),
+                    clientId = env.getVariable("DISCORD_OAUTH_ID"),
+                    clientSecret = env.getVariable("DISCORD_OAUTH_SECRET"),
                     defaultScopes = listOf("identify", "guilds", "guilds.members.read"),
                 )
             }

@@ -1,7 +1,6 @@
 package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.Database.dbQuery
-import com.jeroenvdg.scrumdapp.UserService.Users.name
 import com.jeroenvdg.scrumdapp.models.UserTable.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll

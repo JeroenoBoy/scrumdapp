@@ -8,7 +8,6 @@ import com.jeroenvdg.scrumdapp.routes.authRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
-import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.http.HttpStatusCode
@@ -17,7 +16,6 @@ import io.ktor.server.application.*
 import io.ktor.server.application.install
 import io.ktor.server.mustache.Mustache
 import io.ktor.server.netty.EngineMain
-import io.ktor.server.netty.NettyApplicationEngine
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.response.respond
@@ -26,6 +24,8 @@ import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
 import org.jetbrains.exposed.sql.Database
+import scrumdapp.services.DotenvService
+import scrumdapp.services.EnvironmentService
 
 fun main(args: Array<String>) {
     println("Starting Scrumdapp")
@@ -33,9 +33,9 @@ fun main(args: Array<String>) {
 }
 
 suspend fun Application.module() {
-    val dotenv = Dotenv.load()
+    val env = DotenvService()
     val database = Database.connect(
-        url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
+        url = env.getVariable("DATABASE_URL"),
         user = "root",
         driver = "org.h2.Driver",
         password = "",
@@ -61,7 +61,7 @@ suspend fun Application.module() {
     dependencies {
         provide { database }
         provide { UserTable(database) }
-        provide { dotenv }
+        provide<EnvironmentService> { env }
         provide { httpClient }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
