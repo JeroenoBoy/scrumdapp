@@ -6,6 +6,8 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.kotlin.datetime.*
+
 
 class GroupsTable(database: Database) {
     object Groups: Table() {
@@ -24,11 +26,12 @@ class GroupsTable(database: Database) {
         override val primaryKey = PrimaryKey(id)
     }
 
-    object GroupCheckin: Table() {
+    object GroupCheckins: Table() {
         val id = integer("id").autoIncrement()
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val userId = optReference("user_id", UserTable.Users.id, onDelete = ReferenceOption.CASCADE)
         val onTime = bool("on_time")
+        val date = date("date")
         val delay = integer("total_delay").default(0)
         val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 5) }
         val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 5) }
@@ -48,7 +51,7 @@ class GroupsTable(database: Database) {
 
     init {
         transaction(database) {
-            SchemaUtils.create(Groups, UserGroups, GroupCheckin, GroupInvite)
+            SchemaUtils.create(Groups, UserGroups, GroupCheckins, GroupInvite)
         }
     }
 }

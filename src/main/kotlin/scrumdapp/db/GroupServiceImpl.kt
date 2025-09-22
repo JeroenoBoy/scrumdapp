@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 class GroupServiceImpl: GroupService {
 
     private fun resultRowToGroup(row: ResultRow): Group {
-        return Group( // Why break?
+        return Group(
             id = row[Groups.id],
             name = row[Groups.name],
         )
