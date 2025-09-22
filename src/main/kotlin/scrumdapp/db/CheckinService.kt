@@ -1,7 +1,9 @@
 package com.jeroenvdg.scrumdapp.db
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Checkin(
     val id: Int,
     val groupId: Int?,

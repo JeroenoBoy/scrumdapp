@@ -1,18 +1,18 @@
 package com.jeroenvdg.scrumdapp
 
 import com.github.mustachejava.DefaultMustacheFactory
-import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.UserSession
 import com.jeroenvdg.scrumdapp.routes.authRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
+import com.jeroenvdg.scrumdapp.Database.initializeDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.mustache.Mustache
 import io.ktor.server.netty.EngineMain
@@ -23,7 +23,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
-import org.jetbrains.exposed.sql.Database
 import scrumdapp.services.DotenvService
 import scrumdapp.services.EnvironmentService
 
@@ -34,12 +33,7 @@ fun main(args: Array<String>) {
 
 suspend fun Application.module() {
     val env = DotenvService()
-    val database = Database.connect(
-        url = env.getVariable("DATABASE_URL"),
-        user = "root",
-        driver = "org.h2.Driver",
-        password = "",
-    )
+    val database = initializeDatabase()
     val httpClient = HttpClient(CIO) { }
 
     install(ContentNegotiation) {
@@ -47,8 +41,8 @@ suspend fun Application.module() {
     }
 
     install(Sessions) {
-        cookie<UserSession>("SCRUM_DADDY_SESSIE")
-        cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
+        cookie<UserSession>("SCRUM_DADDY_SESSIE") {
+        }
 //        cookie<MySession>("SCRUM_SES") {
 //            cookie.extensions["SameSite"] = "strict"
 //        }
@@ -61,8 +55,8 @@ suspend fun Application.module() {
     dependencies {
         provide { database }
         provide { UserTable(database) }
-        provide<EnvironmentService> { env }
         provide { httpClient }
+        provide<EnvironmentService> { env }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
 

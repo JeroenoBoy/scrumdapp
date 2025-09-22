@@ -1,7 +1,9 @@
 package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Group(
     val id: Int,
     val name: String,
