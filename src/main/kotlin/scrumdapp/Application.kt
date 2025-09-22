@@ -7,12 +7,13 @@ import com.jeroenvdg.scrumdapp.routes.authRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
+import com.jeroenvdg.scrumdapp.Database.initializeDatabase
 import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.*
+import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.mustache.Mustache
 import io.ktor.server.netty.EngineMain
@@ -24,7 +25,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
-import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>) {
     println("Starting Scrumdapp")
@@ -33,12 +33,7 @@ fun main(args: Array<String>) {
 
 suspend fun Application.module() {
     val dotenv = Dotenv.load()
-    val database = Database.connect(
-        url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
-        user = "root",
-        driver = "org.h2.Driver",
-        password = "",
-    )
+    val database = initializeDatabase()
     val httpClient = HttpClient(CIO) { }
 
     install(ContentNegotiation) {

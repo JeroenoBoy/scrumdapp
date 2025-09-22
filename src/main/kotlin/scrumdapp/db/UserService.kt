@@ -1,8 +1,9 @@
 package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.models.UserTable
+import kotlinx.serialization.Serializable
 
-
+@Serializable
 data class User(
     val id: Int,
     val name: String,
