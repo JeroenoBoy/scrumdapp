@@ -6,14 +6,14 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.kotlin.datetime.*
+import org.jetbrains.exposed.sql.kotlin.datetime.date
 
 
 class GroupsTable(database: Database) {
     object Groups: Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", 50)
-
+        val bannerPicture = varchar("bannerPicture", 50)
         override val primaryKey = PrimaryKey(id)
     }
 
@@ -33,8 +33,8 @@ class GroupsTable(database: Database) {
         val onTime = bool("on_time")
         val date = date("date")
         val delay = integer("total_delay").default(0)
-        val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 5) }
-        val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 5) }
+        val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 10) }
+        val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 10) }
         val comment = text("comment")
 
         override val primaryKey = PrimaryKey(id)

@@ -53,6 +53,26 @@ class GroupServiceImpl: GroupService {
         }
     }
 
+    override suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions {
+        return dbQuery {
+            UserGroups
+                .select(UserGroups.userId eq userid and (UserGroups.groupId eq group.id))
+                .withDistinct()
+                .map { UserPermissions.fromId(it) }
+                .single()
+        }
+    }
+
+    override suspend fun compareGroupMemberPermissions(group: Group, userid: Int, permission: UserPermissions): Boolean {
+        return dbQuery {
+            UserGroups.select(
+                UserGroups.groupId eq group.id,
+                UserGroups.userId eq userid,
+                UserGroups.permissions eq permission.id
+            ).any()
+        }
+    }
+
     override suspend fun addGroupMember(group: Group, user: User, permission: UserPermissions) {
         return dbQuery {
             UserGroups.insert {
@@ -84,11 +104,10 @@ class GroupServiceImpl: GroupService {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteGroupInvite(
-        group: Group,
-        user: User
-    ) {
-        TODO("Not yet implemented")
+    override suspend fun deleteGroupInvite(group: Group, user: User) { // Not finished, discuss with Jeroen
+        return dbQuery {
+            GroupInvite.deleteWhere { GroupInvite.groupId eq group.id }
+        }
     }
 
 
