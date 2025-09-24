@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import com.jeroenvdg.scrumdapp.Database.initializeDatabase
+import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.models.GroupsTable
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -34,6 +35,7 @@ fun main(args: Array<String>) {
 
 suspend fun Application.module() {
     val env = DotenvService()
+    dependencies { provide<EnvironmentService> { env } }
     val database = initializeDatabase()
     val httpClient = HttpClient(CIO) { }
 
@@ -44,6 +46,7 @@ suspend fun Application.module() {
     install(Sessions) {
         cookie<UserSession>("SCRUM_DADDY_SESSIE") {
         }
+        cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
 //        cookie<MySession>("SCRUM_SES") {
 //            cookie.extensions["SameSite"] = "strict"
 //        }
@@ -58,15 +61,9 @@ suspend fun Application.module() {
         provide { UserTable(database) }
         provide { GroupsTable(database) }
         provide { httpClient }
-        provide<EnvironmentService> { env }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
 
-    routing {
-        get("/3") {
-            call.respond(HttpStatusCode.OK,"Whats up")
-        }
-    }
     configureRouting()
     authRouting()
 }
