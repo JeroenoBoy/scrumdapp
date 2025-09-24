@@ -3,12 +3,10 @@
 package com.jeroenvdg.scrumdapp.services.oauth2.discord
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.async
+import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -36,28 +34,30 @@ interface DiscordService {
     suspend fun getGuildMember(token: String, guildId: String): Result<DiscordGuildMember>
 }
 
+class DiscordServiceException(val status: Int, message: String = "") : Exception(message)
+
 class DiscordServiceImpl(val client: HttpClient) : DiscordService {
     override suspend fun getUser(token: String): Result<DiscordUser> {
-        val response = client.get("https://discord.com/api/v10/users/@me") {
-            header("authorization", "Bearer $token")
-        }
-        val body = Json.decodeFromString<DiscordUser>(response.bodyAsText())
-        return Result.success(body)
+        return discordGetRequest("/users/@me", token)
     }
 
     override suspend fun getGuilds(token: String): Result<List<DiscordGuild>> {
-        val response = client.get("https://discord.com/api/v10/users/@me/guilds") {
-            header("authorization", "Bearer $token")
-        }
-        val body = Json.decodeFromString<List<DiscordGuild>>(response.bodyAsText())
-        return Result.success(body)
+        return discordGetRequest("/users/@me/guilds", token)
     }
 
     override suspend fun getGuildMember(token: String, guildId: String): Result<DiscordGuildMember> {
-        val response = client.get("https://discord.com/api/v10/users/@me/guilds/$guildId/member") {
+        return discordGetRequest("/users/@me/guilds/$guildId/member", token)
+    }
+
+    private suspend inline fun <reified T> discordGetRequest(endpoint: String, token: String): Result<T> {
+        val response = client.get("https://discord.com/api/v10$endpoint") {
             header("authorization", "Bearer $token")
         }
-        val body = Json.decodeFromString<DiscordGuildMember>(response.bodyAsText())
-        return Result.success(body)
+        if (response.status == HttpStatusCode.OK) {
+            val body = Json.decodeFromString<T>(response.bodyAsText())
+            return Result.success(body)
+        }
+        println(response.bodyAsText())
+        return Result.failure(DiscordServiceException(response.status.value, response.status.description))
     }
 }

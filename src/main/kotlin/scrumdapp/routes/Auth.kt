@@ -1,13 +1,15 @@
 package com.jeroenvdg.scrumdapp.routes
 
+import com.jeroenvdg.scrumdapp.db.SessionService
+import com.jeroenvdg.scrumdapp.db.User
+import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
-import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordGuild
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
+import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
 import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.pages.loginPage
 import com.jeroenvdg.scrumdapp.views.mainLayout
-import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,18 +24,14 @@ import kotlinx.serialization.Serializable
 import scrumdapp.services.EnvironmentService
 
 @Serializable
-data class UserSession(val tokenData: TokenData, val userData: UserData)
-
-@Serializable
-data class TokenData(val accessToken: String, val tokenType: String, val refreshToken: String, val accessTokenExpiresAt: GMTDate)
-
-@Serializable
-data class UserData(val name: String, val discordId: String, val avatar: String?)
+data class SessionToken(val token: String)
 
 suspend fun Application.authRouting() {
     val env = dependencies.resolve<EnvironmentService>()
     val httpClient = dependencies.resolve<HttpClient>()
     val discordService = dependencies.resolve<DiscordService>()
+    val userService = dependencies.resolve<UserService>()
+    val sessionService = dependencies.resolve<SessionService>()
 
     val authorizationServerId = env.getVariable("AUTHORIZATION_SERVER_ID")
 
@@ -61,38 +59,23 @@ suspend fun Application.authRouting() {
             authenticate("auth-oauth-discord") {
                 get("/login") { } // Magically redirects to the callback
                 get("/callback") {
-                    val currentPrincipal = call.principal<OAuthAccessTokenResponse.OAuth2>()
-                    val state = currentPrincipal?.state
-                    if (currentPrincipal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    val principal = call.principal<OAuthAccessTokenResponse.OAuth2>()
+                    val state = principal?.state
+                    if (principal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    if (principal.refreshToken == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
 
-                    val tokenExpirationDate = GMTDate() + currentPrincipal.expiresIn * 1000
-                    val tokenData = TokenData(currentPrincipal.accessToken, currentPrincipal.tokenType, currentPrincipal.refreshToken!!, tokenExpirationDate)
+                    val tokenExpiry = GMTDate() + principal.expiresIn * 1000
 
-                    val guildsResponse: Result<List<DiscordGuild>> = discordService.getGuilds(currentPrincipal.accessToken)
-                    if (guildsResponse.isFailure) {
-                        return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    val discordUser = discordService.getUser(principal.accessToken).getOrElse {
+                        return@get call.respond(HttpStatusCode.Unauthorized, "Failed to log in")
                     }
 
-                    val guilds = guildsResponse.getOrThrow()
-                    var guildFound = false
-                    for (guild in guilds.reversed()) {
-                        if (guild.id == authorizationServerId) {
-                            guildFound = true
-                            break
-                        }
-                    }
+                    // Get user with discordId
+                    val user = userService.getUser(1) ?: createUser(principal, discordUser, authorizationServerId, discordService, userService)
+                    val session = sessionService.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
 
-                    if (!guildFound) {
-                        return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                    }
-
-                    val user = discordService.getUser(currentPrincipal.accessToken).getOrThrow()
-                    val guildMember = discordService.getGuildMember(currentPrincipal.accessToken, authorizationServerId).getOrThrow()
-                    val name = guildMember.nick ?: user.global_name
-                    val avatar = guildMember.avatar ?: user.avatar
-
-                    call.sessions.set(UserSession(tokenData, UserData(name, user.id, avatar)))
+                    call.sessions.set(SessionToken(session.token))
                     val redirect = call.sessions.get<RedirectCookie>()
                     if (redirect != null) {
                         call.sessions.clear<RedirectCookie>()
@@ -117,12 +100,17 @@ suspend fun Application.authRouting() {
     }
 }
 
+suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
+                       discordUser: DiscordUser,
+                       authorityGuild: String,
+                       discordService: DiscordService,
+                       userService: UserService): User {
 
-suspend fun ApplicationCall.tryGetUserSession(): UserSession? {
-    val userSession = this.sessions.get<UserSession>()
-    if (userSession == null) {
-        this.respondRedirect("/", false)
-        return null
-    }
-    return userSession
+    val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
+    val name = guildMember.nick ?: discordUser.global_name
+    var avatar = guildMember.avatar ?: discordUser.avatar
+    if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
+
+    val user = userService.addUser(User(-1, name, discordUser.id.toLong(), avatar ?: ""))
+    return user!!
 }

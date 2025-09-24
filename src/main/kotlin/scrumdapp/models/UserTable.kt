@@ -1,10 +1,27 @@
 package com.jeroenvdg.scrumdapp.models
 
+import io.ktor.util.date.GMTDate
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.kotlin.datetime.CurrentDateTime
+import org.jetbrains.exposed.sql.kotlin.datetime.datetime
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 import org.jetbrains.exposed.sql.transactions.transaction
+
+
+@Serializable
+data class UserSession(
+    var id: Int,
+    var userId: Int,
+    var token: String,
+    var discordRefreshToken: String,
+    var discordAccessToken: String?,
+    var discordAccessTokenExpiry: GMTDate,
+    val createdAt: GMTDate
+);
 
 class UserTable(database: Database) {
     object Users : Table() {
@@ -18,8 +35,12 @@ class UserTable(database: Database) {
 
     object UserSessions: Table() {
         val id = integer("id").autoIncrement()
-        val user_id = optReference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
-        val token = varchar("token", 255)
+        val userId = optReference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
+        val token = varchar("token", 128)
+        val discordRefreshToken = varchar("discord_refresh_token", 64)
+        val discordAccessToken = varchar("discord_access_token", 64).nullable()
+        val discordAccessTokenExpiry = timestamp("discord_access_token_expire_date")
+        val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
     }
 
     init {

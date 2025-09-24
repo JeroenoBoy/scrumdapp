@@ -1,6 +1,6 @@
 package com.jeroenvdg.scrumdapp.views.components
 
-import com.jeroenvdg.scrumdapp.routes.UserData
+import com.jeroenvdg.scrumdapp.db.User
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -10,7 +10,7 @@ import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.span
 
-fun FlowContent.navbar(userData: UserData) {
+fun FlowContent.navbar(user: User) {
     header(classes="nav") {
         div(classes="nav-group") {
             a(href="/home", classes="nav-button r-full px-sm") { icon("arrow_back") }
@@ -23,8 +23,10 @@ fun FlowContent.navbar(userData: UserData) {
         }
         div(classes="nav-group justify-end") {
             div(classes="dropdown horizontal align-center g-md") {
-                +userData.name
-                img(alt="User Profile Picture", classes="nav-user-icon", src="https://cdn.discordapp.com/avatars/${userData.discordId}/${userData.avatar}.png")
+                +user.name
+                if (!user.profileImage.isEmpty()) {
+                    img(alt="User Profile Picture", classes="nav-user-icon", src=user.profileImage)
+                }
                 div(classes="dropdown-content") {
                     a(href="/settings", classes="nav-button") {
                         icon(iconName="settings")

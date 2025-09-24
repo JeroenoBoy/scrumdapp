@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertReturning
 import org.jetbrains.exposed.sql.update
 
 class UserServiceImpl: UserService {
@@ -21,8 +22,9 @@ class UserServiceImpl: UserService {
 
     override suspend fun getUser(id: Int): User? {
         return dbQuery {
-            Users.select(Users.id eq id).map { resultRowToUser(it) }.singleOrNull()
-        }
+            Users.select(Users.fields)
+                .where(Users.id eq id)
+                .singleOrNull()?.let { resultRowToUser(it) } }
     }
 
     override suspend fun getUsers(): List<User> {
@@ -31,18 +33,18 @@ class UserServiceImpl: UserService {
         }
     }
 
-    override suspend fun addUser(user: Users): User? {
+    override suspend fun addUser(user: User): User? {
         return dbQuery {
-            val inserts = Users.insert {
+            val inserts = Users.insertReturning(Users.fields) {
                 it[name] = user.name
                 it[discordId] = user.discordId
                 it[profileImage] = user.profileImage
             }
-            inserts.resultedValues?.singleOrNull()?.let { resultRowToUser(it) }
+            inserts.singleOrNull()?.let { resultRowToUser(it) }
         }
     }
 
-    override suspend fun alterUser(user: Users): Boolean {
+    override suspend fun alterUser(user: User): Boolean {
         return dbQuery {
             Users.update ({Users.id eq user.id}) {
                 it[name] = user.name
@@ -52,7 +54,7 @@ class UserServiceImpl: UserService {
         }
     }
 
-    override suspend fun deleteUser(user: Users): Boolean {
+    override suspend fun deleteUser(user: User): Boolean {
         return dbQuery {
             Users.deleteWhere { Users.id eq user.id }
         }>0

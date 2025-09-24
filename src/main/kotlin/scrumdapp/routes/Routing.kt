@@ -3,6 +3,7 @@ package com.jeroenvdg.scrumdapp.routes
 import com.jeroenvdg.scrumdapp.middileware.Make404
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
+import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.PageData
@@ -59,7 +60,7 @@ suspend fun Application.configureRouting() {
         route("/epic") {
             install(IsLoggedIn)
             get {
-                val session = call.tryGetUserSession() ?: return@get
+                val user = call.user
                 call.respondHtml {
                     mainLayout(PageData("Home")) {
                         h1 {
@@ -67,11 +68,11 @@ suspend fun Application.configureRouting() {
                         }
                         p {
                             +"Super epic story, innit "
-                            strong { +session.userData.name }
+                            strong { +user.name }
                             +"?"
                         }
-                        if (session.userData.avatar != null) {
-                            img(alt="User profile picture", "https://cdn.discordapp.com/avatars/${session.userData.discordId}/${session.userData.avatar}.png")
+                        if (user.profileImage.isNotEmpty()) {
+                            img(alt="User profile picture", user.profileImage)
                         }
                     }
                 }

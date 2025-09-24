@@ -1,6 +1,5 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
-import com.jeroenvdg.scrumdapp.routes.UserSession
 import kotlinx.html.FlowContent
 import kotlinx.html.div
 import kotlinx.html.h1

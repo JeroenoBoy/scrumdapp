@@ -14,7 +14,7 @@ data class User(
 interface UserService {
     suspend fun getUser(id: Int): User?
     suspend fun getUsers(): List<User>
-    suspend fun addUser(user: UserTable.Users): User?
-    suspend fun alterUser(user: UserTable.Users): Boolean
-    suspend fun deleteUser(user: UserTable.Users): Boolean
+    suspend fun addUser(user: User): User?
+    suspend fun alterUser(user: User): Boolean
+    suspend fun deleteUser(user: User): Boolean
 }

@@ -1,11 +1,8 @@
 package com.jeroenvdg.scrumdapp.views
 
-import com.jeroenvdg.scrumdapp.routes.UserSession
+import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.views.components.navbar
-import io.ktor.server.application.PipelineCall
 import io.ktor.server.routing.RoutingCall
-import io.ktor.server.sessions.get
-import io.ktor.server.sessions.sessions
 import kotlinx.html.BODY
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
@@ -40,7 +37,7 @@ fun HTML.dashboardLayout(pageData: DashboardPageData, builder: FlowContent.() ->
     mainLayout(PageData(pageData.title)) {
         div { id = "app"
             img(alt="bg-img", src="/static/backgrounds/15.png", classes="bg-img")
-            navbar(pageData.call.sessions.get<UserSession>()!!.userData)
+            navbar(pageData.call.user)
             div(classes="nav-height")
             div(classes="spacer-xl")
             div(classes="container") {
