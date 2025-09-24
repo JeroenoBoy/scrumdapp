@@ -30,6 +30,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposed_kotlinxdatetime_version")
+    implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.h2database:h2:$h2_version")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-client-cio:$exposed_version")
