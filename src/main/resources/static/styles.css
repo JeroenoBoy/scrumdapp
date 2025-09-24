@@ -50,6 +50,11 @@ ul, ol {
     margin-bottom: var(--gap-md);
 }
 
+hr {
+    width: 100%;
+    color: var(--bg2);
+}
+
 .text-center {
     text-align: center;
 }
@@ -118,10 +123,31 @@ ul, ol {
     padding: var(--gap-sm) var(--gap-md);
     border-radius: var(--radius);
     color: var(--fg);
+    background: var(--bg_h);
+}
+
+.btn:hover {
+    background: var(--bg2);
+}
+
+.btn:active {
+    background: var(--bg3);
 }
 
 .btn-blue {
     background: var(--blue-dim);
+}
+
+.btn-blue:hover {
+    background: var(--blue);
+}
+
+.btn-red {
+    background: var(--red-dim);
+}
+
+.btn-red:hover {
+    background: var(--red);
 }
 
 .icon {
@@ -262,6 +288,11 @@ ul, ol {
     margin-top: 20vh;
 }
 
+.-mtr-md {
+    margin-top: calc(var(--gap-md)*-1);
+    margin-right: calc(var(--gap-md)*-1);
+}
+
 .px-0 {
     padding-left: 0;
     padding-right: 0;
@@ -270,6 +301,21 @@ ul, ol {
 .px-sm {
     padding-left: var(--gap-sm);
     padding-right: var(--gap-sm);
+}
+
+.px-md {
+    padding-left: var(--gap-md);
+    padding-right: var(--gap-md);
+}
+
+.px-lg {
+    padding-left: var(--gap-lg);
+    padding-right: var(--gap-lg);
+}
+
+.px-xl {
+    padding-left: var(--gap-xl);
+    padding-right: var(--gap-xl);
 }
 
 .g-md {
@@ -349,10 +395,18 @@ ul, ol {
     justify-content: end;
 }
 
+.flex-1 {
+    flex: 1;
+}
+
 .grid {
     display: grid;
 }
 
 .row-3 {
     grid-template-columns: repeat(3, 1fr);
+}
+
+.b-none {
+    border: none;
 }
