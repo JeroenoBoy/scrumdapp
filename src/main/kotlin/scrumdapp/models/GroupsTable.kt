@@ -1,5 +1,6 @@
 package com.jeroenvdg.scrumdapp.models
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -8,6 +9,14 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.kotlin.datetime.date
 
+@Serializable
+enum class Presence {
+    OnTime,
+    Late,
+    Absent,
+    VerifiedAbsent,
+    Sick,
+}
 
 class GroupsTable(database: Database) {
     object Groups: Table() {
@@ -30,7 +39,7 @@ class GroupsTable(database: Database) {
         val id = integer("id").autoIncrement()
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val userId = optReference("user_id", UserTable.Users.id, onDelete = ReferenceOption.CASCADE)
-        val onTime = bool("on_time")
+        val presence = enumeration("presence", Presence::class)
         val date = date("date")
         val delay = integer("total_delay").default(0)
         val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 10) }

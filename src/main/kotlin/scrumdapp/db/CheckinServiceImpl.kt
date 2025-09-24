@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
+import com.jeroenvdg.scrumdapp.models.Presence
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -11,7 +12,7 @@ class CheckinServiceImpl: CheckinService {
             id = row[GroupCheckins.id],
             groupId = row[GroupCheckins.groupId],
             userId = row[GroupCheckins.userId],
-            onTime = row[GroupCheckins.onTime],
+            presence = row[GroupCheckins.presence],
             date = row[GroupCheckins.date],
             delay = row[GroupCheckins.delay],
             checkinStars = row[GroupCheckins.checkinStars],
@@ -43,7 +44,7 @@ class CheckinServiceImpl: CheckinService {
             val inserts = GroupCheckins.insert {
                 it[GroupCheckins.groupId] = checkin.groupId
                 it[GroupCheckins.userId] = checkin.userId
-                it[GroupCheckins.onTime] = checkin.onTime
+                it[GroupCheckins.presence] = checkin.presence
                 it[GroupCheckins.delay] = checkin.delay
                 it[GroupCheckins.date] = checkin.date
                 it[GroupCheckins.checkinStars] = checkin.checkinStars
@@ -59,7 +60,7 @@ class CheckinServiceImpl: CheckinService {
             GroupCheckins.batchInsert(checkins) { checkin ->
                 this[GroupCheckins.groupId] = group.id
                 this[GroupCheckins.userId] = checkin.userId
-                this[GroupCheckins.onTime] = checkin.onTime
+                this[GroupCheckins.presence] = checkin.presence
                 this[GroupCheckins.delay] = checkin.delay
                 this[GroupCheckins.date] = checkin.date
                 this[GroupCheckins.checkinStars] = checkin.checkinStars
@@ -72,7 +73,7 @@ class CheckinServiceImpl: CheckinService {
     override suspend fun alterCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.update({ GroupCheckins.userId eq checkin.userId and (GroupCheckins.groupId eq checkin.groupId)}) {
-               it[GroupCheckins.onTime] = checkin.onTime
+               it[GroupCheckins.presence] = checkin.presence
                it[GroupCheckins.delay] = checkin.delay
                it[GroupCheckins.date] = checkin.date
                it[GroupCheckins.checkinStars] = checkin.checkinStars

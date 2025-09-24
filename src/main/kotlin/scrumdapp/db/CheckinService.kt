@@ -1,5 +1,6 @@
 package com.jeroenvdg.scrumdapp.db
 
+import com.jeroenvdg.scrumdapp.models.Presence
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ data class Checkin(
     val id: Int,
     val groupId: Int?,
     val userId: Int?,
-    val onTime: Boolean,
+    val presence: Presence,
     val delay: Int,
     val checkinStars: Int,
     val checkupStars: Int,
