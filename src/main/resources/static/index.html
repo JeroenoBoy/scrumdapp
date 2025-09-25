@@ -62,7 +62,7 @@
         <div class="spacer-xl"></div>
         <div class="container-parent">
         <div class="container">
-            <h1>Groep Weird Ways of Learning</h1>
+            <h1>Groep - Weird Ways of Learning</h1>
             <div class="horizontal g-lg">
                 <div class="vertical g-lg">
                     <div class="card vertical g-md">
@@ -86,18 +86,114 @@
                     </div>
                 </div>
                 <div class="card flex-1">
-                    <table class="w-full">
+                    <table class="checkin-table">
                         <thead>
-                            <th>Naam</th>
-                            <th>Aanwezigheid</th>
-                            <th>Check-in</th>
-                            <th>Check-up</th>
-                            <th>Opmerkingen</th>
+                            <tr>
+                                <th class="text-left name-field">Naam</th>
+                                <th class="text-left pl-md">Presentie</th>
+                                <th>Check-in</th>
+                                <th>Check-up</th>
+                                <th class="text-right">Opmerkingen</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Jeroen</td>
-                                <td>Op Tijd</td>
+                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
+                                <td class="green pl-md">Op Tijd</td>
+                                <td class="text-center green">3/5</td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
+                                <td class="green pl-md">
+                                    <select name="presence" class="input">
+                                        <option value="0" selected="selected" class="green">Op Tijd</option>
+                                        <option value="1" class="yellow">Te Laat</option>
+                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
+                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
+                                        <option value="4" class="blue">Ziek</option>
+                                    </select>
+                                </td>
+                                <td class="text-center green">
+                                    <select name="presence" class="input">
+                                        <option value="0" selected="selected" class="red-dim">0</option>
+                                        <option value="1" class="red">0.5</option>
+                                        <option value="2" class="orange-dim">1</option>
+                                        <option value="3" class="orange">1.5</option>
+                                        <option value="4" class="yellow-dim">2</option>
+                                        <option value="5" class="yellow">2.5</option>
+                                        <option value="6" class="green-dim">3</option>
+                                        <option value="7" class="green">3.5</option>
+                                        <option value="8" class="aqua">4</option>
+                                        <option value="9" class="blue-dim">4.5</option>
+                                        <option value="10" class="blue">5</option>
+                                    </select>
+                                </td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Luc van Ogtrop</td>
+                                <td class="green-dim pl-md">Goorloofd Afwezig</td>
+                                <td class="text-center green">3/5</td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Varya Komissarova</td>
+                                <td class="red pl-md">Ongeoorloofd afwezig</td>
+                                <td class="text-center green">3/5</td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Sylvie Nguyen</td>
+                                <td class="yellow pl-md">Te Laat</td>
+                                <td class="text-center green">3/5</td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Enrico</td>
+                                <td class="blue pl-md">Ziek</td>
+                                <td class="text-center green">3/5</td>
+                                <td class="text-center blue-dim">4/5</td>
+                                <td class="horizontal justify-between">
+                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
+                                    <a class="btn btn-blue">
+                                        <i class="material-icons">view</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-ellpise name-field">Raynison van Daal</td>
+                                <td class="green pl-md">Op Tijd</td>
                                 <td class="text-center green">3/5</td>
                                 <td class="text-center blue-dim">4/5</td>
                                 <td class="horizontal justify-between">

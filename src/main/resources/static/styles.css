@@ -62,6 +62,14 @@ hr {
     text-align: center;
 }
 
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
 .text-sb {
     font-weight: 600;
 }
@@ -143,6 +151,25 @@ hr {
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.checkin-table {
+    width: 100%;
+}
+
+.checkin-table th {
+    border-bottom: 1px solid var(--gray-dim);
+    padding-bottom: var(--gap-md);
+}
+
+.checkin-table td {
+    padding-top: var(--gap-md);
+}
+
+.name-field {
+    width: 100px;
+    max-width: 100px;
+    border-right: 1px solid var(--gray-dim);
 }
 
 .input-group {
@@ -241,12 +268,6 @@ hr {
     height: 24px;
 }
 
-/* Navbar */
-
-.nav-height {
-    height: 42px;
-}
-
 .container-parent {
     max-width: 1000px;
     width: 100%;
@@ -258,6 +279,12 @@ hr {
     margin-left: var(--gap-lg);
     margin-right: var(--gap-lg);
     width: calc(100% - var(--gap-lg) * 2);
+}
+
+/* Navbar */
+
+.nav-height {
+    height: 42px;
 }
 
 .nav {
@@ -424,6 +451,10 @@ hr {
 .px-xl {
     padding-left: var(--gap-xl);
     padding-right: var(--gap-xl);
+}
+
+.pl-md {
+    padding-left: var(--gap-md);
 }
 
 .g-md {
