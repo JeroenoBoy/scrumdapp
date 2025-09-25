@@ -1,5 +1,7 @@
 package com.jeroenvdg.scrumdapp.routes
 
+import com.jeroenvdg.scrumdapp.db.GroupService
+import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middileware.Make404
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
@@ -28,7 +30,8 @@ import org.jetbrains.exposed.sql.Database
 data class MustacheUser(val id: Int, val name: String)
 
 suspend fun Application.configureRouting() {
-    val users = dependencies.resolve<UserTable>()
+    val users = dependencies.resolve<UserService>()
+    val groups = dependencies.resolve<GroupService>()
 
     routing {
         get("/") {
@@ -40,7 +43,7 @@ suspend fun Application.configureRouting() {
             get {
                 call.respondHtml {
                     dashboardLayout(DashboardPageData("Home", call)) {
-                        homePage()
+                        homePage(emptyList())
                     }
                 }
             }
