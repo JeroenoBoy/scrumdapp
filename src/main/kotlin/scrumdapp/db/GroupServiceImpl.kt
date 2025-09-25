@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class GroupServiceImpl: GroupService {
-
     private fun resultRowToGroup(row: ResultRow): Group {
         return Group(
             id = row[Groups.id],

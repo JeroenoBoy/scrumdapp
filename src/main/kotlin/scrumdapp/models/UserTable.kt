@@ -27,7 +27,7 @@ class UserTable(database: Database) {
     object Users : Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", length = 50)
-        val discordId = long("discord_id")
+        val discordId = long("discord_id").uniqueIndex()
         val profileImage = varchar("profile_image", length = 255) // Possible need to change this
 
         override val primaryKey = PrimaryKey(id)
