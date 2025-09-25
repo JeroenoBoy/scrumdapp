@@ -30,7 +30,7 @@ class GroupServiceImpl: GroupService {
 
     override suspend fun getGroup(id: Int): Group? {
         return dbQuery {
-            Groups.select(Groups.id eq id)
+            Groups.select(Groups.fields).where { Groups.id eq id }
             .map { resultRowToGroup(it)}.singleOrNull()}
     }
 
@@ -47,7 +47,7 @@ class GroupServiceImpl: GroupService {
     override suspend fun getGroupMembers(id: Int): List<User> {
         return dbQuery {
             (UserGroups innerJoin Users)
-                .select(UserGroups.groupId eq id)
+                .select(Users.fields).where { UserGroups.groupId eq id }
                 .map { resultRowToUser(it) }
         }
     }
@@ -55,7 +55,7 @@ class GroupServiceImpl: GroupService {
     override suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions {
         return dbQuery {
             UserGroups
-                .select(UserGroups.userId eq userid and (UserGroups.groupId eq group.id))
+                .select(UserGroups.fields).where { UserGroups.userId eq userid and (UserGroups.groupId eq group.id) }
                 .withDistinct()
                 .map { UserPermissions.fromId(it) }
                 .single()
@@ -63,13 +63,11 @@ class GroupServiceImpl: GroupService {
     }
 
     override suspend fun compareGroupMemberPermissions(group: Group, userid: Int, permission: UserPermissions): Boolean {
-        return dbQuery {
-            UserGroups.select(
-                UserGroups.groupId eq group.id,
-                UserGroups.userId eq userid,
-                UserGroups.permissions eq permission.id
-            ).any()
+        val result = dbQuery {
+            UserGroups.select(UserGroups.permissions)
+                .where { UserGroups.groupId eq group.id and (UserGroups.userId eq userid) }
         }
+        return result == permission
     }
 
     override suspend fun addGroupMember(group: Group, user: User, permission: UserPermissions) {

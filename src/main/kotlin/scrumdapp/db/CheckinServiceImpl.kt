@@ -23,19 +23,19 @@ class CheckinServiceImpl: CheckinService {
 
     override suspend fun getUserCheckins(user: User, group: Group): List<Checkin> {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.groupId eq group.id and(GroupCheckins.userId eq user.id)).map { resultRowToCheckin(it) }
+            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.groupId eq group.id and(GroupCheckins.userId eq user.id)}.map { resultRowToCheckin(it) }
         }
     }
 
     override suspend fun getGroupCheckins(group: Group): List<Checkin> {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.groupId eq group.id).map { resultRowToCheckin(it) }
+            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.groupId eq group.id}.map { resultRowToCheckin(it) }
         }
     }
 
     override suspend fun getCheckin(id: Int): Checkin? {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.id eq id).map { resultRowToCheckin(it) }.firstOrNull()
+            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.id eq id}.map { resultRowToCheckin(it) }.firstOrNull()
         }
     }
 
