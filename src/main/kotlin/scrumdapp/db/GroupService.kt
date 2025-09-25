@@ -14,6 +14,7 @@ interface GroupService {
     suspend fun getGroup(id: Int): Group?
     suspend fun getGroupMembers(id: Int): List<User>
     suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions
+    suspend fun compareGroupMemberAccess(group: Group, userid: Int): Boolean
     suspend fun compareGroupMemberPermissions(group: Group, userid: Int, permission: UserPermissions): Boolean
     suspend fun createGroup(group: Group): Group?
     suspend fun addGroupMember(group: Group, user: User, permission: UserPermissions = UserPermissions.User)
