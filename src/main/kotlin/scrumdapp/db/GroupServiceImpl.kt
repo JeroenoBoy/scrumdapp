@@ -62,6 +62,14 @@ class GroupServiceImpl: GroupService {
         }
     }
 
+    override suspend fun compareGroupMemberAccess(group: Group, userid: Int): Boolean {
+        return dbQuery {
+            UserGroups.select(UserGroups.userId)
+                .where { UserGroups.groupId eq group.id and (UserGroups.userId eq userid) }
+                .any()
+        }
+    }
+
     override suspend fun compareGroupMemberPermissions(group: Group, userid: Int, permission: UserPermissions): Boolean {
         val result = dbQuery {
             UserGroups.select(UserGroups.permissions)

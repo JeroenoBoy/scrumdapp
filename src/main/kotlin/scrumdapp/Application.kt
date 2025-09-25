@@ -7,6 +7,8 @@ import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import com.jeroenvdg.scrumdapp.Database.initializeDatabase
+import com.jeroenvdg.scrumdapp.db.CheckinService
+import com.jeroenvdg.scrumdapp.db.CheckinServiceImpl
 import com.jeroenvdg.scrumdapp.db.GroupService
 import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
 import com.jeroenvdg.scrumdapp.db.SessionService
@@ -45,6 +47,7 @@ suspend fun Application.module() {
     val userService = UserServiceImpl()
     val sessionService = SessionServiceImpl()
     val groupService = GroupServiceImpl()
+    val checkinService = CheckinServiceImpl()
 
     install(CallLogging)
 
@@ -73,6 +76,7 @@ suspend fun Application.module() {
         provide { httpClient }
         provide<UserService> { userService }
         provide<GroupService> { groupService }
+        provide<CheckinService> { checkinService }
         provide<SessionService> { sessionService }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
