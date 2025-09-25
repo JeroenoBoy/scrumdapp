@@ -40,8 +40,10 @@ fun HTML.dashboardLayout(pageData: DashboardPageData, builder: FlowContent.() ->
             navbar(pageData.call.user)
             div(classes="nav-height")
             div(classes="spacer-xl")
-            div(classes="container") {
-                builder()
+            div(classes="container-parent") {
+                div(classes="container") {
+                    builder()
+                }
             }
         }
     }

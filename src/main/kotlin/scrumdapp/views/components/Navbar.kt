@@ -29,11 +29,11 @@ fun FlowContent.navbar(user: User) {
                 }
                 div(classes="dropdown-content") {
                     a(href="/settings", classes="nav-button") {
-                        icon(iconName="settings")
+                        icon(iconName="settings", classes="purple")
                         +"Settings"
                     }
                     a(href="/logout", classes="nav-button") {
-                        icon(iconName="logout")
+                        icon(iconName="logout", classes="red")
                         +"Logout"
                     }
                 }

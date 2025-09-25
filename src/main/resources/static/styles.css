@@ -29,6 +29,9 @@ body {
     position: relative;
 }
 
+dialog { display: block; }
+dialog:not(:target):not([open]) { display: none; }
+
 /* Text */
 
 h1 {
@@ -71,6 +74,12 @@ hr {
     font-style: italic;
 }
 
+.text-ellpise {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .muted {
     color: var(--gray)
 }
@@ -103,6 +112,59 @@ hr {
     border: 1px solid var(--fg4);
     padding: var(--gap-lg);
     border-radius: var(--radius);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--fg);
+    display: flex;
+    border: none;
+    background: none;
+}
+
+.modal-content {
+    max-width: 600px;
+    width: 100%;
+    margin: 20vh auto auto;
+    z-index: 1;
+}
+
+.modal-bg {
+    background-color: var(--bg);
+    opacity: 0.5;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--gap-lg);
+}
+
+.input-label {
+    width: min(350px, 30%);
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.input {
+    flex: 1;
+    background: var(--bg_h);
+    border: 1px solid var(--fg4);
+    border-radius: var(--radius);
+    padding: var(--gap-md);
+    color: var(--fg1);
 }
 
 .btn-card {
@@ -158,6 +220,22 @@ hr {
     background: var(--red);
 }
 
+.btn-gray {
+    background: var(--gray);
+}
+
+.btn-gray:hover {
+    background: var(--gray-dim);
+}
+
+.btn-green {
+    background: var(--green-dim);
+}
+
+.btn-green:hover {
+    background: var(--green);
+}
+
 .icon {
     width: 24px;
     height: 24px;
@@ -169,12 +247,17 @@ hr {
     height: 42px;
 }
 
-.container {
+.container-parent {
     max-width: 1000px;
     width: 100%;
-    padding: 0 var(--gap-lg);
     margin-left: auto;
     margin-right: auto;
+}
+
+.container {
+    margin-left: var(--gap-lg);
+    margin-right: var(--gap-lg);
+    width: calc(100% - var(--gap-lg) * 2);
 }
 
 .nav {
@@ -212,6 +295,9 @@ hr {
     border-radius: var(--radius);
     height: 100%;
     gap: var(--gap-sm);
+
+    max-width: 100px;
+    overflow: hidden;
 
     transition: background-color 0.2s ease-out;
 }
@@ -271,7 +357,8 @@ hr {
     right: -5px;
     top: 50%;
     z-index: -1;
-    transform: scale(0);
+    opacity: 0;
+    transform: scale(0.3);
     transform-origin: top right;
     padding: 24px var(--gap-md) var(--gap-md) var(--gap-md);
     overflow: hidden;
@@ -287,6 +374,7 @@ hr {
 .dropdown:hover .dropdown-content, .dropdown-content :focus {
     transform: scale(1);
     /*height: calc(100% + var(--gap-sm) * 2);*/
+    opacity: 1;
 }
 
 .dropdown .nav-button {
