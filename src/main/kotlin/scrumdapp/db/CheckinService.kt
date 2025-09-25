@@ -10,11 +10,10 @@ data class Checkin(
     val groupId: Int?,
     val userId: Int?,
     val presence: Presence,
-    val delay: Int,
-    val checkinStars: Int,
-    val checkupStars: Int,
+    val checkinStars: Int?,
+    val checkupStars: Int?,
     val date: LocalDate,
-    val comment: String = ""
+    val comment: String?
 )
 
 interface CheckinService {

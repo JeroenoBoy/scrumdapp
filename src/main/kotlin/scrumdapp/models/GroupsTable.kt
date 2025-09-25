@@ -41,10 +41,9 @@ class GroupsTable(database: Database) {
         val userId = optReference("user_id", UserTable.Users.id, onDelete = ReferenceOption.CASCADE)
         val presence = enumeration("presence", Presence::class)
         val date = date("date")
-        val delay = integer("total_delay").default(0)
-        val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 10) }
-        val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 10) }
-        val comment = text("comment")
+        val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 10) }.nullable()
+        val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 10) }.nullable()
+        val comment = text("comment").nullable()
 
         override val primaryKey = PrimaryKey(id)
     }

@@ -14,7 +14,6 @@ class CheckinServiceImpl: CheckinService {
             userId = row[GroupCheckins.userId],
             presence = row[GroupCheckins.presence],
             date = row[GroupCheckins.date],
-            delay = row[GroupCheckins.delay],
             checkinStars = row[GroupCheckins.checkinStars],
             checkupStars = row[GroupCheckins.checkupStars],
             comment = row[GroupCheckins.comment]
@@ -45,7 +44,6 @@ class CheckinServiceImpl: CheckinService {
                 it[GroupCheckins.groupId] = checkin.groupId
                 it[GroupCheckins.userId] = checkin.userId
                 it[GroupCheckins.presence] = checkin.presence
-                it[GroupCheckins.delay] = checkin.delay
                 it[GroupCheckins.date] = checkin.date
                 it[GroupCheckins.checkinStars] = checkin.checkinStars
                 it[GroupCheckins.checkupStars] = checkin.checkupStars
@@ -61,7 +59,6 @@ class CheckinServiceImpl: CheckinService {
                 this[GroupCheckins.groupId] = group.id
                 this[GroupCheckins.userId] = checkin.userId
                 this[GroupCheckins.presence] = checkin.presence
-                this[GroupCheckins.delay] = checkin.delay
                 this[GroupCheckins.date] = checkin.date
                 this[GroupCheckins.checkinStars] = checkin.checkinStars
                 this[GroupCheckins.checkupStars] = checkin.checkupStars
@@ -74,7 +71,6 @@ class CheckinServiceImpl: CheckinService {
         return dbQuery {
             GroupCheckins.update({ GroupCheckins.userId eq checkin.userId and (GroupCheckins.groupId eq checkin.groupId)}) {
                it[GroupCheckins.presence] = checkin.presence
-               it[GroupCheckins.delay] = checkin.delay
                it[GroupCheckins.date] = checkin.date
                it[GroupCheckins.checkinStars] = checkin.checkinStars
                it[GroupCheckins.checkupStars] = checkin.checkupStars
