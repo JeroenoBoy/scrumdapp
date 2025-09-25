@@ -105,6 +105,14 @@ hr {
     border-radius: var(--radius);
 }
 
+.btn-card {
+    transition: background-color 0.2s ease-out;
+}
+
+.btn-card:hover {
+    background: var(--bg1);
+}
+
 .card-title {
     font-size: var(--font-size-lg);
 }
@@ -266,7 +274,6 @@ hr {
     transform: scale(0);
     transform-origin: top right;
     padding: 24px var(--gap-md) var(--gap-md) var(--gap-md);
-    opacity: 0;
     overflow: hidden;
     background-color: var(--bg_h);
     gap: var(--gap-sm);
@@ -280,7 +287,6 @@ hr {
 .dropdown:hover .dropdown-content, .dropdown-content :focus {
     transform: scale(1);
     /*height: calc(100% + var(--gap-sm) * 2);*/
-    opacity: 1;
 }
 
 .dropdown .nav-button {
@@ -300,6 +306,11 @@ hr {
 .-mtr-md {
     margin-top: calc(var(--gap-md)*-1);
     margin-right: calc(var(--gap-md)*-1);
+}
+
+.my-auto {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .px-0 {
