@@ -26,7 +26,7 @@ import scrumdapp.services.EnvironmentService
 @Serializable
 data class SessionToken(val token: String)
 
-suspend fun Application.authRouting() {
+suspend fun Application.configureAuthRouting() {
     val env = dependencies.resolve<EnvironmentService>()
     val httpClient = dependencies.resolve<HttpClient>()
     val discordService = dependencies.resolve<DiscordService>()

@@ -2,7 +2,7 @@ package com.jeroenvdg.scrumdapp
 
 import com.github.mustachejava.DefaultMustacheFactory
 import com.jeroenvdg.scrumdapp.models.UserTable
-import com.jeroenvdg.scrumdapp.routes.authRouting
+import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
@@ -29,6 +29,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
+import scrumdapp.routes.groups.configureGroupRoutes
 import scrumdapp.services.DotenvService
 import scrumdapp.services.EnvironmentService
 
@@ -78,5 +79,6 @@ suspend fun Application.module() {
     }
 
     configureRouting()
-    authRouting()
+    configureGroupRoutes()
+    configureAuthRouting()
 }
