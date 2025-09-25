@@ -42,10 +42,4 @@ class UserTable(database: Database) {
         val discordAccessTokenExpiry = timestamp("discord_access_token_expire_date")
         val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
     }
-
-    init {
-        transaction(database) {
-            SchemaUtils.create(Users, UserSessions)
-        }
-    }
 }

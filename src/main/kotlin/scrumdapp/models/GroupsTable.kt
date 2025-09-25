@@ -57,10 +57,4 @@ class GroupsTable(database: Database) {
 
         override val primaryKey = PrimaryKey(id)
     }
-
-    init {
-        transaction(database) {
-            SchemaUtils.create(Groups, UserGroups, GroupCheckins, GroupInvite)
-        }
-    }
 }

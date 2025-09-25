@@ -17,6 +17,7 @@ import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.db.UserServiceImpl
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
+import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
 import io.ktor.client.HttpClient
@@ -82,7 +83,7 @@ suspend fun Application.module() {
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
 
-    configureRouting()
     configureGroupRoutes()
+    configureRouting()
     configureAuthRouting()
 }
