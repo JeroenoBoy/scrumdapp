@@ -52,6 +52,15 @@ class GroupServiceImpl: GroupService {
         }
     }
 
+    override suspend fun getUserGroups(id: Int): List<Group> {
+        return  dbQuery {
+            (UserGroups innerJoin Groups)
+                .select(Groups.fields)
+                .where { UserGroups.userId eq id }
+                .map { resultRowToGroup(it)}
+        }
+    }
+
     override suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions {
         return dbQuery {
             UserGroups
