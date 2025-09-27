@@ -12,11 +12,10 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
 import io.ktor.server.plugins.di.dependencies
-import io.ktor.server.request.receive
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -52,8 +51,9 @@ suspend fun Application.configureGroupRoutes() {
                     val newGroup = groups.createGroup(Group(0, groupName))
                     if (newGroup != null) {
                         groups.addGroupMember(newGroup, call.user, UserPermissions.LordOfScrum)
+                        call.respondRedirect("/groups/${newGroup.id}/config")
                     }
-                    call.respond(HttpStatusCode.OK)
+                    call.respond(HttpStatusCode.InternalServerError)
                 } catch (ex: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)
                 } catch (ex: JsonConvertException) {
