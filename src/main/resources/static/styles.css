@@ -164,11 +164,12 @@ hr {
 
 .checkin-table td {
     padding-top: var(--gap-md);
+    padding-left: var(--gap-sm);
 }
 
 .name-field {
-    width: 100px;
-    max-width: 100px;
+    width: 10em;
+    max-width: 10em;
     border-right: 1px solid var(--gray-dim);
 }
 
@@ -603,7 +604,7 @@ hr {
 }
 
 .max-w-om {
-    max-width: 200px;
+    max-width: 250px;
 }
 
 .h-full {
