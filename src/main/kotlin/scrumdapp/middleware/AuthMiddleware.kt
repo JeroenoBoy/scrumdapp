@@ -8,7 +8,6 @@ import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.models.UserSession
 import com.jeroenvdg.scrumdapp.routes.SessionToken
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createRouteScopedPlugin
 import io.ktor.server.request.uri
@@ -17,7 +16,6 @@ import io.ktor.server.sessions.clear
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
-import io.ktor.server.util.url
 import io.ktor.util.AttributeKey
 import kotlinx.serialization.Serializable
 

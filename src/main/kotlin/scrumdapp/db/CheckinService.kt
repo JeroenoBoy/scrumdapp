@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 data class Checkin(
     val id: Int,
     val groupId: Int?,
+    val name: String,
     val userId: Int?,
     val presence: Presence,
     val checkinStars: Int?,

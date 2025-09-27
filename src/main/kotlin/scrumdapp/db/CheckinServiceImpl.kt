@@ -3,6 +3,7 @@ package com.jeroenvdg.scrumdapp.db
 import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
 import com.jeroenvdg.scrumdapp.models.Presence
+import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -11,6 +12,7 @@ class CheckinServiceImpl: CheckinService {
         return Checkin(
             id = row[GroupCheckins.id],
             groupId = row[GroupCheckins.groupId],
+            name = row[Users.name],
             userId = row[GroupCheckins.userId],
             presence = row[GroupCheckins.presence],
             date = row[GroupCheckins.date],
@@ -22,19 +24,32 @@ class CheckinServiceImpl: CheckinService {
 
     override suspend fun getUserCheckins(user: User, group: Group): List<Checkin> {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.groupId eq group.id and(GroupCheckins.userId eq user.id)}.map { resultRowToCheckin(it) }
+            GroupCheckins
+                .innerJoin(Users, { GroupCheckins.id eq user.id}, { Users.id})
+                .select(GroupCheckins.fields + Users.name)
+                .where {GroupCheckins.groupId eq group.id and(GroupCheckins.userId eq user.id)}
+                .map { resultRowToCheckin(it) }
         }
     }
 
     override suspend fun getGroupCheckins(group: Group): List<Checkin> {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.groupId eq group.id}.map { resultRowToCheckin(it) }
+            GroupCheckins
+                .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
+                .select(GroupCheckins.fields + Users.name)
+                .where {GroupCheckins.groupId eq group.id}
+                .map { resultRowToCheckin(it) }
         }
     }
 
     override suspend fun getCheckin(id: Int): Checkin? {
         return dbQuery {
-            GroupCheckins.select(GroupCheckins.fields).where {GroupCheckins.id eq id}.map { resultRowToCheckin(it) }.firstOrNull()
+            GroupCheckins
+                .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
+                .select(GroupCheckins.fields + Users.name)
+                .where {GroupCheckins.id eq id}
+                .map { resultRowToCheckin(it) }
+                .firstOrNull()
         }
     }
 

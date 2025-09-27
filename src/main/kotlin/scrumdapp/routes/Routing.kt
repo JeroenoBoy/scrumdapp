@@ -6,6 +6,7 @@ import com.jeroenvdg.scrumdapp.middileware.Make404
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.user
+import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.PageData
@@ -41,9 +42,10 @@ suspend fun Application.configureRouting() {
         route("/home") {
             install(IsLoggedIn)
             get {
+                val groups = groups.getUserGroups(call.userSession.userId)
                 call.respondHtml {
                     dashboardLayout(DashboardPageData("Home", call)) {
-                        homePage(emptyList())
+                        homePage(groups)
                     }
                 }
             }
