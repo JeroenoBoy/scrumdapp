@@ -40,7 +40,7 @@ fun FlowContent.homePage(groups: List<Group>) {
 }
 
 fun FlowContent.groupWidget(group: Group) {
-    a(classes="card btn-card") {
+    a(href = "/groups/${group.id}", classes="card btn-card") {
         h2(classes="card-title") {+group.name}
 //        p(classes="muted") {+group.owner.name}
         img(alt="card image", src="/static/backgrounds/15.png", classes="card-img")

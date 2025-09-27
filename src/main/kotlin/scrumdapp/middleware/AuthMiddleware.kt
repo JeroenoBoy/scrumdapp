@@ -100,8 +100,9 @@ val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProvider
     val perm = pluginConfig.permissions
     onCall { call ->
         val groupid = call.parameters["groupid"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/")
-        if (!groupService.compareGroupMemberPermissions(Group(groupid, "bleh"), call.userSession.userId, perm)) {
-            call.respondRedirect("/groups/$groupid")
+        val userPerm = groupService.getGroupMemberPermissions(Group(groupid, "bleh"), call.userSession.userId)
+        if (perm.id <= userPerm.id) {
+            call.respondRedirect("/groups/${groupid}")
         }
     }
 }

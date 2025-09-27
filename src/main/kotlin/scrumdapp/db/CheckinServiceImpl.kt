@@ -4,6 +4,7 @@ import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserTable.Users
+import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -32,12 +33,12 @@ class CheckinServiceImpl: CheckinService {
         }
     }
 
-    override suspend fun getGroupCheckins(group: Group): List<Checkin> {
+    override suspend fun getGroupCheckins(group: Group, date: LocalDate): List<Checkin> {
         return dbQuery {
             GroupCheckins
                 .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
                 .select(GroupCheckins.fields + Users.name)
-                .where {GroupCheckins.groupId eq group.id}
+                .where {GroupCheckins.groupId eq group.id and (GroupCheckins.date eq date)}
                 .map { resultRowToCheckin(it) }
         }
     }

@@ -2,7 +2,9 @@ package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.models.UserPermissions
 import kotlinx.html.FlowContent
+import kotlinx.html.InputType
 import kotlinx.html.table
 import kotlinx.html.thead
 import kotlinx.html.tbody
@@ -17,28 +19,39 @@ import kotlinx.html.form
 import kotlinx.html.h1
 import kotlinx.html.hr
 import kotlinx.html.i
+import kotlinx.html.input
 
 
-fun FlowContent.groupPage(checkins: List<Checkin>, group: Group) {
+fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, perm: UserPermissions) {
     h1 {+group.name}
     div(classes = "horizontal g-lg") {
         div(classes= "vertical g-lg") {
             div(classes= "card vertical g-md") {
                 i(classes= "px-lg-text-center") {+"pagina's"}
                 hr {}
-                // Figure out how the buttons are going to work. (pre-render or reload or other?)
+                a(href= "/groups/${group.id}/trends", classes= "btn b-none px-lg text-center") {+"Trends"}
+                when {
+                    perm.id <= UserPermissions.ScrumDad.id -> {
+                        a(href= "/groups/${group.id}/users", classes= "btn b-none px-lg text-center") {+"Gebruikers"}
+                        a(href= "/groups/${group.id}/config", classes= "btn b-none px-lg text-center") {+"Instellingen"}
+                    }
+                    perm.id <= UserPermissions.UserManagement.id -> {
+                        a(href= "/groups/${group.id}/users", classes= "btn b-none px-lg text-center") {+"Gebruikers"}
+                    }
+                }
             }
-            checkinDates(checkins.map {it.date.toString()})
+            checkinDates(checkins.map {it.date.toString()}, perm)
         }
         checkinWidget(checkins)
     }
 }
 
-fun FlowContent.checkinDates(dates: List<String>) {
+fun FlowContent.checkinDates(dates: List<String>, perm: UserPermissions) {
     div(classes = "card vertical g-md") {
-        form(classes = "horizontal justify-between items-center") {
-            i(classes = "px-lg my-auto") {+"Data"
-
+        if (perm.id <= UserPermissions.CheckinManagement.id) {
+            form(classes = "horizontal justify-between items-center") {
+                i(classes = "px-lg my-auto") {+"Data" }
+                input(classes = "btn btn-red", type = InputType.submit) {value="+"}
             }
         }
         hr {}

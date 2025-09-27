@@ -63,10 +63,11 @@ class GroupServiceImpl: GroupService {
     override suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions {
         return dbQuery {
             UserGroups
-                .select(UserGroups.fields).where { UserGroups.userId eq userid and (UserGroups.groupId eq group.id) }
+                .select(UserGroups.permissions)
+                .where { UserGroups.userId eq userid and (UserGroups.groupId eq group.id) }
                 .withDistinct()
                 .map { UserPermissions.fromId(it) }
-                .single()
+                .first()
         }
     }
 
