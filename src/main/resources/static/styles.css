@@ -194,6 +194,134 @@ hr {
     color: var(--fg1);
 }
 
+.checkbox-expand {
+    position: relative;
+    max-height: 2.1em;
+    height: 100%;
+    background-color: transparent;
+    border-radius: var(--radius);
+    transition: all 0.2s ease-out;
+    overflow: hidden;
+}
+
+.checkbox-expand>input[type="checkbox"] {
+    position: absolute;
+    top: 50%;
+    right: 0;
+}
+
+.checkbox-expand>input[type="checkbox"].noshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: unset;
+    max-height: unset;
+    opacity: 0;
+}
+
+.checkbox-expand>span {
+    display: block;
+}
+
+.text-area-grow {
+    display: grid;
+}
+
+.text-area-grow textarea {
+    resize: none;
+}
+
+.checkbox-expand textarea {
+    max-height: 1vw;
+}
+
+.checkbox-expand:has(>input[type="checkbox"]:checked) textarea,
+.checkbox-expand:has(input:focus) textarea,
+.checkbox-expand:has(textarea:focus) textarea {
+    z-index: 10;
+    max-height: unset;
+}
+
+.checkbox-expand:has(>input[type="checkbox"]:checked),
+.checkbox-expand:has(input:focus),
+.checkbox-expand:has(textarea:focus) {
+    max-height: unset;
+}
+
+.checkbox-expand:has(>input[type="checkbox"]:hover) {
+    background-color: var(--bg2);
+}
+
+.checkbox-expand:has(>input[type="checkbox"]:checked)>.checkbox-expand-content {
+    white-space: wrap;
+}
+
+.select-checkin:has(>option[value="0"]:checked) {
+    color: var(--red-dim);
+}
+
+.select-checkin:has(option[value="1"]:checked) {
+    color: var(--red);
+}
+
+.select-checkin:has(option[value="2"]:checked) {
+    color: var(--orange-dim);
+}
+
+.select-checkin:has(option[value="3"]:checked) {
+    color: var(--orange);
+}
+
+.select-checkin:has(option[value="4"]:checked) {
+    color: var(--yellow-dim);
+}
+
+.select-checkin:has(option[value="5"]:checked) {
+    color: var(--yellow);
+}
+
+.select-checkin:has(option[value="6"]:checked) {
+    color: var(--green-dim);
+}
+
+.select-checkin:has(option[value="7"]:checked) {
+    color: var(--green);
+}
+
+.select-checkin:has(option[value="8"]:checked) {
+    color: var(--blue-dim);
+}
+
+.select-checkin:has(option[value="9"]:checked) {
+    color: var(--blue);
+}
+
+.select-checkin:has(option[value="10"]:checked) {
+    color: var(--aqua);
+}
+
+.select-presence:has(option[value="0"]:checked) {
+    color: var(--green);
+}
+
+.select-presence:has(option[value="1"]:checked) {
+    color: var(--yellow);
+}
+
+.select-presence:has(option[value="2"]:checked) {
+    color: var(--green-dim);
+}
+
+.select-presence:has(option[value="3"]:checked) {
+    color: var(--red);
+}
+
+.select-presence:has(option[value="4"]:checked) {
+    color: var(--blue);
+}
+
 .btn-card {
     transition: background-color 0.2s ease-out;
 }
@@ -428,6 +556,10 @@ hr {
     margin-bottom: auto;
 }
 
+.p-sm {
+    padding: var(--gap-sm);
+}
+
 .px-0 {
     padding-left: 0;
     padding-right: 0;
@@ -467,6 +599,10 @@ hr {
 
 .w-full {
     width: 100%;
+}
+
+.max-w-om {
+    max-width: 200px;
 }
 
 .h-full {
@@ -548,4 +684,19 @@ hr {
 
 .b-none {
     border: none;
+}
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+/* overrides */
+
+.checkbox-expand.absolute {
+    top: 0.4rem;
+    overflow: unset;
 }

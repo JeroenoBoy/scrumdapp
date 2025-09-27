@@ -38,6 +38,7 @@
             </div>
             <div class="nav-group justify-center">
                 <a class="nav-button" href="/groups">Groepen</a>
+                <a class="nav-button" href="/home">Dagboek</a>
                 <a class="nav-button" href="/about">Over</a>
             </div>
             <div class="nav-group justify-end">
@@ -102,17 +103,19 @@
                                 <td class="green pl-md">Op Tijd</td>
                                 <td class="text-center green">3/5</td>
                                 <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="horizontal justify-between align-center max-w-om">
+                                    <div class="checkbox-expand px-sm">
+                                        <input type="checkbox" class="noshow">
+                                        <span class="text-ellpise checkbox-expand-content">
+                                            Super gafe epic opmerking OMGGGGG AAAAAAA WEEE
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="text-ellpise name-field">Jeroen van de Geest</td>
                                 <td class="green pl-md">
-                                    <select name="presence" class="input">
+                                    <select name="presence" class="input select-presence">
                                         <option value="0" selected="selected" class="green">Op Tijd</option>
                                         <option value="1" class="yellow">Te Laat</option>
                                         <option value="2" class="green-dim">Geoorloofd Afwezig</option>
@@ -121,90 +124,101 @@
                                     </select>
                                 </td>
                                 <td class="text-center green">
-                                    <select name="presence" class="input">
-                                        <option value="0" selected="selected" class="red-dim">0</option>
-                                        <option value="1" class="red">0.5</option>
-                                        <option value="2" class="orange-dim">1</option>
-                                        <option value="3" class="orange">1.5</option>
-                                        <option value="4" class="yellow-dim">2</option>
-                                        <option value="5" class="yellow">2.5</option>
-                                        <option value="6" class="green-dim">3</option>
-                                        <option value="7" class="green">3.5</option>
-                                        <option value="8" class="aqua">4</option>
-                                        <option value="9" class="blue-dim">4.5</option>
-                                        <option value="10" class="blue">5</option>
+                                    <select name="presence" class="input select-checkin">
+                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
+                                        <option value="1" class="red">0.5 / 5</option>
+                                        <option value="2" class="orange-dim">1 / 5</option>
+                                        <option value="3" class="orange">1.5 / 5</option>
+                                        <option value="4" class="yellow-dim">2 / 5</option>
+                                        <option value="5" class="yellow">2.5 / 5</option>
+                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
+                                        <option value="7" class="green">3.5 / 5</option>
+                                        <option value="8" class="aqua">4 / 5</option>
+                                        <option value="9" class="blue-dim">4.5 / 5</option>
+                                        <option value="10" class="blue">5 / 5</option>
                                     </select>
                                 </td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="text-center blue-dim">
+                                    <select name="presence" class="input select-checkin">
+                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
+                                        <option value="1" class="red">0.5 / 5</option>
+                                        <option value="2" class="orange-dim">1 / 5</option>
+                                        <option value="3" class="orange">1.5 / 5</option>
+                                        <option value="4" class="yellow-dim">2 / 5</option>
+                                        <option value="5" class="yellow">2.5 / 5</option>
+                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
+                                        <option value="7" class="green">3.5 / 5</option>
+                                        <option value="8" class="aqua">4 / 5</option>
+                                        <option value="9" class="blue-dim">4.5 / 5</option>
+                                        <option value="10" class="blue">5 / 5</option>
+                                    </select>
+                                </td>
+                                <td class="horizontal justify-between align-center max-w-om relative">
+                                    <div class="checkbox-expand w-full absolute">
+                                        <div class="text-area-grow">
+                                            <textarea type="text" name="addition"
+                                                      class="input checkbox-expand-content" rows="5"
+                                                      placeholder="Opmerking...">
+                                            </textarea>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-ellpise name-field">Luc van Ogtrop</td>
-                                <td class="green-dim pl-md">Goorloofd Afwezig</td>
-                                <td class="text-center green">3/5</td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
+                                <td class="green pl-md">
+                                    <select name="presence" class="input select-presence">
+                                        <option value="0" selected="selected" class="green">Op Tijd</option>
+                                        <option value="1" class="yellow">Te Laat</option>
+                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
+                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
+                                        <option value="4" class="blue">Ziek</option>
+                                    </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Varya Komissarova</td>
-                                <td class="red pl-md">Ongeoorloofd afwezig</td>
-                                <td class="text-center green">3/5</td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="text-center green">
+                                    <select name="presence" class="input select-checkin">
+                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
+                                        <option value="1" class="red">0.5 / 5</option>
+                                        <option value="2" class="orange-dim">1 / 5</option>
+                                        <option value="3" class="orange">1.5 / 5</option>
+                                        <option value="4" class="yellow-dim">2 / 5</option>
+                                        <option value="5" class="yellow">2.5 / 5</option>
+                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
+                                        <option value="7" class="green">3.5 / 5</option>
+                                        <option value="8" class="aqua">4 / 5</option>
+                                        <option value="9" class="blue-dim">4.5 / 5</option>
+                                        <option value="10" class="blue">5 / 5</option>
+                                    </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Sylvie Nguyen</td>
-                                <td class="yellow pl-md">Te Laat</td>
-                                <td class="text-center green">3/5</td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="text-center blue-dim">
+                                    <select name="presence" class="input select-checkin">
+                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
+                                        <option value="1" class="red">0.5 / 5</option>
+                                        <option value="2" class="orange-dim">1 / 5</option>
+                                        <option value="3" class="orange">1.5 / 5</option>
+                                        <option value="4" class="yellow-dim">2 / 5</option>
+                                        <option value="5" class="yellow">2.5 / 5</option>
+                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
+                                        <option value="7" class="green">3.5 / 5</option>
+                                        <option value="8" class="aqua">4 / 5</option>
+                                        <option value="9" class="blue-dim">4.5 / 5</option>
+                                        <option value="10" class="blue">5 / 5</option>
+                                    </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Enrico</td>
-                                <td class="blue pl-md">Ziek</td>
-                                <td class="text-center green">3/5</td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Raynison van Daal</td>
-                                <td class="green pl-md">Op Tijd</td>
-                                <td class="text-center green">3/5</td>
-                                <td class="text-center blue-dim">4/5</td>
-                                <td class="horizontal justify-between">
-                                    <span class="text-ellpise">Super gafe epic opmerkingen</span>
-                                    <a class="btn btn-blue">
-                                        <i class="material-icons">view</i>
-                                    </a>
+                                <td class="horizontal justify-between align-center max-w-om relative">
+                                    <div class="checkbox-expand w-full absolute">
+                                        <div class="text-area-grow">
+                                            <textarea type="text" name="addition"
+                                                      class="input checkbox-expand-content" rows="5"
+                                                      placeholder="Opmerking...">
+                                            </textarea>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div class="flex"></div>
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@ fun FlowContent.navbar(user: User) {
         }
         div(classes="nav-group justify-center") {
             a(href="/home", classes="nav-button") { +"Home" }
+            a(href="/dagboek", classes="nav-button") { +"Dagboek" }
             a(href="/about", classes="nav-button") { +"About" }
         }
         div(classes="nav-group justify-end") {
