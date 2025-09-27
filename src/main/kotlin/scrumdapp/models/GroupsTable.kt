@@ -22,7 +22,7 @@ class GroupsTable(database: Database) {
     object Groups: Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", 50)
-        val bannerPicture = varchar("bannerPicture", 50)
+        val bannerPicture = varchar("bannerPicture", 50).nullable()
         override val primaryKey = PrimaryKey(id)
     }
 

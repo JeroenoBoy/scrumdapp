@@ -63,7 +63,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>) {
             tbody {
                 checkins.forEach { checkin ->
                     tr {
-                        td(classes = "text-ellpise name-field") { }
+                        td(classes = "text-ellpise name-field") { +checkin.name }
                         td(classes = "pl-md") {} // Kleurtje moet nog
                         td(classes = "text-center") {}
                         td(classes = "text-center") {}

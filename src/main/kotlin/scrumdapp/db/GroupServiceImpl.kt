@@ -37,7 +37,6 @@ class GroupServiceImpl: GroupService {
     override suspend fun createGroup(group: Group): Group? {
         return dbQuery {
             val inserts = Groups.insert {
-                it[id]=group.id
                 it[name]=group.name
             }
             inserts.resultedValues?.singleOrNull()?.let { resultRowToGroup(it) }

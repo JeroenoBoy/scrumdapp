@@ -1,18 +1,32 @@
 package scrumdapp.routes.groups
 
 
+import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.db.GroupService
 import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
+import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsInGroup
+import com.jeroenvdg.scrumdapp.middleware.user
+import com.jeroenvdg.scrumdapp.models.UserPermissions
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.request.receive
+import io.ktor.server.request.receiveParameters
+import io.ktor.server.response.respond
 import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
 
 suspend fun Application.configureGroupRoutes() {
+    val users = dependencies.resolve<UserService>()
+    val groups = dependencies.resolve<GroupService>()
 
     fun checkDateSyntax(input: String): String? {
         val regex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
@@ -31,6 +45,22 @@ suspend fun Application.configureGroupRoutes() {
     routing {
         route("/groups") {
             install(IsLoggedIn)
+
+            post() {
+                try {
+                    val groupName = call.receiveParameters()["group_name"].toString()
+                    val newGroup = groups.createGroup(Group(0, groupName))
+                    if (newGroup != null) {
+                        groups.addGroupMember(newGroup, call.user, UserPermissions.LordOfScrum)
+                    }
+                    call.respond(HttpStatusCode.OK)
+                } catch (ex: IllegalStateException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                } catch (ex: JsonConvertException) {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            }
+
             route("/{groupid}") {
                 install(IsInGroup) {
                     groupService = GroupServiceImpl()
