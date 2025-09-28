@@ -26,7 +26,7 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
         styleLink("https://fonts.googleapis.com/css2?family=Libertinus+Mono&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap")
         styleLink("/static/theme.css")
         styleLink("/static/styles.css")
-        styleLink("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,arrow_back,logout,settings")
+        styleLink("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,arrow_back,cancel,check,edit,logout,settings,undo")
     }
     body {
         builder()

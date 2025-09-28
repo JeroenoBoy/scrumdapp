@@ -10,12 +10,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.kotlin.datetime.date
 
 @Serializable
-enum class Presence {
-    OnTime,
-    Late,
-    Absent,
-    VerifiedAbsent,
-    Sick,
+enum class Presence(val color: String, val key: String) {
+    OnTime("green", "Op Tijd"),
+    Late("yellow", "Te Laat"),
+    Absent("green-dim", "Geoorloofd Afwezig"),
+    VerifiedAbsent("red", "Ongeoorloofd Afwezig"),
+    Sick("blue", "Ziek"),
 }
 
 class GroupsTable(database: Database) {

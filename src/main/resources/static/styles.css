@@ -29,17 +29,27 @@ body {
     position: relative;
 }
 
+input, h1, h2, h3, h4, h5, h6, p, a {
+    all: unset;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    display: block;
+}
+
 dialog { display: block; }
 dialog:not(:target):not([open]) { display: none; }
 
 /* Text */
 
 h1 {
+    font-size: var(--font-size-xl);
     margin: var(--gap-sm) 0 var(--gap-lg) 0;
     font-style: italic;
 }
 
 h2 {
+    font-size: var(--font-size-lg);
     margin: var(--gap-sm) 0 var(--gap-md) 0;
     font-style: italic;
 }
@@ -287,7 +297,7 @@ hr {
 }
 
 .select-checkin:has(option[value="8"]:checked) {
-    color: var(--blue-dim);
+    color: var(--aqua);
 }
 
 .select-checkin:has(option[value="9"]:checked) {
@@ -295,7 +305,7 @@ hr {
 }
 
 .select-checkin:has(option[value="10"]:checked) {
-    color: var(--aqua);
+    color: var(--blue-dim);
 }
 
 .select-presence:has(option[value="0"]:checked) {
@@ -339,12 +349,15 @@ hr {
 }
 
 .btn {
-    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
     border: 1px solid var(--fg4);
     padding: var(--gap-sm) var(--gap-md);
     border-radius: var(--radius);
     color: var(--fg);
     background: var(--bg_h);
+    transition: background-color 0.2s ease-out;
 }
 
 .btn:hover {
@@ -530,6 +543,24 @@ hr {
 
 .dropdown .nav-button {
     padding: 0 var(--gap-sm);
+}
+
+.hacky-icon {
+    display: flex;
+    position: relative;
+}
+
+.hacky-icon > input {
+    padding-left: 2.2em;
+}
+
+.hacky-icon > .icon {
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    left: var(--gap-md);
+    pointer-events: none;
 }
 
 /* Utils */
