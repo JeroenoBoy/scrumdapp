@@ -226,16 +226,10 @@ hr {
     display: block;
 }
 
-.text-area-grow {
-    display: grid;
-}
-
-.text-area-grow textarea {
-    resize: none;
-}
-
 .checkbox-expand textarea {
     max-height: 1.3em;
+    /*margin-left: calc(var(--gap-sm) * -1);*/
+    width: calc(100% - var(--gap-md) * 2 - var(--gap-sm));
     transition: max-height 0.1s ease-out;
 }
 
@@ -604,7 +598,8 @@ hr {
 }
 
 .max-w-om {
-    max-width: 250px;
+    width: 200px;
+    max-width: 200px;
 }
 
 .h-full {
@@ -686,6 +681,10 @@ hr {
 
 .b-none {
     border: none;
+}
+
+.no-resize {
+    resize: none;
 }
 
 .relative {

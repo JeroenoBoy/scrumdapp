@@ -86,7 +86,7 @@
                         <a class="btn b-none px-lg text-center">2025/09/19</a>
                     </div>
                 </div>
-                <div class="card flex-1">
+                <div class="card flex-1 vertical gap-2">
                     <table class="checkin-table">
                         <thead>
                             <tr>
@@ -115,7 +115,7 @@
                             <tr>
                                 <td class="text-ellpise name-field">Jeroen van de Geest</td>
                                 <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
+                                    <select name="presence" class="input select-presence w-full text-ellpise">
                                         <option value="0" selected="selected" class="green">Op Tijd</option>
                                         <option value="1" class="yellow">Te Laat</option>
                                         <option value="2" class="green-dim">Geoorloofd Afwezig</option>
@@ -124,303 +124,49 @@
                                     </select>
                                 </td>
                                 <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
+                                    <select name="presence" class="input select-checkin w-full">
+                                        <option value="0" selected="selected" class="red-dim">0</option>
+                                        <option value="1" class="red">0.5</option>
+                                        <option value="2" class="orange-dim">1</option>
+                                        <option value="3" class="orange">1.5</option>
+                                        <option value="4" class="yellow-dim">2</option>
+                                        <option value="5" class="yellow">2.5</option>
+                                        <option value="6" class="green-dim" selected="selected">3</option>
+                                        <option value="7" class="green">3.5</option>
+                                        <option value="8" class="aqua">4</option>
+                                        <option value="9" class="blue-dim">4.5</option>
+                                        <option value="10" class="blue">5</option>
                                     </select>
                                 </td>
                                 <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
+                                    <select name="presence" class="input select-checkin w-full">
+                                        <option value="0" selected="selected" class="red-dim">0</option>
+                                        <option value="1" class="red">0.5</option>
+                                        <option value="2" class="orange-dim">1</option>
+                                        <option value="3" class="orange">1.5</option>
+                                        <option value="4" class="yellow-dim">2</option>
+                                        <option value="5" class="yellow">2.5</option>
+                                        <option value="6" class="green-dim" selected="selected">3</option>
+                                        <option value="7" class="green">3.5</option>
+                                        <option value="8" class="aqua">4</option>
+                                        <option value="9" class="blue-dim">4.5</option>
+                                        <option value="10" class="blue">5</option>
                                     </select>
                                 </td>
                                 <td class="horizontal justify-between align-center max-w-om relative">
                                     <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
-                                <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
-                                        <option value="0" selected="selected" class="green">Op Tijd</option>
-                                        <option value="1" class="yellow">Te Laat</option>
-                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
-                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
-                                        <option value="4" class="blue">Ziek</option>
-                                    </select>
-                                </td>
-                                <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="horizontal justify-between align-center max-w-om relative">
-                                    <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
-                                <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
-                                        <option value="0" selected="selected" class="green">Op Tijd</option>
-                                        <option value="1" class="yellow">Te Laat</option>
-                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
-                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
-                                        <option value="4" class="blue">Ziek</option>
-                                    </select>
-                                </td>
-                                <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="horizontal justify-between align-center max-w-om relative">
-                                    <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
-                                <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
-                                        <option value="0" selected="selected" class="green">Op Tijd</option>
-                                        <option value="1" class="yellow">Te Laat</option>
-                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
-                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
-                                        <option value="4" class="blue">Ziek</option>
-                                    </select>
-                                </td>
-                                <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="horizontal justify-between align-center max-w-om relative">
-                                    <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
-                                <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
-                                        <option value="0" selected="selected" class="green">Op Tijd</option>
-                                        <option value="1" class="yellow">Te Laat</option>
-                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
-                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
-                                        <option value="4" class="blue">Ziek</option>
-                                    </select>
-                                </td>
-                                <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="horizontal justify-between align-center max-w-om relative">
-                                    <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-ellpise name-field">Jeroen van de Geest</td>
-                                <td class="green pl-md">
-                                    <select name="presence" class="input select-presence">
-                                        <option value="0" selected="selected" class="green">Op Tijd</option>
-                                        <option value="1" class="yellow">Te Laat</option>
-                                        <option value="2" class="green-dim">Geoorloofd Afwezig</option>
-                                        <option value="3" class="red">Ongeoorloofd Afwezig</option>
-                                        <option value="4" class="blue">Ziek</option>
-                                    </select>
-                                </td>
-                                <td class="text-center green">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="text-center blue-dim">
-                                    <select name="presence" class="input select-checkin">
-                                        <option value="0" selected="selected" class="red-dim">0 / 5</option>
-                                        <option value="1" class="red">0.5 / 5</option>
-                                        <option value="2" class="orange-dim">1 / 5</option>
-                                        <option value="3" class="orange">1.5 / 5</option>
-                                        <option value="4" class="yellow-dim">2 / 5</option>
-                                        <option value="5" class="yellow">2.5 / 5</option>
-                                        <option value="6" class="green-dim" selected="selected">3 / 5</option>
-                                        <option value="7" class="green">3.5 / 5</option>
-                                        <option value="8" class="aqua">4 / 5</option>
-                                        <option value="9" class="blue-dim">4.5 / 5</option>
-                                        <option value="10" class="blue">5 / 5</option>
-                                    </select>
-                                </td>
-                                <td class="horizontal justify-between align-center max-w-om relative">
-                                    <div class="checkbox-expand w-full absolute">
-                                        <div class="text-area-grow">
-                                            <textarea type="text" name="addition"
-                                                      class="input checkbox-expand-content" rows="5"
-                                                      placeholder="Opmerking..."></textarea>
-                                        </div>
+                                        <textarea type="text" name="addition"
+                                                  class="input checkbox-expand-content no-resize" rows="5"
+                                                  placeholder="Opmerking..."></textarea>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <div class="flex"></div>
+                    <div class="flex-1"></div>
+                    <div class="horizontal justify-end">
+                        <a href="" class="btn">Edit</a>
+                    </div>
                 </div>
             </div>
         </div>
