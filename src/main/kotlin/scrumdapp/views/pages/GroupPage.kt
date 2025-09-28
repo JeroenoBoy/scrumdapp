@@ -37,7 +37,7 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, perm: Us
     div(classes="horizontal g-lg") {
         div(classes="vertical g-lg") {
             div(classes="card vertical g-md") {
-                i(classes="px-lg-text-center") {+"pagina's"}
+                i(classes="px-lg text-center") {+"Pagina's"}
                 hr {}
                 a(href="/groups/${group.id}/trends", classes="btn b-none px-lg text-center") {+"Trends"}
                 when {
@@ -73,7 +73,7 @@ fun FlowContent.checkinDates(dates: List<String>, perm: UserPermissions) {
     }
 }
 
-fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String) {
+fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
     table(classes="checkin-table") {
         thead {
             tr {
@@ -111,9 +111,11 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     }
     div(classes="flex-1")
     div(classes="horizontal g-md justify-end") {
-        a(href="/groups/${group.id}/edit?date=${date}", classes="btn") {
-            icon(iconName="edit", classes="blue")
-            +"Pas aan"
+        if (perms.id >= UserPermissions.CheckinManagement.id) {
+            a(href="/groups/${group.id}/edit?date=${date}", classes="btn") {
+                icon(iconName="edit", classes="blue")
+                +"Pas aan"
+            }
         }
     }
 }
@@ -175,7 +177,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
             div(classes="horizontal g-md justify-end") {
                 a(href="#", classes="btn") {
                     icon(iconName="undo", classes="gray")
-                    +"Terug"
+                    +"Nee"
                 }
                 a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
                     icon(iconName="cancel", classes="bg-hard")

@@ -97,7 +97,7 @@ suspend fun Application.configureGroupRoutes() {
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, UserPermissions.ScrumDad) {
-                                checkinWidget(checkins, group, dateParam)
+                                checkinWidget(checkins, group, dateParam, UserPermissions.CheckinManagement)
                             }
                         }
                     }
