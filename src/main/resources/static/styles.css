@@ -12,12 +12,12 @@ body {
     navigation: auto;
 }
 
-::view-transition-group(root) {
-     animation-duration: 0.5s;
- }
+#app {
+    view-transition-name: app;
+}
 
-:root {
-    view-transition-name: root;
+::view-transition-group(*) {
+    animation-duration: 0.25s;
 }
 
 :focus {
@@ -29,7 +29,7 @@ body {
     position: relative;
 }
 
-input, h1, h2, h3, h4, h5, h6, p, a {
+input, h1, h2, h3, h4, h5, h6, p, a, hr {
     all: unset;
 }
 
@@ -65,7 +65,8 @@ ul, ol {
 
 hr {
     width: 100%;
-    color: var(--bg2);
+    height: 1px;
+    background-color: var(--bg2);
 }
 
 .text-center {

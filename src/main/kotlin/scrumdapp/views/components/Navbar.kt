@@ -15,12 +15,12 @@ fun FlowContent.navbar(user: User) {
         div(classes="nav-group") {
 //            a(href="/home", classes="nav-button r-full px-sm") { icon("arrow_back") }
 //            span(classes="breadcrumbs-separator") {+"/"}
-            i(classes="px-md") { +"Scrumdapp" }
+            i(classes="px-lg") { +"Scrumdapp" }
         }
         div(classes="nav-group justify-center") {
             a(href="/home", classes="nav-button") { +"Home" }
             a(href="/dagboek", classes="nav-button") { +"Dagboek" }
-            a(href="/about", classes="nav-button") { +"About" }
+            a(href="/about", classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {
             div(classes="dropdown horizontal align-center g-md") {
