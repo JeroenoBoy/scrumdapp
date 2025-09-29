@@ -17,7 +17,6 @@ data class UserGroup(
     val permissions: UserPermissions,
 )
 
-
 interface GroupService {
     suspend fun allGroup(): List<Group>
     suspend fun getGroup(id: Int): Group?
@@ -29,7 +28,7 @@ interface GroupService {
     suspend fun compareGroupMemberAccess(groupId: Int, userid: Int): Boolean
     suspend fun compareGroupMemberPermissions(groupId: Int, userid: Int, permission: UserPermissions): Boolean
     suspend fun createGroup(group: Group): Group?
-    suspend fun renameGroup(groupId: Int, name: String)
+    suspend fun updateGroup(groupId: Int, name: String? = null, bannerImage: String? = null)
     suspend fun deleteGroup(groupId: Int)
     suspend fun addGroupMember(groupId: Int, user: User, permission: UserPermissions = UserPermissions.User)
     suspend fun alterGroupMemberPerms(user: User, permission: UserPermissions): Boolean

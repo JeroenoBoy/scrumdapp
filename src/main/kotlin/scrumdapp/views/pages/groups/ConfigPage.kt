@@ -14,12 +14,13 @@ import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
+import kotlinx.html.img
 import kotlinx.html.input
 import kotlinx.html.label
 import kotlinx.html.p
 import kotlin.random.Random
 
-fun FlowContent.groupConfigContent(group: Group, groupUser: UserGroup) {
+fun FlowContent.groupConfigContent(group: Group, groupUser: UserGroup, backgrounds: List<String>) {
     val safetyId = Random.nextInt(0, 99999999)
 
     h2 { +"Instellingen" }
@@ -42,6 +43,21 @@ fun FlowContent.groupConfigContent(group: Group, groupUser: UserGroup) {
         }
     }
 
+    div(classes="spacer-lg")
+
+    div(classes="vertical g-md") {
+        img(src="/static/backgrounds/thumbnails/${group.bannerImage ?: "15"}.webp", classes="rounded cover") {
+            width="420"
+            height="240"
+        }
+        div("horizontal") {
+            a(href="#pick-background", classes="btn") {
+                icon(iconName="texture", classes="green")
+                +"Verander Achtergrond"
+            }
+        }
+    }
+
     if (groupUser.permissions == UserPermissions.LordOfScrum) {
         div(classes="spacer-xl")
 
@@ -59,6 +75,36 @@ fun FlowContent.groupConfigContent(group: Group, groupUser: UserGroup) {
     }
 
     modal(id="pick-background") {
+        h2 { +"Kies Achtergrond" }
+        div(classes="background-container grid row-2 g-lg rounded w-full") {
+            for (background in backgrounds) {
+                if (background == (group.bannerImage ?: "15")) {
+                    div(classes="relative ratio-43") {
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        a(href="#", classes="btn btn-green pick-bg-btn") {
+                            icon(iconName="check", classes="bg-hard")
+                            +"Huidige"
+                        }
+                    }
+                } else {
+                    form(action="/groups/${group.id}/config/change-image", method=FormMethod.post, classes="relative ratio-43") {
+                        input(type=InputType.hidden, name="img") { value=background }
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        div(classes="hacky-icon pick-bg-btn") {
+                            icon(iconName="check", classes="bg-hard")
+                            input(type=InputType.submit, classes="btn btn-gray") { value="Kies" }
+                        }
+                    }
+                }
+            }
+        }
+        div(classes="spacer-md")
+        div(classes="horizontal g-md justify-end") {
+            a(classes="btn btn", href="#") {
+                icon(iconName="undo", classes="gray")
+                +"Terug"
+            }
+        }
     }
 
     modal(id="delete-group-$safetyId") {
