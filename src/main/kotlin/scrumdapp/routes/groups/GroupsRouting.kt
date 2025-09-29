@@ -15,6 +15,7 @@ import com.jeroenvdg.scrumdapp.views.pages.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groupPage
 import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
 import com.scrumdapp.scrumdapp.middleware.IsInGroup
+import com.scrumdapp.scrumdapp.middleware.group
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
@@ -86,15 +87,10 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
                     }
-                    val group = groupService.getGroup(call.parameters["groupid"]?.toInt() ?: -1) // To Do: Make this a bit cleaner
-                    if (group == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
-                        return@get
-                    }
 
+                    val group = call.group
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
-                    //println("userPerm: ${userPerm.displayName}")
+
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, UserPermissions.ScrumDad) {
@@ -111,13 +107,10 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
                     }
-                    val group = groupService.getGroup(call.parameters["groupid"]?.toInt() ?: -1) // To Do: Make this a bit cleaner
-                    if (group == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
-                        return@get
-                    }
 
+                    val group = call.group
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
+
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, UserPermissions.ScrumDad) {
