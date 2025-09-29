@@ -29,6 +29,5 @@ fun FlowContent.aboutPage() {
     ul {
         li { +"Jeroen van de Geest" }
         li { +"Daan Meijneken" }
-        li { +"Luc van Ogtrop" }
     }
 }

@@ -1,4 +1,4 @@
-package scrumdapp.services
+package com.jeroenvdg.scrumdapp.services
 
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv

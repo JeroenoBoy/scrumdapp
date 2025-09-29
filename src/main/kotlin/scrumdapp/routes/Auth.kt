@@ -3,8 +3,11 @@ package com.jeroenvdg.scrumdapp.routes
 import com.jeroenvdg.scrumdapp.db.SessionService
 import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserService
+import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
+import com.jeroenvdg.scrumdapp.middleware.userSession
+import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
 import com.jeroenvdg.scrumdapp.views.PageData
@@ -21,7 +24,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.date.*
 import kotlinx.serialization.Serializable
-import scrumdapp.services.EnvironmentService
 
 @Serializable
 data class SessionToken(val token: String)
@@ -95,6 +97,16 @@ suspend fun Application.configureAuthRouting() {
                         loginPage()
                     }
                 }
+            }
+        }
+
+        route("/logout") {
+            install(IsLoggedIn)
+            get {
+                val token = call.userSession.token
+                sessionService.deleteSession(token)
+                call.sessions.clear<SessionToken>()
+                call.respondRedirect("/login")
             }
         }
     }

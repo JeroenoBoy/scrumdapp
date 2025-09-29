@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp
 
 import com.jeroenvdg.scrumdapp.models.UserTable.*
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
+import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import io.ktor.server.application.Application
 import io.ktor.server.plugins.di.dependencies
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +10,6 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import scrumdapp.services.EnvironmentService
 
 object Database {
     suspend fun Application.initializeDatabase(): Database {

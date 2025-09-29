@@ -12,6 +12,7 @@ class GroupServiceImpl: GroupService {
         return Group(
             id = row[Groups.id],
             name = row[Groups.name],
+            bannerImage = row[Groups.bannerPicture],
         )
     }
 
@@ -24,11 +25,12 @@ class GroupServiceImpl: GroupService {
         )
     }
 
-    private fun resultRowToUserGroup(row: ResultRow): UserGroup {
+    private fun groupUser(row: ResultRow): UserGroup {
         return UserGroup(
-            groupId = row[UserGroups.groupId]?: -1,
-            userId = row[UserGroups.userId]?: -1,
-            permission = row[UserGroups.permissions]
+            id = row[UserGroups.id],
+            userId = row[UserGroups.userId]!!,
+            groupId = row[UserGroups.groupId]!!,
+            permissions = UserPermissions.get(row[UserGroups.permissions])
         )
     }
 
@@ -45,9 +47,24 @@ class GroupServiceImpl: GroupService {
     override suspend fun createGroup(group: Group): Group? {
         return dbQuery {
             val inserts = Groups.insert {
-                it[name]=group.name
+                it[name] = group.name
+                it[bannerPicture] = group.bannerImage
             }
             inserts.resultedValues?.singleOrNull()?.let { resultRowToGroup(it) }
+        }
+    }
+
+    override suspend fun renameGroup(groupId: Int, name: String) {
+        dbQuery {
+            Groups.update({ Groups.id eq groupId }) {
+                it[Groups.name] = name
+            }
+        }
+    }
+
+    override suspend fun deleteGroup(groupId: Int) {
+        dbQuery {
+            Groups.deleteWhere { Groups.id eq groupId }
         }
     }
 
@@ -68,11 +85,13 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun getUserGroupMembers(groupId: Int): List<UserGroup> {
+    override suspend fun getGroupUser(groupId: Int, userId: Int): UserGroup? {
         return dbQuery {
-            UserGroups.select(UserGroups.columns)
-                .where { UserGroups.id eq groupId }
-                .map { resultRowToUserGroup(it)}
+            val groupUser = UserGroups
+                .select(UserGroups.fields)
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.userId eq userId) }
+                .singleOrNull()
+            if (groupUser == null) null else groupUser(groupUser)
         }
     }
 

@@ -1,22 +1,24 @@
-package scrumdapp.routes.groups
+package com.jeroenvdg.scrumdapp.routes.groups
 
 
 import com.jeroenvdg.scrumdapp.db.CheckinService
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
 import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
-import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.user
-import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
-import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
+import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
-import com.jeroenvdg.scrumdapp.views.pages.checkinWidget
-import com.jeroenvdg.scrumdapp.views.pages.editableCheckinWidget
-import com.jeroenvdg.scrumdapp.views.pages.groupPage
+import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
+import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
+import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
+import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
+import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
+import com.scrumdapp.scrumdapp.middleware.IsInGroup
+import com.scrumdapp.scrumdapp.middleware.group
+import com.scrumdapp.scrumdapp.middleware.groupUser
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
@@ -57,13 +59,17 @@ suspend fun Application.configureGroupRoutes() {
         route("/groups") {
             install(IsLoggedIn)
 
+            get {
+                call.respondRedirect("/home", false)
+            }
+
             post {
                 try {
                     val groupName = call.receiveParameters()["group_name"].toString()
-                    val newGroup = groupService.createGroup(Group(0, groupName))
+                    val newGroup = groupService.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
                         groupService.addGroupMember(newGroup.id, call.user, UserPermissions.LordOfScrum)
-                        call.respondRedirect("/groups/${newGroup.id}/config")
+                        return@post call.respondRedirect("/groups/${newGroup.id}")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
                 } catch (ex: IllegalStateException) {
@@ -80,19 +86,15 @@ suspend fun Application.configureGroupRoutes() {
                     // example url: /groups/{groupid}?date={YYYY-MM-DD}
                     val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     val isoDate = parseIsoDate(dateParam)
-
                     if (isoDate == null) {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
                     }
-                    val group = groupService.getGroup(call.parameters["groupid"]?.toInt() ?: -1) // To Do: Make this a bit cleaner
-                    if (group == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
-                        return@get
-                    }
 
+                    val group = call.group
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
+
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, userPerm) {
@@ -109,14 +111,11 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
                     }
-                    val group = groupService.getGroup(call.parameters["groupid"]?.toInt() ?: -1) // To Do: Make this a bit cleaner
-                    if (group == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
-                        return@get
-                    }
 
+                    val group = call.group
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
+
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, userPerm) {
@@ -127,9 +126,7 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 route("/users") {
-                    install(HasCorrectPerms) {
-                        permissions = UserPermissions.UserManagement
-                    }
+                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
 
                     get {
                     }
@@ -148,17 +145,40 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 route("/config") {
-                    install(HasCorrectPerms) {
-                        permissions = UserPermissions.ScrumDad
-                        this.groupService = groupService
-                    }
+                    install(HasCorrectPerms) { permissions = UserPermissions.ScrumDad }
 
                     get {
+                        val group = call.group
+                        val groupUser = call.groupUser
 
+                        call.respondHtml {
+                            dashboardLayout(DashboardPageData("Settings", call)) {
+                                groupPage(emptyList(), group, groupUser.permissions) {
+                                    groupConfigContent(group, groupUser)
+                                }
+                            }
+                        }
                     }
 
-                    put {
+                    val nameRegex = Regex("^[a-zA-Z0-9_ ]{3,50}$")
+                    post("/change-name") {
+                        val name = call.receiveParameters()["group_name"]
+                        val group = call.group
+                        if (name == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (name == call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (!nameRegex.matches(name)) { return@post call.respondRedirect("/groups/${group.id}/config") }
 
+                        groupService.renameGroup(group.id, name)
+                        call.respondRedirect("/groups/${group.id}/config")
+                    }
+
+                    post("/delete-group") {
+                        val name = call.receiveParameters()["delete_group_name"]
+                        val group = call.group
+                        if (name != call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config#delete-failed") }
+
+                        groupService.deleteGroup(group.id)
+                        call.respondRedirect("/home")
                     }
                 }
             }

@@ -27,15 +27,6 @@ class UserProviderConfig() {
     lateinit var sessionService: SessionService
 }
 
-class GroupProviderConfig() {
-    lateinit var groupService: GroupService
-}
-
-class PermProviderConfig() {
-    lateinit var groupService: GroupService
-    var permissions: UserPermissions = UserPermissions.User
-}
-
 private val userSessionAttributeKey = AttributeKey<UserSession>("User Session")
 private val userAttributeKey = AttributeKey<User>("User")
 
@@ -44,6 +35,12 @@ private val userAttributeKey = AttributeKey<User>("User")
  */
 val ApplicationCall.user: User
     get() = attributes[userAttributeKey]
+
+/**
+ * Can check if user exists
+ */
+val ApplicationCall.hasUser: Boolean
+    get() = attributes.getOrNull(userAttributeKey) != null
 
 /**
  * Should be **checked by middleware** if it exists
@@ -78,31 +75,6 @@ val IsLoggedOut = createRouteScopedPlugin("Is Logged Out") {
     onCall { call ->
         if (call.attributes.getOrNull(userAttributeKey) != null) {
             call.respondRedirect("/home")
-        }
-    }
-}
-
-val IsInGroup = createRouteScopedPlugin("Is In Group", ::GroupProviderConfig) {
-    val groupService = pluginConfig.groupService
-    onCall { call ->
-        if (call.attributes.getOrNull(userSessionAttributeKey) != null) {
-            val userid = call.userSession.userId
-            val groupid = call.parameters["groupid"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/") //taking into account that the group is referenced in url
-            if (!groupService.compareGroupMemberAccess(groupid, userid)) {
-                call.respondRedirect("/home")
-            }
-        }
-    }
-}
-
-val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProviderConfig) {
-    val groupService = pluginConfig.groupService
-    val perm = pluginConfig.permissions
-    onCall { call ->
-        val groupid = call.parameters["groupid"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/")
-        val userPerm = groupService.getGroupMemberPermissions(groupid, call.userSession.userId)
-        if (perm.id <= userPerm.id) {
-            call.respondRedirect("/groups/${groupid}")
         }
     }
 }
