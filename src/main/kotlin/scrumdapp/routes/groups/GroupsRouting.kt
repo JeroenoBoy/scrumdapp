@@ -10,6 +10,7 @@ import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
+import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
@@ -79,7 +80,7 @@ suspend fun Application.configureGroupRoutes() {
                     // example url: /groups/{groupid}?date={YYYY-MM-DD}
                     val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     val isoDate = parseIsoDate(dateParam)
-                    println("isoDate: $isoDate")
+
                     if (isoDate == null) {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
@@ -89,15 +90,13 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
                         return@get
                     }
-                    println("group: ${group.name}")
 
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
-                    //println("userPerm: ${userPerm.displayName}")
+                    val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
-                            groupPage(checkins, group, UserPermissions.ScrumDad) {
-                                checkinWidget(checkins, group, dateParam, UserPermissions.CheckinManagement)
+                            groupPage(checkins, group, userPerm) {
+                                checkinWidget(checkins, group, dateParam, userPerm)
                             }
                         }
                     }
@@ -106,7 +105,6 @@ suspend fun Application.configureGroupRoutes() {
                 get("/edit") {
                     val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     val isoDate = parseIsoDate(dateParam)
-                    println("isoDate: $isoDate")
                     if (isoDate == null) {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
@@ -116,14 +114,12 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
                         return@get
                     }
-                    println("group: ${group.name}")
 
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
-                    //println("userPerm: ${userPerm.displayName}")
+                    val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
-                            groupPage(checkins, group, UserPermissions.ScrumDad) {
+                            groupPage(checkins, group, userPerm) {
                                 editableCheckinWidget(checkins, group, dateParam)
                             }
                         }
@@ -133,11 +129,9 @@ suspend fun Application.configureGroupRoutes() {
                 route("/users") {
                     install(HasCorrectPerms) {
                         permissions = UserPermissions.UserManagement
-                        this.groupService = groupService
                     }
 
                     get {
-
                     }
 
                     put {

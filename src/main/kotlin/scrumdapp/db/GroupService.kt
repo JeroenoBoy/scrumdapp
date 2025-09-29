@@ -9,11 +9,19 @@ data class Group(
     val name: String,
 )
 
+@Serializable
+data class UserGroup(
+    val groupId: Int,
+    val userId: Int,
+    val permission: Int
+)
+
 interface GroupService {
     suspend fun allGroup(): List<Group>
     suspend fun getGroup(id: Int): Group?
     suspend fun getGroupMembers(id: Int): List<User>
     suspend fun getUserGroups(id: Int): List<Group>
+    suspend fun getUserGroupMembers(groupId: Int): List<UserGroup>
     suspend fun getGroupMemberPermissions(groupId: Int, userid: Int): UserPermissions
     suspend fun compareGroupMemberAccess(groupId: Int, userid: Int): Boolean
     suspend fun compareGroupMemberPermissions(groupid: Int, userid: Int, permission: UserPermissions): Boolean

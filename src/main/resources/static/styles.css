@@ -329,6 +329,26 @@ hr {
     color: var(--blue);
 }
 
+.select-role:has(option[value="-2"]:checked) {
+    color: var(--red)
+}
+
+.select-role:has(option[value="-1"]:checked) {
+    color: var(--yellow)
+}
+
+.select-role:has(option[value="0"]:checked) {
+    color: var(--blue)
+}
+
+.select-role:has(option[value="1"]:checked) {
+    color: var(--purple)
+}
+
+.select-role:has(option[value="69"]:checked) {
+    color: var(--aqua)
+}
+
 .btn-card {
     transition: background-color 0.2s ease-out;
 }

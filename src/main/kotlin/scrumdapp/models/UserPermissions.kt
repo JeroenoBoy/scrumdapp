@@ -12,6 +12,7 @@ sealed class UserPermissions(val displayName: String, val id: Int) {
     companion object {
         fun fromId(row: ResultRow): UserPermissions {
             return when (row[GroupsTable.UserGroups.permissions]) {
+                -2 -> LordOfScrum
                 -1 -> ScrumDad
                 0 -> UserManagement
                 1 -> CheckinManagement

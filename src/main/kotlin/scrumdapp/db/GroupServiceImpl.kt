@@ -24,6 +24,14 @@ class GroupServiceImpl: GroupService {
         )
     }
 
+    private fun resultRowToUserGroup(row: ResultRow): UserGroup {
+        return UserGroup(
+            groupId = row[UserGroups.groupId]?: -1,
+            userId = row[UserGroups.userId]?: -1,
+            permission = row[UserGroups.permissions]
+        )
+    }
+
     override suspend fun allGroup(): List<Group> {
         return dbQuery { Groups.selectAll().map { resultRowToGroup(it) } }
     }
@@ -52,11 +60,19 @@ class GroupServiceImpl: GroupService {
     }
 
     override suspend fun getUserGroups(id: Int): List<Group> {
-        return  dbQuery {
+        return dbQuery {
             (UserGroups innerJoin Groups)
                 .select(Groups.fields)
                 .where { UserGroups.userId eq id }
                 .map { resultRowToGroup(it)}
+        }
+    }
+
+    override suspend fun getUserGroupMembers(groupId: Int): List<UserGroup> {
+        return dbQuery {
+            UserGroups.select(UserGroups.columns)
+                .where { UserGroups.id eq groupId }
+                .map { resultRowToUserGroup(it)}
         }
     }
 
