@@ -23,22 +23,22 @@ class CheckinServiceImpl: CheckinService {
         )
     }
 
-    override suspend fun getUserCheckins(user: User, group: Group): List<Checkin> {
+    override suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin> {
         return dbQuery {
             GroupCheckins
                 .innerJoin(Users, { GroupCheckins.id eq user.id}, { Users.id})
                 .select(GroupCheckins.fields + Users.name)
-                .where {GroupCheckins.groupId eq group.id and(GroupCheckins.userId eq user.id)}
+                .where {GroupCheckins.groupId eq groupId and(GroupCheckins.userId eq user.id)}
                 .map { resultRowToCheckin(it) }
         }
     }
 
-    override suspend fun getGroupCheckins(group: Group, date: LocalDate): List<Checkin> {
+    override suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin> {
         return dbQuery {
             GroupCheckins
                 .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
                 .select(GroupCheckins.fields + Users.name)
-                .where {GroupCheckins.groupId eq group.id and (GroupCheckins.date eq date)}
+                .where {GroupCheckins.groupId eq groupId and (GroupCheckins.date eq date)}
                 .map { resultRowToCheckin(it) }
         }
     }
@@ -69,10 +69,10 @@ class CheckinServiceImpl: CheckinService {
         }
     }
 
-    override suspend fun createGroupCheckin(group: Group, checkins: List<Checkin>): List<Checkin>? {
+    override suspend fun createGroupCheckin(groupId: Int, checkins: List<Checkin>): List<Checkin>? {
         return dbQuery {
             GroupCheckins.batchInsert(checkins) { checkin ->
-                this[GroupCheckins.groupId] = group.id
+                this[GroupCheckins.groupId] = groupId
                 this[GroupCheckins.userId] = checkin.userId
                 this[GroupCheckins.presence] = checkin.presence
                 this[GroupCheckins.date] = checkin.date

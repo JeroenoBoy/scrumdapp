@@ -61,7 +61,7 @@ suspend fun Application.configureGroupRoutes() {
                     val groupName = call.receiveParameters()["group_name"].toString()
                     val newGroup = groupService.createGroup(Group(0, groupName))
                     if (newGroup != null) {
-                        groupService.addGroupMember(newGroup, call.user, UserPermissions.LordOfScrum)
+                        groupService.addGroupMember(newGroup.id, call.user, UserPermissions.LordOfScrum)
                         call.respondRedirect("/groups/${newGroup.id}/config")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -91,7 +91,7 @@ suspend fun Application.configureGroupRoutes() {
                     }
                     println("group: ${group.name}")
 
-                    val checkins = checkinService.getGroupCheckins(group, isoDate)
+                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
                     //println("userPerm: ${userPerm.displayName}")
                     call.respondHtml {
@@ -118,7 +118,7 @@ suspend fun Application.configureGroupRoutes() {
                     }
                     println("group: ${group.name}")
 
-                    val checkins = checkinService.getGroupCheckins(group, isoDate)
+                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
                     //println("userPerm: ${userPerm.displayName}")
                     call.respondHtml {
