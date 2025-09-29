@@ -12,6 +12,7 @@ class GroupServiceImpl: GroupService {
         return Group(
             id = row[Groups.id],
             name = row[Groups.name],
+            bannerImage = row[Groups.bannerPicture],
         )
     }
 
@@ -21,6 +22,15 @@ class GroupServiceImpl: GroupService {
             name = row[Users.name],
             discordId = row[Users.discordId],
             profileImage = row[Users.profileImage],
+        )
+    }
+
+    private fun groupUser(row: ResultRow): UserGroup {
+        return UserGroup(
+            id = row[UserGroups.id],
+            userId = row[UserGroups.userId]!!,
+            groupId = row[UserGroups.groupId]!!,
+            permissions = UserPermissions.get(row[UserGroups.permissions])
         )
     }
 
@@ -37,7 +47,8 @@ class GroupServiceImpl: GroupService {
     override suspend fun createGroup(group: Group): Group? {
         return dbQuery {
             val inserts = Groups.insert {
-                it[name]=group.name
+                it[name] = group.name
+                it[bannerPicture] = group.bannerImage
             }
             inserts.resultedValues?.singleOrNull()?.let { resultRowToGroup(it) }
         }
@@ -57,6 +68,16 @@ class GroupServiceImpl: GroupService {
                 .select(Groups.fields)
                 .where { UserGroups.userId eq id }
                 .map { resultRowToGroup(it)}
+        }
+    }
+
+    override suspend fun getGroupUser(groupId: Int, userId: Int): UserGroup? {
+        return dbQuery {
+            val groupUser = UserGroups
+                .select(UserGroups.fields)
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.userId eq userId) }
+                .singleOrNull()
+            if (groupUser == null) null else groupUser(groupUser)
         }
     }
 

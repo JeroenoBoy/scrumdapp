@@ -24,7 +24,7 @@ class SessionServiceImpl: SessionService {
     override suspend fun getSession(token: String): UserSession? {
         return dbQuery {
             val statement = UserSessions.select(UserSessions.fields).where(UserSessions.token eq token)
-            resultRowToSession(statement.single())
+            if (statement.empty()) null else resultRowToSession(statement.single())
         }
     }
 

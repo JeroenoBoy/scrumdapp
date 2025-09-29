@@ -7,9 +7,7 @@ import com.jeroenvdg.scrumdapp.db.GroupService
 import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
 import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
-import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.user
-import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
@@ -31,6 +29,8 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
+import scrumdapp.middleware.HasCorrectPerms
+import scrumdapp.middleware.IsInGroup
 import java.time.format.DateTimeFormatter
 
 suspend fun Application.configureGroupRoutes() {
@@ -56,10 +56,14 @@ suspend fun Application.configureGroupRoutes() {
         route("/groups") {
             install(IsLoggedIn)
 
+            get {
+                call.respondRedirect("/home", false)
+            }
+
             post {
                 try {
                     val groupName = call.receiveParameters()["group_name"].toString()
-                    val newGroup = groupService.createGroup(Group(0, groupName))
+                    val newGroup = groupService.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
                         groupService.addGroupMember(newGroup, call.user, UserPermissions.LordOfScrum)
                         call.respondRedirect("/groups/${newGroup.id}/config")
@@ -79,7 +83,6 @@ suspend fun Application.configureGroupRoutes() {
                     // example url: /groups/{groupid}?date={YYYY-MM-DD}
                     val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     val isoDate = parseIsoDate(dateParam)
-                    println("isoDate: $isoDate")
                     if (isoDate == null) {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
@@ -89,7 +92,6 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
                         return@get
                     }
-                    println("group: ${group.name}")
 
                     val checkins = checkinService.getGroupCheckins(group, isoDate)
                     //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
@@ -106,7 +108,6 @@ suspend fun Application.configureGroupRoutes() {
                 get("/edit") {
                     val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     val isoDate = parseIsoDate(dateParam)
-                    println("isoDate: $isoDate")
                     if (isoDate == null) {
                         call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
                         return@get
@@ -116,11 +117,8 @@ suspend fun Application.configureGroupRoutes() {
                         call.respond(HttpStatusCode.BadRequest, "Unknown or invalid group id")
                         return@get
                     }
-                    println("group: ${group.name}")
 
                     val checkins = checkinService.getGroupCheckins(group, isoDate)
-                    //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
-                    //println("userPerm: ${userPerm.displayName}")
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, UserPermissions.ScrumDad) {
@@ -131,10 +129,7 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 route("/users") {
-                    install(HasCorrectPerms) {
-                        permissions = UserPermissions.UserManagement
-                        this.groupService = groupService
-                    }
+                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
 
                     get {
 
@@ -154,10 +149,7 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 route("/config") {
-                    install(HasCorrectPerms) {
-                        permissions = UserPermissions.ScrumDad
-                        this.groupService = groupService
-                    }
+                    install(HasCorrectPerms) { permissions = UserPermissions.ScrumDad }
 
                     get {
 
