@@ -88,7 +88,7 @@ val IsInGroup = createRouteScopedPlugin("Is In Group", ::GroupProviderConfig) {
         if (call.attributes.getOrNull(userSessionAttributeKey) != null) {
             val userid = call.userSession.userId
             val groupid = call.parameters["groupid"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/") //taking into account that the group is referenced in url
-            if (!groupService.compareGroupMemberAccess(Group(groupid, "bleh"), userid)) {
+            if (!groupService.compareGroupMemberAccess(groupid, userid)) {
                 call.respondRedirect("/home")
             }
         }
@@ -100,7 +100,7 @@ val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProvider
     val perm = pluginConfig.permissions
     onCall { call ->
         val groupid = call.parameters["groupid"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/")
-        val userPerm = groupService.getGroupMemberPermissions(Group(groupid, "bleh"), call.userSession.userId)
+        val userPerm = groupService.getGroupMemberPermissions(groupid, call.userSession.userId)
         if (perm.id <= userPerm.id) {
             call.respondRedirect("/groups/${groupid}")
         }
