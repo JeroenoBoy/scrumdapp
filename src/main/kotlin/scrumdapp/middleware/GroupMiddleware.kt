@@ -52,7 +52,7 @@ val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProvider
     val perm = pluginConfig.permissions
     onCall { call ->
         val groupUser = call.attributes.getOrNull(groupUserAttributeKey) ?: return@onCall call.respondRedirect("/home")
-        if (perm.id <= groupUser.permissions.id) {
+        if (perm.id < groupUser.permissions.id) {
             call.respondRedirect("/groups/${call.group.id}")
         }
     }
