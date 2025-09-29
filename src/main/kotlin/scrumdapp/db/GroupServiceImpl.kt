@@ -60,37 +60,37 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun getGroupMemberPermissions(group: Group, userid: Int): UserPermissions {
+    override suspend fun getGroupMemberPermissions(groupId: Int, userid: Int): UserPermissions {
         return dbQuery {
             UserGroups
                 .select(UserGroups.permissions)
-                .where { UserGroups.userId eq userid and (UserGroups.groupId eq group.id) }
+                .where { UserGroups.userId eq userid and (UserGroups.groupId eq groupId) }
                 .withDistinct()
                 .map { UserPermissions.fromId(it) }
                 .first()
         }
     }
 
-    override suspend fun compareGroupMemberAccess(group: Group, userid: Int): Boolean {
+    override suspend fun compareGroupMemberAccess(groupId: Int, userid: Int): Boolean {
         return dbQuery {
             UserGroups.select(UserGroups.userId)
-                .where { UserGroups.groupId eq group.id and (UserGroups.userId eq userid) }
+                .where { UserGroups.groupId eq groupId and (UserGroups.userId eq userid) }
                 .any()
         }
     }
 
-    override suspend fun compareGroupMemberPermissions(group: Group, userid: Int, permission: UserPermissions): Boolean {
+    override suspend fun compareGroupMemberPermissions(groupId: Int, userid: Int, permission: UserPermissions): Boolean {
         val result = dbQuery {
             UserGroups.select(UserGroups.permissions)
-                .where { UserGroups.groupId eq group.id and (UserGroups.userId eq userid) }
+                .where { UserGroups.groupId eq groupId and (UserGroups.userId eq userid) }
         }
         return result == permission
     }
 
-    override suspend fun addGroupMember(group: Group, user: User, permission: UserPermissions) {
+    override suspend fun addGroupMember(groupid: Int, user: User, permission: UserPermissions) {
         return dbQuery {
             UserGroups.insert {
-                it[groupId] = group.id
+                it[groupId] = groupid
                 it[userId] = user.id
                 it[permissions] = permission.id
             }
@@ -105,22 +105,22 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun deleteGroupMember(group: Group, user: User): Boolean {
+    override suspend fun deleteGroupMember(groupId: Int, user: User): Boolean {
         return dbQuery {
-            UserGroups.deleteWhere { UserGroups.groupId eq group.id and (UserGroups.userId eq user.id) }>0
+            UserGroups.deleteWhere { UserGroups.groupId eq groupId and (UserGroups.userId eq user.id) }>0
         }
     }
 
     override suspend fun createGroupInvite(
-        group: Group,
+        groupId: Int,
         password: String
     ): String {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteGroupInvite(group: Group, user: User) { // Not finished, discuss with Jeroen
+    override suspend fun deleteGroupInvite(groupId: Int, user: User) { // Not finished, discuss with Jeroen
         return dbQuery {
-            GroupInvite.deleteWhere { GroupInvite.groupId eq group.id }
+            GroupInvite.deleteWhere { GroupInvite.groupId eq groupId }
         }
     }
 
