@@ -1,5 +1,6 @@
 package com.jeroenvdg.scrumdapp.db
 
+import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import kotlinx.serialization.Serializable
 
@@ -16,12 +17,6 @@ data class UserGroup(
     val permissions: UserPermissions,
 )
 
-@Serializable
-data class UserGroup(
-    val groupId: Int,
-    val userId: Int,
-    val permission: Int
-)
 
 interface GroupService {
     suspend fun allGroup(): List<Group>
@@ -29,6 +24,7 @@ interface GroupService {
     suspend fun getGroupMembers(id: Int): List<User>
     suspend fun getUserGroups(id: Int): List<Group>
     suspend fun getGroupUser(groupId: Int, userId: Int): UserGroup?
+    suspend fun getGroupUsers(groupId: Int): List<UserGroup>
     suspend fun getGroupMemberPermissions(groupId: Int, userid: Int): UserPermissions
     suspend fun compareGroupMemberAccess(groupId: Int, userid: Int): Boolean
     suspend fun compareGroupMemberPermissions(groupId: Int, userid: Int, permission: UserPermissions): Boolean

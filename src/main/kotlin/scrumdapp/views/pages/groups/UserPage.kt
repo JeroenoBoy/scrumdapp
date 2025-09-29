@@ -1,14 +1,18 @@
 package com.jeroenvdg.scrumdapp.views.pages.groups
 
+import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.components.icon
+import com.jeroenvdg.scrumdapp.views.components.modal
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
+import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.form
+import kotlinx.html.h2
 import kotlinx.html.input
 import kotlinx.html.option
 import kotlinx.html.select
@@ -18,8 +22,9 @@ import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
+import kotlinx.html.p
 
-fun FlowContent.userEditContent(users: List<User>, userGroups: List<UserGroup>) {
+fun FlowContent.userEditContent(group: Group, users: List<User>, userGroups: List<UserGroup>) {
     form(method=FormMethod.put, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
             thead {
@@ -30,6 +35,7 @@ fun FlowContent.userEditContent(users: List<User>, userGroups: List<UserGroup>) 
             }
             tbody {
                 for (user in users) {
+                    val userId = user.id.toString()
                     val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
                     tr {
                         td(classes="text-ellipse name-field") { +user.name }
@@ -60,6 +66,13 @@ fun FlowContent.userEditContent(users: List<User>, userGroups: List<UserGroup>) 
                                     +"Lid"}
                             }
                         }
+                        td(classes="pl-md") {
+                            div(classes="horizontal space-between align-center") {
+                                p(classes="red") { +"Verwijder Gebruiker"}
+                                div(classes="flex-1")
+                                a(href="#delete-user-$userId")
+                            }
+                        }
                     }
                 }
             }
@@ -70,8 +83,24 @@ fun FlowContent.userEditContent(users: List<User>, userGroups: List<UserGroup>) 
                 icon(iconName="check", classes="blue")
                 input(type=InputType.submit, classes="btn") { value="Toepassen"}
             }
-
-
         }
+    }
+
+    modal(id="delete-user-tempuserId") {
+        h2 { +"Verwijder Gebruiker"}
+
+        form(action="/groups/${group.id}/users/delete-user", method= FormMethod.post) {
+            div(classes = "horizontal g-md justify-end") {
+                a(classes="btn btn-green", href="#") {
+                    icon(iconName="undo", classes="bg-hard")
+                    +"Terug"
+                }
+                div(classes="hacky-icon") {
+                    icon(iconName="check", classes="bg-hard")
+                    input(type=InputType.submit, classes="btn")
+                }
+            }
+        }
+
     }
 }

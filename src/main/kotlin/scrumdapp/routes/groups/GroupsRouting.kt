@@ -15,6 +15,7 @@ import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
+import com.jeroenvdg.scrumdapp.views.pages.groups.userEditContent
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
 import com.scrumdapp.scrumdapp.middleware.IsInGroup
@@ -130,9 +131,25 @@ suspend fun Application.configureGroupRoutes() {
                     install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
 
                     get {
+                        val group = call.group
+                        val userPerm = call.groupUser.permissions
+                        val groupMembers = groupService.getGroupMembers(group.id)
+                        val groupUsers = groupService.getGroupUsers(group.id)
+
+                        call.respondHtml {
+                            dashboardLayout(DashboardPageData(group.name, call)) {
+                                groupPage(emptyList(), group, userPerm) {
+                                    userEditContent(group, groupMembers, groupUsers)
+                                }
+                            }
+                        }
                     }
 
-                    put {
+                    post("/alter-users") {
+
+                    }
+
+                    post("/delete-user") {
 
                     }
 
