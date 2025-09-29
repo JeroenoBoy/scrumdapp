@@ -19,6 +19,9 @@ import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
 import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
+import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
+import com.jeroenvdg.scrumdapp.services.DotenvService
+import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.serialization.kotlinx.json.json
@@ -31,9 +34,6 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.sessions.Sessions
 import io.ktor.server.sessions.cookie
-import scrumdapp.routes.groups.configureGroupRoutes
-import scrumdapp.services.DotenvService
-import scrumdapp.services.EnvironmentService
 
 fun main(args: Array<String>) {
     println("Starting Scrumdapp")

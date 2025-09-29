@@ -1,10 +1,9 @@
-package scrumdapp.routes.groups
+package com.jeroenvdg.scrumdapp.routes.groups
 
 
 import com.jeroenvdg.scrumdapp.db.CheckinService
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
 import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
@@ -14,6 +13,8 @@ import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groupPage
+import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
+import com.scrumdapp.scrumdapp.middleware.IsInGroup
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
@@ -29,8 +30,6 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
-import scrumdapp.middleware.HasCorrectPerms
-import scrumdapp.middleware.IsInGroup
 import java.time.format.DateTimeFormatter
 
 suspend fun Application.configureGroupRoutes() {
@@ -65,7 +64,7 @@ suspend fun Application.configureGroupRoutes() {
                     val groupName = call.receiveParameters()["group_name"].toString()
                     val newGroup = groupService.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
-                        groupService.addGroupMember(newGroup, call.user, UserPermissions.LordOfScrum)
+                        groupService.addGroupMember(newGroup.id, call.user, UserPermissions.LordOfScrum)
                         call.respondRedirect("/groups/${newGroup.id}/config")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -93,7 +92,7 @@ suspend fun Application.configureGroupRoutes() {
                         return@get
                     }
 
-                    val checkins = checkinService.getGroupCheckins(group, isoDate)
+                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     //val userPerm = groups.getGroupMemberPermissions(group, call.userSession.id)
                     //println("userPerm: ${userPerm.displayName}")
                     call.respondHtml {
@@ -118,7 +117,7 @@ suspend fun Application.configureGroupRoutes() {
                         return@get
                     }
 
-                    val checkins = checkinService.getGroupCheckins(group, isoDate)
+                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
                             groupPage(checkins, group, UserPermissions.ScrumDad) {

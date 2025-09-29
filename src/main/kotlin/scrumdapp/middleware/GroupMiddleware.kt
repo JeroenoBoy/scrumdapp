@@ -1,4 +1,4 @@
-package scrumdapp.middleware
+package com.scrumdapp.scrumdapp.middleware
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupService
