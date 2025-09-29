@@ -54,10 +54,12 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun renameGroup(groupId: Int, name: String) {
+    override suspend fun updateGroup(groupId: Int, name: String?, bannerImage: String?) {
+        if (name == null && bannerImage == null) { return }
         dbQuery {
             Groups.update({ Groups.id eq groupId }) {
-                it[Groups.name] = name
+                if (name != null) { it[Groups.name] = name }
+                if (bannerImage != null) { it[Groups.bannerPicture] = bannerImage }
             }
         }
     }
@@ -122,10 +124,10 @@ class GroupServiceImpl: GroupService {
         return result == permission
     }
 
-    override suspend fun addGroupMember(groupid: Int, user: User, permission: UserPermissions) {
+    override suspend fun addGroupMember(groupId: Int, user: User, permission: UserPermissions) {
         return dbQuery {
             UserGroups.insert {
-                it[groupId] = groupid
+                it[this.groupId] = groupId
                 it[userId] = user.id
                 it[permissions] = permission.id
             }

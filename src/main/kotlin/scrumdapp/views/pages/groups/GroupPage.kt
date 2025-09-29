@@ -38,23 +38,25 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
     h1 {+group.name}
     div(classes="horizontal g-lg") {
         div(classes="vertical g-lg") {
-            div(classes="card vertical g-md") {
-                i(classes="px-lg text-center") {+"Pagina's"}
-                hr {}
-                a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
-                    icon(iconName="bar_chart", classes="yellow")
-                    +"Trends"
-                }
-                if (userPermissions.id <= UserPermissions.UserManagement.id) {
-                    a(href="/groups/${group.id}/users", classes="btn b-none px-lg") {
-                        icon(iconName="groups", classes="blue")
-                        +"Gebruikers"
+            if (userPermissions.id <= UserPermissions.User.id) {
+                div(classes="card vertical g-md") {
+                    i(classes="px-lg text-center") {+"Pagina's"}
+                    hr {}
+                    a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
+                        icon(iconName="bar_chart", classes="yellow")
+                        +"Trends"
                     }
-                }
-                if (userPermissions.id <= UserPermissions.ScrumDad.id) {
-                    a(href="/groups/${group.id}/config", classes="btn b-none px-lg") {
-                        icon(iconName="settings", classes="purple")
-                        +"Instellingen"
+                    if (userPermissions.id <= UserPermissions.UserManagement.id) {
+                        a(href="/groups/${group.id}/users", classes="btn b-none px-lg") {
+                            icon(iconName="groups", classes="blue")
+                            +"Gebruikers"
+                        }
+                    }
+                    if (userPermissions.id <= UserPermissions.ScrumDad.id) {
+                        a(href="/groups/${group.id}/config", classes="btn b-none px-lg") {
+                            icon(iconName="settings", classes="purple")
+                            +"Instellingen"
+                        }
                     }
                 }
             }

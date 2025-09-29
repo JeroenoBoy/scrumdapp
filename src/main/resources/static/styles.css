@@ -367,6 +367,7 @@ hr {
     object-fit: cover;
     width: 100%;
     height: auto;
+    aspect-ratio: 4/3;
 }
 
 .btn {
@@ -439,9 +440,22 @@ hr {
     width: calc(100% - var(--gap-lg) * 2);
 }
 
+.background-container {
+    height: 100%;
+    max-height: 50vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 .danger-zone {
     padding: var(--gap-lg);
     border: 1px dashed var(--red-dim);
+    border-radius: var(--radius);
+}
+
+.dashed-border {
+    padding: var(--gap-lg);
+    border: 1px dashed var(--gray);
     border-radius: var(--radius);
 }
 
@@ -590,6 +604,12 @@ hr {
     pointer-events: none;
 }
 
+.pick-bg-btn {
+    position: absolute;
+    right: var(--gap-lg);
+    bottom: var(--gap-lg);
+}
+
 /* Utils */
 
 .m-md {
@@ -733,12 +753,28 @@ hr {
     display: grid;
 }
 
+.row-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .row-3 {
     grid-template-columns: repeat(3, 1fr);
 }
 
+.ratio-43 {
+    aspect-ratio: 4/3;
+}
+
 .b-none {
     border: none;
+}
+
+.rounded {
+    border-radius: var(--radius);
+}
+
+.cover {
+    object-fit: cover;
 }
 
 .no-resize {

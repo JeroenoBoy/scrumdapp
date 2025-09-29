@@ -37,6 +37,8 @@ import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
 
+val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
+
 suspend fun Application.configureGroupRoutes() {
     val userService = dependencies.resolve<UserService>()
     val groupService = dependencies.resolve<GroupService>()
@@ -97,9 +99,9 @@ suspend fun Application.configureGroupRoutes() {
                     val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
 
                     call.respondHtml {
-                        dashboardLayout(DashboardPageData(group.name, call)) {
+                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                             groupPage(checkins, group, userPerm) {
-                                checkinWidget(checkins, group, dateParam, userPerm)
+                                checkinWidget(checkins, group, dateParam, UserPermissions.CheckinManagement)
                             }
                         }
                     }
@@ -118,7 +120,7 @@ suspend fun Application.configureGroupRoutes() {
                     val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
 
                     call.respondHtml {
-                        dashboardLayout(DashboardPageData(group.name, call)) {
+                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                             groupPage(checkins, group, userPerm) {
                                 editableCheckinWidget(checkins, group, dateParam)
                             }
@@ -153,9 +155,9 @@ suspend fun Application.configureGroupRoutes() {
                         val groupUser = call.groupUser
 
                         call.respondHtml {
-                            dashboardLayout(DashboardPageData("Settings", call)) {
+                            dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
                                 groupPage(emptyList(), group, groupUser.permissions) {
-                                    groupConfigContent(group, groupUser)
+                                    groupConfigContent(group, groupUser, backgrounds)
                                 }
                             }
                         }
@@ -169,7 +171,18 @@ suspend fun Application.configureGroupRoutes() {
                         if (name == call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config") }
                         if (!nameRegex.matches(name)) { return@post call.respondRedirect("/groups/${group.id}/config") }
 
-                        groupService.renameGroup(group.id, name)
+                        groupService.updateGroup(group.id, name=name)
+                        call.respondRedirect("/groups/${group.id}/config")
+                    }
+
+                    post("/change-image") {
+                        val bannerImage = call.receiveParameters()["img"]
+                        val group = call.group
+                        if (!backgrounds.contains(bannerImage)) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (bannerImage == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (bannerImage == call.group.bannerImage) { return@post call.respondRedirect("/groups/${group.id}/config") }
+
+                        groupService.updateGroup(group.id, bannerImage=bannerImage)
                         call.respondRedirect("/groups/${group.id}/config")
                     }
 
