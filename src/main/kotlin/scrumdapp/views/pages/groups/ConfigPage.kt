@@ -98,6 +98,13 @@ fun FlowContent.groupConfigContent(group: Group, groupUser: UserGroup, backgroun
                 }
             }
         }
+        div(classes="spacer-md")
+        div(classes="horizontal g-md justify-end") {
+            a(classes="btn btn", href="#") {
+                icon(iconName="undo", classes="gray")
+                +"Terug"
+            }
+        }
     }
 
     modal(id="delete-group-$safetyId") {
