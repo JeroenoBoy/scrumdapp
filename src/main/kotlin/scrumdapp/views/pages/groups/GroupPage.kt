@@ -1,4 +1,4 @@
-package com.jeroenvdg.scrumdapp.views.pages
+package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
@@ -17,7 +17,6 @@ import kotlinx.html.th
 import kotlinx.html.td
 import kotlinx.html.span
 import kotlinx.html.a
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h1
@@ -26,17 +25,14 @@ import kotlinx.html.hr
 import kotlinx.html.i
 import kotlinx.html.id
 import kotlinx.html.input
-import kotlinx.html.label
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
 import kotlinx.html.textArea
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 val checkinColorMap = listOf("red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, perm: UserPermissions, crossinline block: DIV.() -> Unit = {}) {
+inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPermissions: UserPermissions, crossinline block: DIV.() -> Unit = {}) {
     h1 {+group.name}
     div(classes="horizontal g-lg") {
         div(classes="vertical g-lg") {
@@ -45,16 +41,16 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, perm: Us
                 hr {}
                 a(href="/groups/${group.id}/trends", classes="btn b-none px-lg text-center") {+"Trends"}
                 when {
-                    perm.id <= UserPermissions.ScrumDad.id -> {
+                    userPermissions.id <= UserPermissions.ScrumDad.id -> {
                         a(href="/groups/${group.id}/users", classes="btn b-none px-lg text-center") {+"Gebruikers"}
                         a(href="/groups/${group.id}/config", classes="btn b-none px-lg text-center") {+"Instellingen"}
                     }
-                    perm.id <= UserPermissions.UserManagement.id -> {
+                    userPermissions.id <= UserPermissions.UserManagement.id -> {
                         a(href="/groups/${group.id}/users", classes="btn b-none px-lg text-center") {+"Gebruikers"}
                     }
                 }
             }
-            checkinDates(checkins.map {it.date.toString()}, perm)
+            checkinDates(checkins.map {it.date.toString()}, userPermissions)
         }
         div(classes="card flex-1 vertical g-md") { id="group-content"
             block()

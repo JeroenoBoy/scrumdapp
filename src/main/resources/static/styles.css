@@ -419,6 +419,12 @@ hr {
     width: calc(100% - var(--gap-lg) * 2);
 }
 
+.danger-zone {
+    padding: var(--gap-lg);
+    border: 1px dashed var(--red-dim);
+    border-radius: var(--radius);
+}
+
 /* Navbar */
 
 .nav-height {

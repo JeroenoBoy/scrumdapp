@@ -17,7 +17,8 @@ import kotlin.random.Random
 interface SessionService {
     suspend fun getSession(token: String): UserSession?
     suspend fun createSession(userId: Int, refreshToken: String, accesToken: String, accesTokenExpiry: GMTDate): UserSession
-    suspend fun revokeAllSessions(userId: Int): Result<Unit>
+    suspend fun revokeAllSessions(userId: Int)
+    suspend fun deleteSession(token: String)
 }
 
 class SessionServiceImpl: SessionService {
@@ -41,11 +42,16 @@ class SessionServiceImpl: SessionService {
         }
     }
 
-    override suspend fun revokeAllSessions(userId: Int): Result<Unit> {
+    override suspend fun revokeAllSessions(userId: Int) {
         dbQuery {
             UserSessions.deleteWhere { this.userId eq userId }
         }
-        return Result.success(Unit)
+    }
+
+    override suspend fun deleteSession(token: String) {
+        dbQuery {
+            UserSessions.deleteWhere { this.token eq token }
+        }
     }
 
     private fun resultRowToSession(resultRow: ResultRow): UserSession {

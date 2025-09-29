@@ -54,6 +54,20 @@ class GroupServiceImpl: GroupService {
         }
     }
 
+    override suspend fun renameGroup(groupId: Int, name: String) {
+        dbQuery {
+            Groups.update({ Groups.id eq groupId }) {
+                it[Groups.name] = name
+            }
+        }
+    }
+
+    override suspend fun deleteGroup(groupId: Int) {
+        dbQuery {
+            Groups.deleteWhere { Groups.id eq groupId }
+        }
+    }
+
     override suspend fun getGroupMembers(id: Int): List<User> {
         return dbQuery {
             (UserGroups innerJoin Users)

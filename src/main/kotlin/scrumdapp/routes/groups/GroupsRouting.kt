@@ -9,13 +9,16 @@ import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
+import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
-import com.jeroenvdg.scrumdapp.views.pages.checkinWidget
-import com.jeroenvdg.scrumdapp.views.pages.editableCheckinWidget
-import com.jeroenvdg.scrumdapp.views.pages.groupPage
+import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
+import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
+import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
+import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
 import com.scrumdapp.scrumdapp.middleware.IsInGroup
 import com.scrumdapp.scrumdapp.middleware.group
+import com.scrumdapp.scrumdapp.middleware.groupUser
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
@@ -66,7 +69,7 @@ suspend fun Application.configureGroupRoutes() {
                     val newGroup = groupService.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
                         groupService.addGroupMember(newGroup.id, call.user, UserPermissions.LordOfScrum)
-                        call.respondRedirect("/groups/${newGroup.id}/config")
+                        return@post call.respondRedirect("/groups/${newGroup.id}")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
                 } catch (ex: IllegalStateException) {
@@ -144,11 +147,37 @@ suspend fun Application.configureGroupRoutes() {
                     install(HasCorrectPerms) { permissions = UserPermissions.ScrumDad }
 
                     get {
+                        val group = call.group
+                        val groupUser = call.groupUser
 
+                        call.respondHtml {
+                            dashboardLayout(DashboardPageData("Settings", call)) {
+                                groupPage(emptyList(), group, groupUser.permissions) {
+                                    groupConfigContent(group, groupUser)
+                                }
+                            }
+                        }
                     }
 
-                    put {
+                    val nameRegex = Regex("^[a-zA-Z0-9_ ]{3,50}$")
+                    post("/change-name") {
+                        val name = call.receiveParameters()["group_name"]
+                        val group = call.group
+                        if (name == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (name == call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config") }
+                        if (!nameRegex.matches(name)) { return@post call.respondRedirect("/groups/${group.id}/config") }
 
+                        groupService.renameGroup(group.id, name)
+                        call.respondRedirect("/groups/${group.id}/config")
+                    }
+
+                    post("/delete-group") {
+                        val name = call.receiveParameters()["delete_group_name"]
+                        val group = call.group
+                        if (name != call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config#delete-failed") }
+
+                        groupService.deleteGroup(group.id)
+                        call.respondRedirect("/home")
                     }
                 }
             }
