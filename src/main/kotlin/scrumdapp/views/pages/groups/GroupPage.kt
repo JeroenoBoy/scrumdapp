@@ -39,14 +39,20 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
             div(classes="card vertical g-md") {
                 i(classes="px-lg text-center") {+"Pagina's"}
                 hr {}
-                a(href="/groups/${group.id}/trends", classes="btn b-none px-lg text-center") {+"Trends"}
-                when {
-                    userPermissions.id <= UserPermissions.ScrumDad.id -> {
-                        a(href="/groups/${group.id}/users", classes="btn b-none px-lg text-center") {+"Gebruikers"}
-                        a(href="/groups/${group.id}/config", classes="btn b-none px-lg text-center") {+"Instellingen"}
+                a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
+                    icon(iconName="bar_chart", classes="yellow")
+                    +"Trends"
+                }
+                if (userPermissions.id <= UserPermissions.UserManagement.id) {
+                    a(href="/groups/${group.id}/users", classes="btn b-none px-lg") {
+                        icon(iconName="groups", classes="blue")
+                        +"Gebruikers"
                     }
-                    userPermissions.id <= UserPermissions.UserManagement.id -> {
-                        a(href="/groups/${group.id}/users", classes="btn b-none px-lg text-center") {+"Gebruikers"}
+                }
+                if (userPermissions.id <= UserPermissions.ScrumDad.id) {
+                    a(href="/groups/${group.id}/config", classes="btn b-none px-lg") {
+                        icon(iconName="settings", classes="purple")
+                        +"Instellingen"
                     }
                 }
             }
