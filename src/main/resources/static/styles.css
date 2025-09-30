@@ -194,6 +194,11 @@ hr {
     border-right: 1px solid var(--gray-dim);
 }
 
+.name-field-bl {
+    width: 10em;
+    max-width: 10em;
+}
+
 .input-group {
     display: flex;
     flex-direction: row;
