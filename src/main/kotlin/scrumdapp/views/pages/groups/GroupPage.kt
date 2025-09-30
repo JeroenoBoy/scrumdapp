@@ -42,6 +42,11 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
                 div(classes="card vertical g-md") {
                     i(classes="px-lg text-center") {+"Pagina's"}
                     hr {}
+                    a(href="/groups/${group.id}", classes="btn b-none px-lg") {
+                        icon(iconName="add", classes="green")
+                        +"Checkin"
+                    }
+
                     a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
                         icon(iconName="bar_chart", classes="yellow")
                         +"Trends"

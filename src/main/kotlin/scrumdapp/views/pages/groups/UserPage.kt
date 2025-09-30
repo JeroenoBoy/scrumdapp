@@ -41,8 +41,6 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
                 for (user in users) {
                     val userId = user.id.toString()
                     val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
-
-
                     tr {
                         td(classes="text-ellipse name-field") { +user.name }
                         if (user.id == ownUserId) {
