@@ -30,6 +30,7 @@ import kotlinx.html.input
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
+import kotlinx.html.style
 import kotlinx.html.textArea
 
 val checkinColorMap = listOf("red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
@@ -37,33 +38,37 @@ val checkinColorMap = listOf("red", "orange-dim", "orange", "yellow-dim", "yello
 inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPermissions: UserPermissions, crossinline block: DIV.() -> Unit = {}) {
     h1 {+group.name}
     div(classes="horizontal g-lg") {
-        div(classes="vertical g-lg") {
-            if (userPermissions.id <= UserPermissions.User.id) {
-                div(classes="card vertical g-md") {
-                    i(classes="px-lg text-center") {+"Pagina's"}
-                    hr {}
-                    a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
-                        icon(iconName="bar_chart", classes="yellow")
-                        +"Trends"
-                    }
-                    if (userPermissions.id <= UserPermissions.UserManagement.id) {
-                        a(href="/groups/${group.id}/users", classes="btn b-none px-lg") {
-                            icon(iconName="groups", classes="blue")
-                            +"Gebruikers"
+        div(classes="vertical relative") {
+            div(classes="vertical g-lg sticky") { style = "top: 4em"
+                if (userPermissions.id <= UserPermissions.User.id) {
+                    div(classes="card vertical g-md") {
+                        i(classes="px-lg text-center") {+"Pagina's"}
+                        hr {}
+                        a(href="/groups/${group.id}/trends", classes="btn b-none px-lg") {
+                            icon(iconName="bar_chart", classes="yellow")
+                            +"Trends"
                         }
-                    }
-                    if (userPermissions.id <= UserPermissions.ScrumDad.id) {
-                        a(href="/groups/${group.id}/config", classes="btn b-none px-lg") {
-                            icon(iconName="settings", classes="purple")
-                            +"Instellingen"
+                        if (userPermissions.id <= UserPermissions.UserManagement.id) {
+                            a(href="/groups/${group.id}/users", classes="btn b-none px-lg") {
+                                icon(iconName="groups", classes="blue")
+                                +"Gebruikers"
+                            }
+                        }
+                        if (userPermissions.id <= UserPermissions.ScrumDad.id) {
+                            a(href="/groups/${group.id}/config", classes="btn b-none px-lg") {
+                                icon(iconName="settings", classes="purple")
+                                +"Instellingen"
+                            }
                         }
                     }
                 }
+                checkinDates(checkins.map {it.date.toString()}, userPermissions)
             }
-            checkinDates(checkins.map {it.date.toString()}, userPermissions)
         }
-        div(classes="card flex-1 vertical g-md") { id="group-content"
-            block()
+        div(classes="flex-1") {
+            div(classes="card flex-1 vertical g-md") { id="group-content"
+                block()
+            }
         }
     }
 }
