@@ -41,5 +41,7 @@ class UserTable(database: Database) {
         val discordAccessToken = varchar("discord_access_token", 64).nullable()
         val discordAccessTokenExpiry = timestamp("discord_access_token_expire_date")
         val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
+
+        override val primaryKey = PrimaryKey(id)
     }
 }

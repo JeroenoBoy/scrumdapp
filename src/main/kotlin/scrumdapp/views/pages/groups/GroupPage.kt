@@ -39,8 +39,8 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
     h1 {+group.name}
     div(classes="horizontal g-lg") {
         div(classes="vertical relative") {
-            div(classes="vertical g-lg sticky") { style = "top: 4em"
-                if (userPermissions.id <= UserPermissions.User.id) {
+            if (userPermissions.id <= UserPermissions.User.id) {
+                div(classes="vertical g-lg sticky") { style = "top: 4em"
                     div(classes="card vertical g-md") {
                         i(classes="px-lg text-center") {+"Pagina's"}
                         hr {}

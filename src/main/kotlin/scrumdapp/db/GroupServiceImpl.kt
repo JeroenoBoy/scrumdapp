@@ -142,17 +142,17 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun alterGroupMemberPerms(user: User, permission: UserPermissions): Boolean {
+    override suspend fun alterGroupMemberPerms(groupId: Int, userId: Int, permission: UserPermissions): Boolean {
         return dbQuery {
-            UserGroups.update({ UserGroups.userId eq user.id}) {
+            UserGroups.update({ UserGroups.userId eq userId and(UserGroups.groupId eq groupId) }) {
                 it[permissions]=permission.id
             }>0
         }
     }
 
-    override suspend fun deleteGroupMember(groupId: Int, user: User): Boolean {
+    override suspend fun deleteGroupMember(groupId: Int, userId: Int): Boolean {
         return dbQuery {
-            UserGroups.deleteWhere { UserGroups.groupId eq groupId and (UserGroups.userId eq user.id) }>0
+            UserGroups.deleteWhere { UserGroups.groupId eq groupId and (UserGroups.userId eq userId) }>0
         }
     }
 

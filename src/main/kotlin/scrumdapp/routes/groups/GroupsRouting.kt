@@ -141,18 +141,50 @@ suspend fun Application.configureGroupRoutes() {
                         call.respondHtml {
                             dashboardLayout(DashboardPageData(group.name, call)) {
                                 groupPage(emptyList(), group, userPerm) {
-                                    userEditContent(group, groupMembers, groupUsers)
+                                    userEditContent(call.groupUser.userId, group, groupMembers, groupUsers)
                                 }
                             }
                         }
                     }
 
                     post("/alter-users") {
+                        val params = call.receiveParameters()
+                        val userPerm = call.groupUser.permissions
 
+                        for((key, value) in params.entries()) {
+                            if(key.startsWith("role-")) {
+                                val userId = key.removePrefix("role-").toIntOrNull()
+                                val permId = value.firstOrNull()?.toIntOrNull()
+
+                                if (userId != null && permId != null) {
+                                    if (userPerm.id < permId) {
+                                        val success = groupService.alterGroupMemberPerms(call.group.id, userId, UserPermissions.get(permId))
+                                        if (!success) {
+                                            return@post call.respondRedirect("/groups/${call.group.id}/users#alter-failed")
+                                        }
+                                    } else {
+                                        return@post call.respondRedirect("/groups/${call.group.id}/users#alter-failed")
+                                    }
+                                }
+                            }
+                        }
+
+                        call.respondRedirect("/groups/${call.group.id}/users#alter-success")
                     }
 
                     post("/delete-user") {
+                        val userId = call.queryParameters["id"]?.toIntOrNull()
+                        val group = call.group
+                        val groupUsers = groupService.getGroupUsers(group.id)
+                        val filteredList = groupUsers.filter { it.id == userId}
 
+                        println("userid: $userId, filterlist: $filteredList")
+
+                        if (userId == null || filteredList.isEmpty()) { return@post call.respondRedirect("/groups/${group.id}/users")}
+
+                        // add check to confirm that person to delete isn't higher in hierarchy
+                        groupService.deleteGroupMember(group.id, userId)
+                        call.respondRedirect("/groups/${group.id}/users")
                     }
 
                     delete {
