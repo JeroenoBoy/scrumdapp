@@ -3,18 +3,14 @@ package com.jeroenvdg.scrumdapp.views.components
 import com.jeroenvdg.scrumdapp.db.User
 import kotlinx.html.FlowContent
 import kotlinx.html.a
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.header
 import kotlinx.html.i
 import kotlinx.html.img
-import kotlinx.html.span
 
 fun FlowContent.navbar(user: User) {
     header(classes="nav") {
         div(classes="nav-group") {
-//            a(href="/home", classes="nav-button r-full px-sm") { icon("arrow_back") }
-//            span(classes="breadcrumbs-separator") {+"/"}
             i(classes="px-lg") { +"Scrumdapp" }
         }
         div(classes="nav-group justify-center") {

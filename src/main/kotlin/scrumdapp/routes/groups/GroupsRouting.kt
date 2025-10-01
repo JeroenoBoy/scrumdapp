@@ -139,7 +139,7 @@ suspend fun Application.configureGroupRoutes() {
                         val groupUsers = groupService.getGroupUsers(group.id)
 
                         call.respondHtml {
-                            dashboardLayout(DashboardPageData(group.name, call)) {
+                            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                                 groupPage(emptyList(), group, userPerm) {
                                     userEditContent(call.groupUser.userId, group, groupMembers, groupUsers)
                                 }

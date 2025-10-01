@@ -16,7 +16,7 @@ import kotlinx.html.styleLink
 import kotlinx.html.title
 
 data class PageData(val title: String)
-data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "15")
+data class DashboardPageData(val title: String, val call: RoutingCall, val backgroundId: String? = "15")
 
 fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
     head {
@@ -36,13 +36,13 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
 
 fun HTML.dashboardLayout(pageData: DashboardPageData, builder: FlowContent.() -> Unit = {}) {
     mainLayout(PageData(pageData.title)) {
-        div { id = "app"
-            img(alt="bg-img", src="/static/backgrounds/${pageData.background ?: "15"}.webp", classes="bg-img")
+        div(classes="h-full vertical") { id = "app"
+            img(alt="bg-img", src="/static/backgrounds/${pageData.backgroundId ?: "15"}.webp", classes="bg-img")
             navbar(pageData.call.user)
             div(classes="nav-height")
             div(classes="spacer-xl")
-            div(classes="container-parent") {
-                div(classes="container") { id="dashboard-content"
+            div(classes="container-parent flex-1") {
+                div(classes="container vertical") { id="dashboard-content"
                     builder()
                 }
             }
