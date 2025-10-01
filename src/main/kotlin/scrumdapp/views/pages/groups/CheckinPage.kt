@@ -9,6 +9,7 @@ import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -24,7 +25,10 @@ import kotlinx.html.textArea
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
+import kotlin.random.Random
 
+
+val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
 fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
     table(classes="checkin-table") {
@@ -41,7 +45,11 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
             for (checkin in checkins) {
                 tr {
                     td(classes="text-ellpise name-field") { +checkin.name }
-                    td(classes="pl-md " + checkin.presence.color) { +checkin.presence.key }
+                    if (checkin.presence == null) {
+                        td(classes="pl-md gray") { +"---" }
+                    } else {
+                        td(classes="pl-md " + checkin.presence.color) { +checkin.presence.key }
+                    }
                     td(classes="text-center " + checkinColorMap[checkin.checkinStars ?: 11]) {
                         +(checkin.checkinStars?.toString() ?: "-")
                     }
@@ -75,7 +83,8 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
 
 fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, date: String) {
     fun FlowContent.checkinSelect(name: String) {
-        select(classes="input select-presence w-full text-ellipse") { this.name=name
+        select(classes="input select-checkin w-full text-ellipse") { this.name=name
+            option(classes="gray") {value=""; +"---"}
             option(classes="red-dim") {value="0"; +"0"}
             option(classes="red") {value="1"; +"0.5"}
             option(classes="orange-dim") {value="2"; +"1"}
@@ -89,6 +98,8 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
             option(classes="blue-dim") {value="10"; +"5"}
         }
     }
+
+    val id = Random.nextInt(999999)
 
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
@@ -108,7 +119,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                         td(classes="pl-md ") {
                             select(classes="input select-presence w-full text-ellipse") { name="presence"
                                 option(classes="gray") {+"---"}
-                                option(classes="green") {value="0"; +"---"}
+                                option(classes="green") {value="0"; +"Op Tijd"}
                                 option(classes="yellow") {value="1"; +"Te Laat"}
                                 option(classes="green-dim") {value="2"; +"Goorloofd Afwezig"}
                                 option(classes="red") {value="3"; +"Ongeoorloofd Afwezig"}
@@ -123,7 +134,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                         }
                         td(classes="horizontal justify-between align-center max-w-om relative") {
                             div(classes="checkbox-expand px-sm absolute") {
-                                textArea(rows="5") {
+                                textArea(rows="5", classes="input checkbox-expand-content no-resize") {
                                     name="addition-"+checkin.id
                                     placeholder="Opmerking..."
                                 }
@@ -135,7 +146,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
         }
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
-            a(href="#confirm-cancel", classes="btn") {
+            a(href="#confirm-cancel-$id", classes="btn") {
                 icon(iconName="cancel", classes="gray")
                 +"Annuleren"
             }
@@ -143,12 +154,16 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                 icon(iconName="check", classes="blue")
                 input(type=InputType.submit, classes="btn") { value="Toepassen" }
             }
+            a(href="#confirm-delete-$id", classes="btn btn-red") {
+                icon(iconName="delete_forever", classes="bg-hard")
+                +"Delete"
+            }
         }
     }
 
-    modal(id="confirm-cancel") {
+    modal(id="confirm-cancel-$id") {
         div(classes="vertical g-md") {
-            h2(classes="modal-title") { +"Weet je het zeker?" }
+            h2(classes="modal-title") { +"Aanpassingen annuleren" }
             p { +"Weet je zeker dat je de aanpassingen wil annuleren?" }
             div(classes="horizontal g-md justify-end") {
                 a(href="#", classes="btn") {
@@ -158,6 +173,23 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                 a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
                     icon(iconName="cancel", classes="bg-hard")
                     +"Annuleren"
+                }
+            }
+        }
+    }
+
+    modal(id="confirm-delete-$id") {
+        form(action="/groups/${group.id}/delete-checkin?date=${date}", method=FormMethod.post, classes="vertical g-md") {
+            h2(classes="modal-title") { +"Checkin verwijderen" }
+            p { +"Weet je zeker dat je de checkin wilt verwijderen?" }
+            div(classes="horizontal g-md justify-end") {
+                a(href="#", classes="btn") {
+                    icon(iconName="undo", classes="gray")
+                    +"Nee"
+                }
+                div(classes="hacky-icon") {
+                    icon(iconName="delete_forever", classes="bg-hard")
+                    input(type=InputType.submit, classes="btn btn-red") { value="Verwijderen" }
                 }
             }
         }

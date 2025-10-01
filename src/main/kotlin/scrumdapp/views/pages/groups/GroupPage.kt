@@ -2,41 +2,10 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
-import com.jeroenvdg.scrumdapp.db.User
-import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.components.icon
-import com.jeroenvdg.scrumdapp.views.components.modal
-import kotlinx.html.DIV
-import kotlinx.html.FlowContent
-import kotlinx.html.FormMethod
-import kotlinx.html.InputType
-import kotlinx.html.MAIN
-import kotlinx.html.table
-import kotlinx.html.thead
-import kotlinx.html.tbody
-import kotlinx.html.tr
-import kotlinx.html.th
-import kotlinx.html.td
-import kotlinx.html.span
-import kotlinx.html.a
-import kotlinx.html.aside
-import kotlinx.html.div
-import kotlinx.html.form
-import kotlinx.html.h1
-import kotlinx.html.h2
-import kotlinx.html.hr
-import kotlinx.html.i
-import kotlinx.html.id
-import kotlinx.html.input
-import kotlinx.html.main
-import kotlinx.html.option
-import kotlinx.html.p
-import kotlinx.html.select
-import kotlinx.html.style
-import kotlinx.html.textArea
-
-val checkinColorMap = listOf("red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
+import kotlinx.datetime.LocalDate
+import kotlinx.html.*
 
 inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPermissions: UserPermissions, crossinline block: MAIN.() -> Unit = {}) {
     h1 {+group.name}
@@ -64,7 +33,7 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
                             }
                         }
                     }
-                    checkinDates(checkins.map {it.date.toString()}, group, userPermissions)
+                    checkinDates(checkins.map { it.date }, group, userPermissions)
                 }
 //            }
         }
@@ -76,7 +45,7 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
     }
 }
 
-fun FlowContent.checkinDates(dates: List<String>, group: Group, perms: UserPermissions) {
+fun FlowContent.checkinDates(dates: List<LocalDate>, group: Group, perms: UserPermissions) {
     div(classes="card vertical g-md") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
             form(classes="horizontal justify-between items-center") {
@@ -87,23 +56,12 @@ fun FlowContent.checkinDates(dates: List<String>, group: Group, perms: UserPermi
         hr {}
         div(classes="vertical g-md") { style="max-height: 15em; overflow-y: scroll"
             for (date in dates) {
-                a(classes = "btn b-none px-lg text-center") {+date}
-            }
-            for (i in 31 downTo  1) {
-                val s = i.toString().padStart(2, '0')
-                a(classes = "btn b-none px-lg text-center", href="/groups/${group.id}?date=${"2025-12-$s"}") {+"2025 / 12 / $s"}
-            }
-            for (i in 30 downTo  1) {
-                val s = i.toString().padStart(2, '0')
-                a(classes = "btn b-none px-lg text-center", href="/groups/${group.id}?date=${"2025-11-$s"}") {+"2025 / 11 / $s"}
-            }
-            for (i in 31 downTo  1) {
-                val s = i.toString().padStart(2, '0')
-                a(classes = "btn b-none px-lg text-center", href="/groups/${group.id}?date=${"2025-10-$s"}") {+"2025 / 10 / $s"}
-            }
-            for (i in 30 downTo  1) {
-                val s = i.toString().padStart(2, '0')
-                a(classes = "btn b-none px-lg text-center", href="/groups/${group.id}?date=${"2025-09-$s"}") {+"2025 / 09 / $s"}
+                val y = date.year.toString().padStart(4, '0')
+                val m = date.monthNumber.toString().padStart(2, '0')
+                val d = date.dayOfMonth.toString().padStart(2, '0')
+                a(classes = "btn b-none px-lg text-center", href="/groups/${group.id}?date=${"$y-$m-$d"}") {
+                    span(classes="gray") { +"$y / $m / $d" }
+                }
             }
         }
     }

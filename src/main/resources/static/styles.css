@@ -263,13 +263,13 @@ hr {
 .checkbox-expand:has(>input[type="checkbox"]:checked) textarea,
 .checkbox-expand:has(input:focus) textarea,
 .checkbox-expand:has(textarea:focus) textarea {
-    z-index: 10;
     max-height: 6em;
 }
 
 .checkbox-expand:has(>input[type="checkbox"]:checked),
 .checkbox-expand:has(input:focus),
 .checkbox-expand:has(textarea:focus) {
+    z-index: 10;
     max-height: unset;
 }
 

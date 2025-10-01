@@ -10,7 +10,7 @@ data class Checkin(
     val groupId: Int?,
     val name: String,
     val userId: Int?,
-    val presence: Presence,
+    val presence: Presence?,
     val checkinStars: Int?,
     val checkupStars: Int?,
     val date: LocalDate,
