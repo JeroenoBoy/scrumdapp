@@ -345,6 +345,11 @@ hr {
     color: var(--blue);
 }
 
+.select-checkin:has(option[value=""]:checked),
+.select-presence:has(option[value=""]:checked) {
+    color: var(--gray)
+}
+
 .select-role:has(option[value="-2"]:checked) {
     color: var(--red)
 }

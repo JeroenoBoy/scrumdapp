@@ -9,7 +9,6 @@ import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -117,8 +116,8 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                     tr {
                         td(classes="text-ellpise name-field") { +checkin.name }
                         td(classes="pl-md ") {
-                            select(classes="input select-presence w-full text-ellipse") { name="presence"
-                                option(classes="gray") {+"---"}
+                            select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.id}"
+                                option(classes="gray") {value=""; +"---"}
                                 option(classes="green") {value="0"; +"Op Tijd"}
                                 option(classes="yellow") {value="1"; +"Te Laat"}
                                 option(classes="green-dim") {value="2"; +"Goorloofd Afwezig"}
