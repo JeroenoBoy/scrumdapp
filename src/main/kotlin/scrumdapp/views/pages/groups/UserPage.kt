@@ -146,13 +146,13 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
 
         form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
-                label(classes="input-label") { htmlFor="create_invite" +"Kies een wachtwoord (optioneel)" }
+                label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord (optioneel)" }
                 input(classes="input", type=InputType.password, name="create_group_invite")
             }
 
             div(classes="horizontal g-md justify-end") {
                 a(classes="btn", href="#") {
-                    icon(iconName="undo", classes="bg-hard")
+                    icon(iconName="undo", classes="gray")
                     +"Terug"
                 }
                 div(classes="hacky-icon") {
@@ -190,13 +190,13 @@ fun FlowContent.userInviteContent(group: Group, url: String) {
     div(classes="spacer-lg")
     p {+"Waarschuwing: de volgende link is geldig voor 1 dag, daarna dient een nieuwe link aan te worden gemaakt!"}
     div(classes="input-group") {
-        label(classes="input-label") {+"Link:"}
+        label(classes="input-label") {+"Link"}
         input(type= InputType.text, classes="input") {value=url}
     }
 
     div(classes="horizontal g-md justify-end") {
         a(classes="btn", href="/groups/${group.id}/users") {
-            icon(iconName="check", classes="bg-hard")
+            icon(iconName="check", classes="gray")
             +"Gelukt?"
         }
     }
