@@ -20,7 +20,9 @@ import com.jeroenvdg.scrumdapp.middleware.UserProvider
 import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
 import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
+import com.jeroenvdg.scrumdapp.routes.groups.configureInviteRoutes
 import com.jeroenvdg.scrumdapp.services.DotenvService
+import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -45,6 +47,7 @@ suspend fun Application.module() {
     val httpClient = HttpClient(CIO) { }
     dependencies { provide<EnvironmentService> { env } }
     val database = initializeDatabase()
+    val encryptionService = EncryptionServiceImpl(env)
     val userService = UserServiceImpl()
     val sessionService = SessionServiceImpl()
     val groupService = GroupServiceImpl()
@@ -75,6 +78,7 @@ suspend fun Application.module() {
         provide { UserTable(database) }
         provide { GroupsTable(database) }
         provide { httpClient }
+        provide { encryptionService}
         provide<UserService> { userService }
         provide<GroupService> { groupService }
         provide<CheckinService> { checkinService }
@@ -83,6 +87,7 @@ suspend fun Application.module() {
     }
 
     configureGroupRoutes()
+    configureInviteRoutes()
     configureRouting()
     configureAuthRouting()
 }
