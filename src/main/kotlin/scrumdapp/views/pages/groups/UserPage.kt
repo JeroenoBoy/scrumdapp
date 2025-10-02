@@ -29,6 +29,8 @@ import kotlinx.html.p
 fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>, userGroups: List<UserGroup>) {
     val token = 111
 
+    h2 { +"Gebruikers aanpassen"}
+    div(classes="spacer-lg")
     form(action="/groups/${group.id}/users/alter-users", method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
             thead {
@@ -175,4 +177,11 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
             }
         }
     }
+}
+
+fun FlowContent.userInviteContent(group: Group, url: String) {
+    h2 {+"Groepsuitnodiging"}
+    div(classes="spacer-lg")
+
+
 }
