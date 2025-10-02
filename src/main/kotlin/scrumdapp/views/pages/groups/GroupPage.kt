@@ -7,7 +7,7 @@ import com.jeroenvdg.scrumdapp.views.components.icon
 import kotlinx.datetime.LocalDate
 import kotlinx.html.*
 
-inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPermissions: UserPermissions, crossinline block: MAIN.() -> Unit = {}) {
+inline fun FlowContent.groupPage(checkins: List<LocalDate>, group: Group, userPermissions: UserPermissions, crossinline block: MAIN.() -> Unit = {}) {
     h1 {+group.name}
     div(classes="horizontal g-lg mb-lg") {
         aside(classes="vertical relative") {
@@ -33,7 +33,7 @@ inline fun FlowContent.groupPage(checkins: List<Checkin>, group: Group, userPerm
                             }
                         }
                     }
-                    checkinDates(checkins.map { it.date }, group, userPermissions)
+                    checkinDates(checkins, group, userPermissions)
                 }
 //            }
         }

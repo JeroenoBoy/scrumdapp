@@ -36,7 +36,6 @@ class CheckinServiceImpl: CheckinService {
 
     override suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin> {
         return dbQuery {
-
             val users = UserGroups
                 .innerJoin(Users, { UserGroups.userId }, { Users.id })
                 .select(Users.id, Users.name)
@@ -50,6 +49,18 @@ class CheckinServiceImpl: CheckinService {
                 .map { resultRowToCheckin(it) }
 
             users.map { u -> checkins.find { c -> u.first == c.userId } ?: Checkin(-1, groupId, u.second, u.first, null, null, null, date, null) }
+        }
+    }
+
+    override suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
+        return dbQuery {
+            GroupCheckins
+                .select(GroupCheckins.date)
+                .where { GroupCheckins.groupId eq groupId }
+                .limit(limit)
+                .distinctBy { GroupCheckins.date }
+                .sortedBy { GroupCheckins.date }
+                .map { it[GroupCheckins.date] }
         }
     }
 
@@ -90,6 +101,21 @@ class CheckinServiceImpl: CheckinService {
                 this[GroupCheckins.checkupStars] = checkin.checkupStars
                 this[GroupCheckins.comment] = checkin.comment
             }.map { resultRow -> resultRowToCheckin(resultRow) }.takeIf { it.isNotEmpty() }
+        }
+    }
+
+    override suspend fun saveGroupCheckin(checkins: List<Checkin>) {
+        return dbQuery {
+            GroupCheckins.batchUpsert(checkins) { checkin ->
+                if (checkin.id != -1) this[GroupCheckins.id] = checkin.id
+                this[GroupCheckins.groupId] = checkin.groupId
+                this[GroupCheckins.userId] = checkin.userId
+                this[GroupCheckins.presence] = checkin.presence
+                this[GroupCheckins.date] = checkin.date
+                this[GroupCheckins.checkinStars] = checkin.checkinStars
+                this[GroupCheckins.checkupStars] = checkin.checkupStars
+                this[GroupCheckins.comment] = checkin.comment
+            }
         }
     }
 

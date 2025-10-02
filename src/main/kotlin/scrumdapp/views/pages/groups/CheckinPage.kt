@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
@@ -24,6 +25,7 @@ import kotlinx.html.textArea
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
+import kotlin.math.floor
 import kotlin.random.Random
 
 
@@ -47,20 +49,34 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
                     if (checkin.presence == null) {
                         td(classes="pl-md gray") { +"---" }
                     } else {
-                        td(classes="pl-md " + checkin.presence.color) { +checkin.presence.key }
+                        td(classes="pl-md " + checkin.presence!!.color) { +checkin.presence!!.key }
                     }
                     td(classes="text-center " + checkinColorMap[checkin.checkinStars ?: 11]) {
-                        +(checkin.checkinStars?.toString() ?: "-")
+                        if (checkin.checkinStars == null) {
+                            +"-"
+                        } else {
+                            +floor(checkin.checkinStars!! * 0.5f).toInt().toString()
+                            if (checkin.checkinStars!! % 2 == 1) {
+                                +".5"
+                            }
+                        }
                     }
                     td(classes="text-center " + checkinColorMap[checkin.checkupStars ?: 11]) {
-                        +(checkin.checkupStars?.toString() ?: "-")
+                        if (checkin.checkupStars == null) {
+                            +"-"
+                        } else {
+                            +floor(checkin.checkupStars!! * 0.5f).toInt().toString()
+                            if (checkin.checkupStars!! % 2 == 1) {
+                                +".5"
+                            }
+                        }
                     }
                     td(classes="horizontal justify-between align-center max-w-om") {
                         if (checkin.comment != null) {
                             div(classes="checkbox-expand px-sm") {
                                 input(type=InputType.checkBox, classes="noshow")
                                 span(classes="text-ellipse checkbox-expand-content") {
-                                    +checkin.comment
+                                    +checkin.comment!!
                                 }
                             }
                         }
@@ -81,20 +97,20 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
 }
 
 fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, date: String) {
-    fun FlowContent.checkinSelect(name: String) {
+    fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
         select(classes="input select-checkin w-full text-ellipse") { this.name=name
-            option(classes="gray") {value=""; +"---"}
-            option(classes="red-dim") {value="0"; +"0"}
-            option(classes="red") {value="1"; +"0.5"}
-            option(classes="orange-dim") {value="2"; +"1"}
-            option(classes="orange") {value="3"; +"1.5"}
-            option(classes="yellow-dim") {value="4"; +"2"}
-            option(classes="yellow") {value="5"; +"2.5"}
-            option(classes="green-dim") {value="6"; +"3"}
-            option(classes="green") {value="7"; +"3.5"}
-            option(classes="aqua") {value="8"; +"4"}
-            option(classes="blue") {value="9"; +"4.5"}
-            option(classes="blue-dim") {value="10"; +"5"}
+            option(classes="gray") {value=""; if (selectedValue == null) { selected = true }; +"---" }
+            option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected = true }; +"0"}
+            option(classes="red") {value="1"; if (selectedValue == 1) { selected = true }; +"0.5"}
+            option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected = true }; +"1"}
+            option(classes="orange") {value="3"; if (selectedValue == 3) { selected = true }; +"1.5"}
+            option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected = true }; +"2"}
+            option(classes="yellow") {value="5"; if (selectedValue == 5) { selected = true }; +"2.5"}
+            option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected = true }; +"3"}
+            option(classes="green") {value="7"; if (selectedValue == 7) { selected = true }; +"3.5"}
+            option(classes="aqua") {value="8"; if (selectedValue == 8) { selected = true }; +"4"}
+            option(classes="blue") {value="9"; if (selectedValue == 9) { selected = true }; +"4.5"}
+            option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected = true }; +"5"}
         }
     }
 
@@ -116,26 +132,29 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                     tr {
                         td(classes="text-ellpise name-field") { +checkin.name }
                         td(classes="pl-md ") {
-                            select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.id}"
-                                option(classes="gray") {value=""; +"---"}
-                                option(classes="green") {value="0"; +"Op Tijd"}
-                                option(classes="yellow") {value="1"; +"Te Laat"}
-                                option(classes="green-dim") {value="2"; +"Goorloofd Afwezig"}
-                                option(classes="red") {value="3"; +"Ongeoorloofd Afwezig"}
-                                option(classes="blue") {value="4"; +"Ziek"}
+                            select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.userId}"
+                                option(classes="gray") {value=""; if (checkin.presence == null) { selected = true } ; +"---" }
+                                option(classes="green") {value="0"; if (checkin.presence == Presence.OnTime) { selected = true }; +"Op Tijd" }
+                                option(classes="yellow") {value="1"; if (checkin.presence == Presence.Late) { selected = true }; +"Te Laat" }
+                                option(classes="green-dim") {value="2"; if (checkin.presence == Presence.VerifiedAbsent) { selected = true } ; +"Goorloofd Afwezig" }
+                                option(classes="red") {value="3"; if (checkin.presence == Presence.Absent) { selected = true }; +"Ongeoorloofd Afwezig" }
+                                option(classes="blue") {value="4"; if (checkin.presence == Presence.Sick) { selected = true }; +"Ziek" }
                             }
                         }
                         td {
-                            checkinSelect("checkin-"+checkin.id)
+                            checkinSelect("checkin-"+checkin.userId, checkin.checkinStars)
                         }
                         td {
-                            checkinSelect("checkout-"+checkin.id)
+                            checkinSelect("checkup-"+checkin.userId, checkin.checkupStars)
                         }
                         td(classes="horizontal justify-between align-center max-w-om relative") {
                             div(classes="checkbox-expand px-sm absolute") {
                                 textArea(rows="5", classes="input checkbox-expand-content no-resize") {
-                                    name="addition-"+checkin.id
+                                    name="comment-"+checkin.userId
                                     placeholder="Opmerking..."
+                                    if (checkin.comment != null) {
+                                        +checkin.comment!!
+                                    }
                                 }
                             }
                         }
