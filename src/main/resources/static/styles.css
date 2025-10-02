@@ -155,6 +155,7 @@ hr {
     display: flex;
     border: none;
     background: none;
+    z-index: 100;
 }
 
 .modal-content {
@@ -262,13 +263,13 @@ hr {
 .checkbox-expand:has(>input[type="checkbox"]:checked) textarea,
 .checkbox-expand:has(input:focus) textarea,
 .checkbox-expand:has(textarea:focus) textarea {
-    z-index: 10;
     max-height: 6em;
 }
 
 .checkbox-expand:has(>input[type="checkbox"]:checked),
 .checkbox-expand:has(input:focus),
 .checkbox-expand:has(textarea:focus) {
+    z-index: 10;
     max-height: unset;
 }
 
@@ -342,6 +343,11 @@ hr {
 
 .select-presence:has(option[value="4"]:checked) {
     color: var(--blue);
+}
+
+.select-checkin:has(option[value=""]:checked),
+.select-presence:has(option[value=""]:checked) {
+    color: var(--gray)
 }
 
 .select-role:has(option[value="-2"]:checked) {
@@ -495,6 +501,7 @@ hr {
 }
 
 .nav {
+    z-index: 50;
     display: flex;
     position: fixed;
     top: 0;
@@ -647,6 +654,10 @@ hr {
 
 .mt-c {
     margin-top: 20vh;
+}
+
+.mb-lg {
+    margin-bottom: var(--gap-lg);
 }
 
 .-mtr-md {
@@ -812,6 +823,14 @@ hr {
 
 .relative {
     position: relative;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.sticky {
+    position: sticky;
 }
 
 .absolute {

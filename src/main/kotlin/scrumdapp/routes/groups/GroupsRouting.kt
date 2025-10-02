@@ -10,7 +10,6 @@ import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
-import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
@@ -32,7 +31,6 @@ import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate

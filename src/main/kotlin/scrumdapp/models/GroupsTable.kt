@@ -39,7 +39,7 @@ class GroupsTable(database: Database) {
         val id = integer("id").autoIncrement()
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val userId = optReference("user_id", UserTable.Users.id, onDelete = ReferenceOption.CASCADE)
-        val presence = enumeration("presence", Presence::class)
+        val presence = enumeration("presence", Presence::class).nullable()
         val date = date("date")
         val checkinStars = integer("checkin_stars").check { it greaterEq 0 and(it lessEq 10) }.nullable()
         val checkupStars = integer("checkup_stars").check { it greaterEq 0 and(it lessEq 10) }.nullable()
