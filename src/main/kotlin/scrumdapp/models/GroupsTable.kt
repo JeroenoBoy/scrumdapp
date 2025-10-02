@@ -15,8 +15,8 @@ import org.jetbrains.exposed.sql.kotlin.datetime.*
 enum class Presence(val color: String, val key: String) {
     OnTime("green", "Op Tijd"),
     Late("yellow", "Te Laat"),
-    Absent("green-dim", "Geoorloofd Afwezig"),
-    VerifiedAbsent("red", "Ongeoorloofd Afwezig"),
+    VerifiedAbsent("green-dim", "Geoorloofd Afwezig"),
+    Absent("red", "Ongeoorloofd Afwezig"),
     Sick("blue", "Ziek"),
 }
 

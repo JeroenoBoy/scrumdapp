@@ -57,9 +57,9 @@ class CheckinServiceImpl: CheckinService {
             GroupCheckins
                 .select(GroupCheckins.date)
                 .where { GroupCheckins.groupId eq groupId }
+                .orderBy(GroupCheckins.date to SortOrder.DESC)
+                .withDistinctOn(GroupCheckins.date)
                 .limit(limit)
-                .distinctBy { GroupCheckins.date }
-                .sortedBy { GroupCheckins.date }
                 .map { it[GroupCheckins.date] }
         }
     }

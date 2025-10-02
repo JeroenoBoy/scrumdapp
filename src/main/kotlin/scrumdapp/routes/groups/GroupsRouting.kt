@@ -48,9 +48,9 @@ suspend fun Application.configureGroupRoutes() {
     val groupService = dependencies.resolve<GroupService>()
     val checkinService = dependencies.resolve<CheckinService>()
 
+    val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
     fun checkDateSyntax(input: String): String {
-        val regex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
-        if (!input.matches(regex)) java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        if (!input.matches(dateRegex)) java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         return input
     }
 
@@ -114,6 +114,19 @@ suspend fun Application.configureGroupRoutes() {
                             groupPage(checkinDates, group, userPerm) {
                                 checkinWidget(checkins, group, dateParam, UserPermissions.CheckinManagement)
                             }
+                        }
+                    }
+                }
+
+                route("/new-checkin") {
+                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
+                    post {
+                        val body = call.receiveParameters()
+                        val date = body["date"]
+                        if (date == null || !dateRegex.matches(date)) {
+                            call.respondRedirect("/groups/${call.group.id}", false)
+                        } else {
+                            call.respondRedirect("/groups/${call.group.id}/edit?date=${date}", false)
                         }
                     }
                 }

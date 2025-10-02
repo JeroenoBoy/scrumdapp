@@ -4,15 +4,18 @@ import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.utils.isNewCheckin
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
+import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
+import kotlinx.html.i
 import kotlinx.html.input
 import kotlinx.html.option
 import kotlinx.html.p
@@ -32,6 +35,9 @@ import kotlin.random.Random
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
 fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
+
+    h2 { +"Checkin voor "; b { +date } }
+
     table(classes="checkin-table") {
         thead {
             tr {
@@ -114,7 +120,10 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
         }
     }
 
+    val isNewCheckin = checkins.isNewCheckin()
     val id = Random.nextInt(999999)
+
+    h2 { +"Checkin voor "; b { +date } }
 
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
@@ -162,19 +171,28 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                 }
             }
         }
+
         div(classes="flex-1")
-        div(classes="horizontal g-md justify-end") {
+        div(classes="horizontal g-md items-center") {
+            div(classes="flex-1")
             a(href="#confirm-cancel-$id", classes="btn") {
                 icon(iconName="cancel", classes="gray")
                 +"Annuleren"
             }
             div(classes="hacky-icon") {
-                icon(iconName="check", classes="blue")
-                input(type=InputType.submit, classes="btn") { value="Toepassen" }
+                if (!isNewCheckin) {
+                    icon(iconName="check", classes="blue")
+                    input(type = InputType.submit, classes = "btn") { value = "Toepassen" }
+                } else {
+                    icon(iconName="add", classes="blue")
+                    input(type = InputType.submit, classes = "btn") { value = "Maak checkin" }
+                }
             }
-            a(href="#confirm-delete-$id", classes="btn btn-red") {
-                icon(iconName="delete_forever", classes="bg-hard")
-                +"Delete"
+            if (!isNewCheckin) {
+                a(href="#confirm-delete-$id", classes="btn btn-red") {
+                    icon(iconName="delete_forever", classes="bg-hard")
+                    +"Delete"
+                }
             }
         }
     }
@@ -188,26 +206,35 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                     icon(iconName="undo", classes="gray")
                     +"Nee"
                 }
-                a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
-                    icon(iconName="cancel", classes="bg-hard")
-                    +"Annuleren"
+                if (isNewCheckin) {
+                    a(href="/groups/${group.id}", classes="btn btn-red") {
+                        icon(iconName="cancel", classes="bg-hard")
+                        +"Annuleren"
+                    }
+                } else {
+                    a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
+                        icon(iconName="cancel", classes="bg-hard")
+                        +"Annuleren"
+                    }
                 }
             }
         }
     }
 
-    modal(id="confirm-delete-$id") {
-        form(action="/groups/${group.id}/delete-checkin?date=${date}", method=FormMethod.post, classes="vertical g-md") {
-            h2(classes="modal-title") { +"Checkin verwijderen" }
-            p { +"Weet je zeker dat je de checkin wilt verwijderen?" }
-            div(classes="horizontal g-md justify-end") {
-                a(href="#", classes="btn") {
-                    icon(iconName="undo", classes="gray")
-                    +"Nee"
-                }
-                div(classes="hacky-icon") {
-                    icon(iconName="delete_forever", classes="bg-hard")
-                    input(type=InputType.submit, classes="btn btn-red") { value="Verwijderen" }
+    if (!isNewCheckin) {
+        modal(id="confirm-delete-$id") {
+            form(action = "/groups/${group.id}/delete-checkin?date=${date}", method = FormMethod.post, classes = "vertical g-md") {
+                h2(classes = "modal-title") { +"Checkin verwijderen" }
+                p { +"Weet je zeker dat je de checkin wilt verwijderen?" }
+                div(classes = "horizontal g-md justify-end") {
+                    a(href = "#", classes = "btn") {
+                        icon(iconName = "undo", classes = "gray")
+                        +"Nee"
+                    }
+                    div(classes = "hacky-icon") {
+                        icon(iconName = "delete_forever", classes = "bg-hard")
+                        input(type = InputType.submit, classes = "btn btn-red") { value = "Verwijderen" }
+                    }
                 }
             }
         }
