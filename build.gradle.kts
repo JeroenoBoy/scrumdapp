@@ -18,6 +18,12 @@ application {
     mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
 }
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = application.mainClass
+    }
+}
+
 dependencies {
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-host-common")
