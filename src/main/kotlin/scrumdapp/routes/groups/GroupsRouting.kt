@@ -12,6 +12,7 @@ import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
+import com.jeroenvdg.scrumdapp.views.pages.groups.checkinDates
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
@@ -98,64 +99,74 @@ suspend fun Application.configureGroupRoutes() {
                     val group = call.group
                     val checkins = checkinService.getGroupCheckins(group.id, isoDate)
                     val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
+                    val checkinDates = checkinService.getCheckinDates(group.id, 10)
 
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                            groupPage(checkins, group, userPerm) {
+                            groupPage(checkinDates, group, userPerm) {
                                 checkinWidget(checkins, group, dateParam, UserPermissions.CheckinManagement)
                             }
                         }
                     }
                 }
 
-                get("/edit") {
-                    val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                    val isoDate = parseIsoDate(dateParam)
-                    if (isoDate == null) {
-                        call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
-                        return@get
-                    }
+                route("/edit") {
+                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
 
-                    val group = call.group
-                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
+                    get {
+                        val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                        val isoDate = parseIsoDate(dateParam)
+                        if (isoDate == null) {
+                            call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD")
+                            return@get
+                        }
 
-                    call.respondHtml {
-                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                            groupPage(checkins, group, userPerm) {
-                                editableCheckinWidget(checkins, group, dateParam)
+                        val group = call.group
+                        val checkins = checkinService.getGroupCheckins(group.id, isoDate)
+                        val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
+                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
+
+                        call.respondHtml {
+                            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+                                groupPage(checkinDates, group, userPerm) {
+                                    editableCheckinWidget(checkins, group, dateParam)
+                                }
                             }
                         }
                     }
-                }
 
-                post("/edit") {
-                    val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                    val isoDate = parseIsoDate(dateParam)
-                    if (isoDate == null) { return@post call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD") }
+                    post {
+                        val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                        val isoDate = parseIsoDate(dateParam)
+                        if (isoDate == null) { return@post call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD") }
 
-                    val group = call.group
-                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    val body = call.receiveParameters()
+                        val group = call.group
+                        val checkins = checkinService.getGroupCheckins(group.id, isoDate)
+                        val body = call.receiveParameters()
 
-                    for (checkin in checkins) {
-                        checkin.date = isoDate
-                        if (body.contains("checkin_${checkin.userId}")) {
-                            checkin.checkinStars = body["checkin_${checkin.userId}"]?.toIntOrNull()
-                            if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!.toLong(), 0, 10)
+                        for (checkin in checkins) {
+                            checkin.date = isoDate
+                            if (body.contains("checkin-${checkin.userId}")) {
+                                checkin.checkinStars = body["checkin-${checkin.userId}"]?.toIntOrNull()
+                                if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!.toLong(), 0, 10)
+                            }
+                            if (body.contains("checkup-${checkin.userId}")) {
+                                checkin.checkupStars = body["checkup-${checkin.userId}"]?.toIntOrNull()
+                                if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!.toLong(), 0, 10)
+                            }
+                            if (body.contains("presence-${checkin.userId}")) {
+                                val presneceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
+                                checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
+                            }
+                            if (body.contains("comment-${checkin.userId}")) {
+                                checkin.comment = body["comment-${checkin.userId}"]
+                                if (checkin.comment.isNullOrBlank()) checkin.comment = null
+                            }
                         }
-                        if (body.contains("checkup_${checkin.userId}")) {
-                            checkin.checkupStars = body["checkup_${checkin.userId}"]?.toIntOrNull()
-                            if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!.toLong(), 0, 10)
-                        }
-                        if (body.contains("presence_${checkin.userId}")) {
-                            val presneceVal = body["presence_${checkin.userId}"]?.toIntOrNull()
-                            checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
-                        }
+
+                        checkinService.saveGroupCheckin(checkins)
+                        call.respondRedirect("/groups/${group.id}?date=${dateParam}")
                     }
-
-                    checkinService.saveGroupCheckin(checkins)
-                    call.respondRedirect("/groups/${group.id}?date=${dateParam}")
                 }
 
                 route("/users") {
@@ -166,10 +177,11 @@ suspend fun Application.configureGroupRoutes() {
                         val userPerm = call.groupUser.permissions
                         val groupMembers = groupService.getGroupMembers(group.id)
                         val groupUsers = groupService.getGroupUsers(group.id)
+                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
-                            dashboardLayout(DashboardPageData(group.name, call)) {
-                                groupPage(emptyList(), group, userPerm) {
+                            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+                                groupPage(checkinDates, group, userPerm) {
                                     userEditContent(call.groupUser.userId, group, groupMembers, groupUsers)
                                 }
                             }
@@ -224,9 +236,11 @@ suspend fun Application.configureGroupRoutes() {
                 get("/trends") {
                     val group = call.group
                     val userPerm = call.groupUser.permissions
+                    val checkinDates = checkinService.getCheckinDates(group.id, 10)
+
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call)) {
-                            groupPage(emptyList(), group, userPerm) {
+                            groupPage(checkinDates, group, userPerm) {
                             }
                         }
                     }
@@ -238,10 +252,11 @@ suspend fun Application.configureGroupRoutes() {
                     get {
                         val group = call.group
                         val groupUser = call.groupUser
+                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
                             dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
-                                groupPage(emptyList(), group, groupUser.permissions) {
+                                groupPage(checkinDates, group, groupUser.permissions) {
                                     groupConfigContent(group, groupUser, backgrounds)
                                 }
                             }

@@ -36,7 +36,6 @@ class CheckinServiceImpl: CheckinService {
 
     override suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin> {
         return dbQuery {
-
             val users = UserGroups
                 .innerJoin(Users, { UserGroups.userId }, { Users.id })
                 .select(Users.id, Users.name)
@@ -50,6 +49,18 @@ class CheckinServiceImpl: CheckinService {
                 .map { resultRowToCheckin(it) }
 
             users.map { u -> checkins.find { c -> u.first == c.userId } ?: Checkin(-1, groupId, u.second, u.first, null, null, null, date, null) }
+        }
+    }
+
+    override suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
+        return dbQuery {
+            GroupCheckins
+                .select(GroupCheckins.date)
+                .where { GroupCheckins.groupId eq groupId }
+                .limit(limit)
+                .distinctBy { GroupCheckins.date }
+                .sortedBy { GroupCheckins.date }
+                .map { it[GroupCheckins.date] }
         }
     }
 

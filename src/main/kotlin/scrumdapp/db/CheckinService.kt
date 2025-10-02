@@ -20,6 +20,7 @@ data class Checkin(
 interface CheckinService {
     suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin>
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
+    suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate>
     suspend fun getCheckin(id: Int): Checkin?
     suspend fun createCheckin(checkin: Checkin): Checkin? // Check if this is enough info for post
     suspend fun createGroupCheckin(groupId: Int, checkins: List<Checkin>): List<Checkin>?
