@@ -37,7 +37,6 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
-import java.lang.Math.clamp
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
@@ -169,11 +168,11 @@ suspend fun Application.configureGroupRoutes() {
                             checkin.date = isoDate
                             if (body.contains("checkin-${checkin.userId}")) {
                                 checkin.checkinStars = body["checkin-${checkin.userId}"]?.toIntOrNull()
-                                if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!.toLong(), 0, 10)
+                                if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!, 0, 10)
                             }
                             if (body.contains("checkup-${checkin.userId}")) {
                                 checkin.checkupStars = body["checkup-${checkin.userId}"]?.toIntOrNull()
-                                if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!.toLong(), 0, 10)
+                                if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!, 0, 10)
                             }
                             if (body.contains("presence-${checkin.userId}")) {
                                 val presneceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
@@ -343,4 +342,10 @@ suspend fun Application.configureGroupRoutes() {
             }
         }
     }
+}
+
+fun clamp(value: Int, min: Int, max: Int): Int {
+    if (value > max) return max;
+    if (value < min) return min;
+    return value
 }
