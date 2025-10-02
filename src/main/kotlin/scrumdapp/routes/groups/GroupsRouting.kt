@@ -239,7 +239,7 @@ suspend fun Application.configureGroupRoutes() {
                     val checkinDates = checkinService.getCheckinDates(group.id, 10)
 
                     call.respondHtml {
-                        dashboardLayout(DashboardPageData(group.name, call)) {
+                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                             groupPage(checkinDates, group, userPerm) {
                             }
                         }
