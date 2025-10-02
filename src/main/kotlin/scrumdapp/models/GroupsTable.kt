@@ -1,5 +1,6 @@
 package com.jeroenvdg.scrumdapp.models
 
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ReferenceOption
@@ -8,6 +9,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.kotlin.datetime.date
+import org.jetbrains.exposed.sql.kotlin.datetime.*
 
 @Serializable
 enum class Presence(val color: String, val key: String) {
@@ -53,6 +55,7 @@ class GroupsTable(database: Database) {
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val token = varchar("token", 64)
         val password = varchar("password", 255).nullable()
+        val createdAt = date("created_at")
 
         override val primaryKey = PrimaryKey(id)
     }

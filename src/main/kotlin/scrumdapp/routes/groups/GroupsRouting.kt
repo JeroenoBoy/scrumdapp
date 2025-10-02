@@ -15,6 +15,7 @@ import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
 import com.jeroenvdg.scrumdapp.views.pages.groups.userEditContent
+import com.jeroenvdg.scrumdapp.views.pages.groups.userInviteContent
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
 import com.scrumdapp.scrumdapp.middleware.IsInGroup
@@ -25,16 +26,17 @@ import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.plugins.origin
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
 
@@ -55,6 +57,12 @@ suspend fun Application.configureGroupRoutes() {
         } catch (e: Exception) {
             null
         }
+    }
+
+    fun generateRandomToken(length: Int): String {
+        val randomGenerator = Random(System.currentTimeMillis())
+        val validChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return(1..length).map { validChars.random(randomGenerator) }.joinToString("")
     }
 
     routing {
@@ -185,8 +193,32 @@ suspend fun Application.configureGroupRoutes() {
                         call.respondRedirect("/groups/${group.id}/users")
                     }
 
-                    delete {
+                    post("/create-invite") {
+                        val passwordRegex = Regex("^[a-zA-Z0-9_ .,#^!?><]{3,50}")
+                        val group = call.group
+                        val token = generateRandomToken(60)
+                        val password = call.receiveParameters()["create_group_invite"]
 
+                        if (!password.isNullOrBlank()  && !passwordRegex.matches(password)) {
+                            return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
+                        }
+
+                        try {
+                            groupService.createGroupInvite(group.id, token, password)
+                        } catch (e: Exception) {
+                            // Throw error modal
+                        }
+
+                        val origin = call.request.origin.serverHost
+                        val url = "https://$origin/invitations?token=$token"
+
+                        call.respondHtml {
+                            dashboardLayout(DashboardPageData(group.name, call)) {
+                                groupPage(emptyList(), group, call.groupUser.permissions) {
+                                    userInviteContent(group, url)
+                                }
+                            }
+                        }
                     }
                 }
 

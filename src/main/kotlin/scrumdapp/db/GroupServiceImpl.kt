@@ -4,8 +4,10 @@ import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.models.UserTable.*
+import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.time.format.DateTimeFormatter
 
 class GroupServiceImpl: GroupService {
     private fun resultRowToGroup(row: ResultRow): Group {
@@ -22,6 +24,16 @@ class GroupServiceImpl: GroupService {
             name = row[Users.name],
             discordId = row[Users.discordId],
             profileImage = row[Users.profileImage],
+        )
+    }
+
+    private fun resultRowToInvite(row: ResultRow): Groupinvite {
+        return Groupinvite(
+            id = row[GroupInvite.id],
+            groupId = row[GroupInvite.groupId]?: -1,
+            token = row[GroupInvite.token],
+            createdAt = row[GroupInvite.createdAt],
+            password = row[GroupInvite.password],
         )
     }
 
@@ -156,12 +168,27 @@ class GroupServiceImpl: GroupService {
         }
     }
 
-    override suspend fun createGroupInvite(
-        groupId: Int,
-        password: String
-    ): String {
-        TODO("Not yet implemented")
+    override suspend fun getGroupInvite(token: String): Groupinvite? {
+        return dbQuery {
+            GroupInvite.select(GroupInvite.fields)
+                .where { GroupInvite.token eq token }
+                .map { resultRowToInvite(it)}
+                .firstOrNull()
+        }
     }
+
+    override suspend fun createGroupInvite(groupId: Int, token: String, password: String?) {
+        val createdDate = LocalDate.parse(java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+         return dbQuery {
+            GroupInvite.insert {
+                it[this.groupId] = groupId
+                it[this.token] = token
+                it[this.password] = password
+                it[createdAt] = createdDate
+            }
+        }
+    }
+
 
     override suspend fun deleteGroupInvite(groupId: Int, user: User) { // Not finished, discuss with Jeroen
         return dbQuery {

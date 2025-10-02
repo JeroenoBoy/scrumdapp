@@ -21,6 +21,7 @@ import kotlinx.html.select
 import kotlinx.html.table
 import kotlinx.html.tbody
 import kotlinx.html.td
+import kotlinx.html.label
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
@@ -105,29 +106,11 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
                 icon(iconName="check", classes="blue")
                 input(type=InputType.submit, classes="btn") { value="Toepassen"}
             }
-            a(classes="btn", href="#create-invite-$token") {
+            a(classes="btn", href="#create-invite") {
                 icon(iconName="add", classes="green")
                 +"Maak uitnodiging"
             }
         }
-    }
-
-    modal(id="create-invite-${token}") {
-        h2 { +"Groepsuitnodiging"}
-
-        p { +"Kopieer, en stuur de volgende link naar je groepsgenoot."}
-        br{}
-
-        p { +"localhost:3000/invites/${token}"}
-
-        div(classes="horizontal g-md justify-end") {
-            a(classes="btn btn-green", href="#") {
-                icon(iconName="check", classes="bg-hard")
-                +"Terug"
-            }
-        }
-
-
     }
 
     // This is disgusting and I know it
@@ -156,6 +139,29 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
         }
     }
 
+    modal(id="create-invite") {
+        h2{ +"Maak uitnodiging"}
+
+        p { +"Vul hieronder een wachtwoord in (optioneel) en klik op de knop om een uitnodiging te maken"}
+
+        form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
+            div(classes="input-group") {
+                label(classes="input-label") { htmlFor="create_invite" +"Kies een wachtwoord (optioneel)" }
+                input(classes="input", type=InputType.password, name="create_group_invite")
+            }
+
+            div(classes="horizontal g-md justify-end") {
+                a(classes="btn", href="#") {
+                    icon(iconName="undo", classes="bg-hard")
+                    +"Terug"
+                }
+                div(classes="hacky-icon") {
+                    icon(iconName="check", classes="bg-hard")
+                    input(type=InputType.submit, classes="btn btn-green") { value="Maak uitnodiging"}
+                }
+            }
+        }
+    }
 
     modal(id="alter-success") {
         h2{ +"Gebruikers zijn met succes bijgewerkt!"}
@@ -182,6 +188,16 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
 fun FlowContent.userInviteContent(group: Group, url: String) {
     h2 {+"Groepsuitnodiging"}
     div(classes="spacer-lg")
+    p {+"Waarschuwing: de volgende link is geldig voor 1 dag, daarna dient een nieuwe link aan te worden gemaakt!"}
+    div(classes="input-group") {
+        label(classes="input-label") {+"Link:"}
+        input(type= InputType.text, classes="input") {value=url}
+    }
 
-
+    div(classes="horizontal g-md justify-end") {
+        a(classes="btn", href="/groups/${group.id}/users") {
+            icon(iconName="check", classes="bg-hard")
+            +"Gelukt?"
+        }
+    }
 }

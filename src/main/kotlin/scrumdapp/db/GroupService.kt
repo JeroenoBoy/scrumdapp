@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 data class Group(
@@ -15,6 +16,14 @@ data class UserGroup(
     val groupId: Int,
     val userId: Int,
     val permissions: UserPermissions,
+)
+
+data class Groupinvite(
+    val id: Int,
+    val groupId: Int,
+    val token: String,
+    val createdAt: LocalDate,
+    val password: String?,
 )
 
 interface GroupService {
@@ -33,6 +42,7 @@ interface GroupService {
     suspend fun addGroupMember(groupId: Int, user: User, permission: UserPermissions = UserPermissions.User)
     suspend fun alterGroupMemberPerms(groupId: Int, userId: Int, permission: UserPermissions): Boolean
     suspend fun deleteGroupMember(groupId: Int, userId: Int): Boolean
-    suspend fun createGroupInvite(groupId: Int, password: String): String
+    suspend fun getGroupInvite(token: String): Groupinvite?
+    suspend fun createGroupInvite(groupId: Int, token: String, password: String?)
     suspend fun deleteGroupInvite(groupId: Int, user: User)
 }
