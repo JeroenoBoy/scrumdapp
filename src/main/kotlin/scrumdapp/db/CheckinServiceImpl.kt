@@ -93,6 +93,21 @@ class CheckinServiceImpl: CheckinService {
         }
     }
 
+    override suspend fun saveGroupCheckin(checkins: List<Checkin>) {
+        return dbQuery {
+            GroupCheckins.batchUpsert(checkins) { checkin ->
+                if (checkin.id != -1) this[GroupCheckins.id] = checkin.id
+                this[GroupCheckins.groupId] = checkin.groupId
+                this[GroupCheckins.userId] = checkin.userId
+                this[GroupCheckins.presence] = checkin.presence
+                this[GroupCheckins.date] = checkin.date
+                this[GroupCheckins.checkinStars] = checkin.checkinStars
+                this[GroupCheckins.checkupStars] = checkin.checkupStars
+                this[GroupCheckins.comment] = checkin.comment
+            }
+        }
+    }
+
     override suspend fun alterCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.update({ GroupCheckins.userId eq checkin.userId and (GroupCheckins.groupId eq checkin.groupId)}) {

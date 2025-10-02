@@ -153,6 +153,9 @@ suspend fun Application.configureGroupRoutes() {
                             checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
                         }
                     }
+
+                    checkinService.saveGroupCheckin(checkins)
+                    call.respondRedirect("/groups/${group.id}?date=${dateParam}")
                 }
 
                 route("/users") {

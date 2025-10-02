@@ -47,7 +47,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
                     if (checkin.presence == null) {
                         td(classes="pl-md gray") { +"---" }
                     } else {
-                        td(classes="pl-md " + checkin.presence.color) { +checkin.presence.key }
+                        td(classes="pl-md " + checkin.presence!!.color) { +checkin.presence!!.key }
                     }
                     td(classes="text-center " + checkinColorMap[checkin.checkinStars ?: 11]) {
                         +(checkin.checkinStars?.toString() ?: "-")
@@ -60,7 +60,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
                             div(classes="checkbox-expand px-sm") {
                                 input(type=InputType.checkBox, classes="noshow")
                                 span(classes="text-ellipse checkbox-expand-content") {
-                                    +checkin.comment
+                                    +checkin.comment!!
                                 }
                             }
                         }

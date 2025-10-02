@@ -134,6 +134,7 @@ hr {
     left: 0;
     right: 0;
     opacity: 0.1;
+    pointer-events: none;
 }
 
 .card {
