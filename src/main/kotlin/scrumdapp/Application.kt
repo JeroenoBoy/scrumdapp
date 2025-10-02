@@ -1,6 +1,5 @@
 package com.jeroenvdg.scrumdapp
 
-import com.github.mustachejava.DefaultMustacheFactory
 import com.jeroenvdg.scrumdapp.Database.initializeDatabase
 import com.jeroenvdg.scrumdapp.db.*
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
@@ -23,7 +22,6 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.mustache.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.calllogging.*
@@ -49,7 +47,7 @@ suspend fun Application.module() {
 
     install(CallLogging)
     install(CachingHeaders) {
-        options { call, outgoingContent ->
+        options { _, outgoingContent ->
             when (outgoingContent.contentType?.withoutParameters()) {
                 ContentType.Text.CSS -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
                 ContentType.Image.WEBP -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
@@ -65,10 +63,6 @@ suspend fun Application.module() {
     install(Sessions) {
         cookie<SessionToken>("SCRUM_DADDY_SESSIE")
         cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
-    }
-
-    install(Mustache) {
-        mustacheFactory = DefaultMustacheFactory("templates")
     }
 
     install(UserProvider) {

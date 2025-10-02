@@ -8,6 +8,7 @@ sealed class UserPermissions(val displayName: String, val id: Int) {
     object ScrumDad: UserPermissions("Scrumdad", -1) // cool way of saying admin
     object UserManagement: UserPermissions("Usermanagement", 0) // allows for editing or adding users
     object CheckinManagement: UserPermissions("Checkinmanagement", 1) // allows for editing or adding checkins
+    object Docent: UserPermissions("Docent", 68) // allows for editing or adding checkins
     object User: UserPermissions("Gebruiker", 69) // standard developer role
 
     companion object {
@@ -17,6 +18,7 @@ sealed class UserPermissions(val displayName: String, val id: Int) {
                 -1 -> ScrumDad
                 0 -> UserManagement
                 1 -> CheckinManagement
+                68 -> Docent
                 69 -> User
                 else -> User
             }
@@ -28,6 +30,7 @@ sealed class UserPermissions(val displayName: String, val id: Int) {
                 -1 -> ScrumDad
                 0 -> UserManagement
                 1 -> CheckinManagement
+                68 -> Docent
                 69 -> User
                 else -> User
             }
