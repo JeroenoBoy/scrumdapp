@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.db.UserService
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
+import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
@@ -34,6 +35,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.datetime.LocalDate
+import java.lang.Math.clamp
 import java.time.format.DateTimeFormatter
 
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
@@ -127,6 +129,32 @@ suspend fun Application.configureGroupRoutes() {
                     }
                 }
 
+                post("/edit") {
+                    val dateParam = checkDateSyntax(call.parameters["date"] ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                    val isoDate = parseIsoDate(dateParam)
+                    if (isoDate == null) { return@post call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD") }
+
+                    val group = call.group
+                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
+                    val body = call.receiveParameters()
+
+                    for (checkin in checkins) {
+                        checkin.date = isoDate
+                        if (body.contains("checkin_${checkin.userId}")) {
+                            checkin.checkinStars = body["checkin_${checkin.userId}"]?.toIntOrNull()
+                            if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!.toLong(), 0, 10)
+                        }
+                        if (body.contains("checkup_${checkin.userId}")) {
+                            checkin.checkupStars = body["checkup_${checkin.userId}"]?.toIntOrNull()
+                            if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!.toLong(), 0, 10)
+                        }
+                        if (body.contains("presence_${checkin.userId}")) {
+                            val presneceVal = body["presence_${checkin.userId}"]?.toIntOrNull()
+                            checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
+                        }
+                    }
+                }
+
                 route("/users") {
                     install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
 
@@ -191,7 +219,14 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 get("/trends") {
-
+                    val group = call.group
+                    val userPerm = call.groupUser.permissions
+                    call.respondHtml {
+                        dashboardLayout(DashboardPageData(group.name, call)) {
+                            groupPage(emptyList(), group, userPerm) {
+                            }
+                        }
+                    }
                 }
 
                 route("/config") {

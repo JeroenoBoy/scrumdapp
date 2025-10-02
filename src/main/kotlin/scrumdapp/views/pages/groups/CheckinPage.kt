@@ -116,7 +116,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                     tr {
                         td(classes="text-ellpise name-field") { +checkin.name }
                         td(classes="pl-md ") {
-                            select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.id}"
+                            select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.userId}"
                                 option(classes="gray") {value=""; +"---"}
                                 option(classes="green") {value="0"; +"Op Tijd"}
                                 option(classes="yellow") {value="1"; +"Te Laat"}
@@ -126,15 +126,15 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                             }
                         }
                         td {
-                            checkinSelect("checkin-"+checkin.id)
+                            checkinSelect("checkin-"+checkin.userId)
                         }
                         td {
-                            checkinSelect("checkout-"+checkin.id)
+                            checkinSelect("checkout-"+checkin.userId)
                         }
                         td(classes="horizontal justify-between align-center max-w-om relative") {
                             div(classes="checkbox-expand px-sm absolute") {
                                 textArea(rows="5", classes="input checkbox-expand-content no-resize") {
-                                    name="addition-"+checkin.id
+                                    name="addition-"+checkin.userId
                                     placeholder="Opmerking..."
                                 }
                             }
