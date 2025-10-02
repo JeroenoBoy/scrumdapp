@@ -10,6 +10,7 @@ import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.services.EncryptionService
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinDates
@@ -47,6 +48,7 @@ suspend fun Application.configureGroupRoutes() {
     val userService = dependencies.resolve<UserService>()
     val groupService = dependencies.resolve<GroupService>()
     val checkinService = dependencies.resolve<CheckinService>()
+    val encryptionService = dependencies.resolve<EncryptionService>()
 
     val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
     fun checkDateSyntax(input: String): String {
@@ -81,7 +83,7 @@ suspend fun Application.configureGroupRoutes() {
                     val groupName = call.receiveParameters()["group_name"].toString()
                     val newGroup = groupService.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
-                        groupService.addGroupMember(newGroup.id, call.user, UserPermissions.LordOfScrum)
+                        groupService.addGroupMember(newGroup.id, call.user.id, UserPermissions.LordOfScrum)
                         return@post call.respondRedirect("/groups/${newGroup.id}")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -255,14 +257,14 @@ suspend fun Application.configureGroupRoutes() {
                         val token = generateRandomToken(60)
                         val password = call.receiveParameters()["create_group_invite"]
 
-                        if (!password.isNullOrBlank()  && !passwordRegex.matches(password)) {
+                        if (password.isNullOrBlank() || !passwordRegex.matches(password)) {
                             return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
-                        }
-
-                        try {
-                            groupService.createGroupInvite(group.id, token, password)
-                        } catch (e: Exception) {
-                            // Throw error modal
+                        } else {
+                            try {
+                                groupService.createGroupInvite(group.id, token, encryptionService.hashValue(password))
+                            } catch (e: Exception) {
+                                // Throw error modal
+                            }
                         }
 
                         val origin = call.request.origin.serverHost

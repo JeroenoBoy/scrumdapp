@@ -144,11 +144,11 @@ class GroupServiceImpl: GroupService {
         return result == permission
     }
 
-    override suspend fun addGroupMember(groupId: Int, user: User, permission: UserPermissions) {
+    override suspend fun addGroupMember(groupId: Int, userId: Int, permission: UserPermissions) {
         return dbQuery {
             UserGroups.insert {
                 it[this.groupId] = groupId
-                it[userId] = user.id
+                it[this.userId] = userId
                 it[permissions] = permission.id
             }
         }
@@ -173,7 +173,7 @@ class GroupServiceImpl: GroupService {
             GroupInvite.select(GroupInvite.fields)
                 .where { GroupInvite.token eq token }
                 .map { resultRowToInvite(it)}
-                .firstOrNull()
+                .first()
         }
     }
 
