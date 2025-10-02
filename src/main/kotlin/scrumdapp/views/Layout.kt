@@ -21,8 +21,8 @@ data class DashboardPageData(val title: String, val call: RoutingCall, val backg
 fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
     head {
         title("${pageData.title} | Scrumdapp")
-        link("/static/theme.css", rel="stylesheet") { attributes["blocking"] = "render" }
-        link("/static/styles.css", rel="stylesheet") { attributes["blocking"] = "render" }
+        link("/static/theme.css", rel="stylesheet")
+        link("/static/styles.css", rel="stylesheet")
         link("https://fonts.googleapis.com", rel = "preconnect")
         link("https://fonts.gstatic.com", rel = "preconnect")
         styleLink("https://fonts.googleapis.com/css2?family=Libertinus+Mono&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap")

@@ -1,41 +1,35 @@
 package com.jeroenvdg.scrumdapp
 
 import com.github.mustachejava.DefaultMustacheFactory
-import com.jeroenvdg.scrumdapp.models.UserTable
-import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
-import com.jeroenvdg.scrumdapp.routes.configureRouting
-import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
-import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import com.jeroenvdg.scrumdapp.Database.initializeDatabase
-import com.jeroenvdg.scrumdapp.db.CheckinService
-import com.jeroenvdg.scrumdapp.db.CheckinServiceImpl
-import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.GroupServiceImpl
-import com.jeroenvdg.scrumdapp.db.SessionService
-import com.jeroenvdg.scrumdapp.db.SessionServiceImpl
-import com.jeroenvdg.scrumdapp.db.UserService
-import com.jeroenvdg.scrumdapp.db.UserServiceImpl
+import com.jeroenvdg.scrumdapp.db.*
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
 import com.jeroenvdg.scrumdapp.models.GroupsTable
+import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
+import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
+import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
 import com.jeroenvdg.scrumdapp.routes.groups.configureInviteRoutes
 import com.jeroenvdg.scrumdapp.services.DotenvService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.mustache.Mustache
-import io.ktor.server.netty.EngineMain
-import io.ktor.server.plugins.calllogging.CallLogging
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.plugins.di.dependencies
-import io.ktor.server.sessions.Sessions
-import io.ktor.server.sessions.cookie
+import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
+import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.mustache.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.cachingheaders.*
+import io.ktor.server.plugins.calllogging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.di.*
+import io.ktor.server.sessions.*
 
 fun main(args: Array<String>) {
     println("Starting Scrumdapp")
@@ -54,6 +48,15 @@ suspend fun Application.module() {
     val checkinService = CheckinServiceImpl()
 
     install(CallLogging)
+    install(CachingHeaders) {
+        options { call, outgoingContent ->
+            when (outgoingContent.contentType?.withoutParameters()) {
+                ContentType.Text.CSS -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+                ContentType.Image.WEBP -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
+                else -> null
+            }
+        }
+    }
 
     install(ContentNegotiation) {
         json()
@@ -78,7 +81,7 @@ suspend fun Application.module() {
         provide { UserTable(database) }
         provide { GroupsTable(database) }
         provide { httpClient }
-        provide { encryptionService}
+        provide { encryptionService }
         provide<UserService> { userService }
         provide<GroupService> { groupService }
         provide<CheckinService> { checkinService }

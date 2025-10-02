@@ -1,4 +1,5 @@
 val exposed_version: String by project
+val ktor_version: String by project
 val h2_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -23,10 +24,11 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$exposed_version")
     implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-server-content-negotiation")
+    implementation("io.ktor:ktor-server-caching-headers:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
     implementation("io.ktor:ktor-server-sessions")
     implementation("io.ktor:ktor-server-mustache")
-    implementation("io.ktor:ktor-server-html-builder:$exposed_version")
+    implementation("io.ktor:ktor-server-html-builder:$ktor_version")
     implementation("io.ktor:ktor-server-di")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
@@ -35,7 +37,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.h2database:h2:$h2_version")
     implementation("io.ktor:ktor-server-netty")
-    implementation("io.ktor:ktor-client-cio:$exposed_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("io.ktor:ktor-serialization-jackson:3.3.0")
