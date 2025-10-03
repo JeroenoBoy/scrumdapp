@@ -27,7 +27,7 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.html.p
 
-fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>, userGroups: List<UserGroup>) {
+fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
     val token = 111
 
     h2 { +"Gebruikers aanpassen"}
@@ -38,53 +38,51 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
                 tr {
                     th(classes="text-left name-field") {+"Naam"}
                     th(classes="text-left pl-md") {+"Rol"}
+                    th(classes="text-left pl-md") {+"Danger zone"}
                 }
             }
             tbody {
-                for (user in users) {
+                tr {
+                    val user = users.find { user -> user.id == ownUser.userId} ?: users.first()
+                    val userPermission = userGroups.find { it.userId == ownUser.userId }?.permissions ?: UserPermissions.User
+                    td(classes="text-ellipse name-field") { +user.name}
+                    td(classes="text-ellipse bl") { +userPermission.displayName}
+                }
+
+                for (user in users.filter { it.id != ownUser.userId }.sortedBy { it.name }) {
                     val userId = user.id.toString()
                     val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
                     tr {
                         td(classes="text-ellipse name-field") { +user.name }
-                        if (user.id == ownUserId) {
-                            td(classes="text-ellipse name-field-bl") {+userPermission.displayName}
-                        } else {
-                            td(classes="pl-md") {
-                                select(classes = "input select-role w-full text-ellipse") {
-                                    name = "role-${user.id}"
-                                    option(classes = "red",) {
-                                        value = "-2";
-                                        if (userPermission.id >= -2) attributes["disabled"] = ""
-                                        if (userPermission.id == -2) attributes["selected"] = ""
-                                        +UserPermissions.LordOfScrum.displayName
-                                    }
-                                    option(classes = "yellow") {
-                                        value = "-1";
-                                        if (userPermission.id >= -1) attributes["disabled"] = ""
-                                        if (userPermission.id == -1) attributes["selected"] = ""
-                                        +UserPermissions.ScrumDad.displayName
-                                    }
-                                    option(classes = "blue") {
-                                        value = "0";
-                                        if (userPermission.id >= 0) attributes["disabled"] = ""
-                                        if (userPermission.id == 0) attributes["selected"] = ""
-                                        +UserPermissions.UserManagement.displayName
-                                    }
-                                    option(classes = "purple") {
-                                        value = "1"
-                                        if (userPermission.id == 1) attributes["selected"] = ""
-                                        +UserPermissions.CheckinManagement.displayName
-                                    }
-                                    option(classes = "aqua") {
-                                        value = "69";
-                                        if (userPermission.id == 69) attributes["selected"] = ""
-                                        +UserPermissions.User.displayName
-                                    }
+                        td(classes="pl-md") {
+                            select(classes = "input select-role w-full text-ellipse") {
+                                name = "role-${user.id}"
+                                option(classes = "yellow") {
+                                    value = "-1";
+                                    if (ownUser.permissions.id >= -1) attributes["disabled"] = ""
+                                    if (userPermission.id == -1) attributes["selected"] = ""
+                                    +UserPermissions.ScrumDad.displayName
+                                }
+                                option(classes = "blue") {
+                                    value = "0";
+                                    if (ownUser.permissions.id >= 0) attributes["disabled"] = ""
+                                    if (userPermission.id == 0) attributes["selected"] = ""
+                                    +UserPermissions.UserManagement.displayName
+                                }
+                                option(classes = "purple") {
+                                    value = "1"
+                                    if (userPermission.id == 1) attributes["selected"] = ""
+                                    +UserPermissions.CheckinManagement.displayName
+                                }
+                                option(classes = "aqua") {
+                                    value = "69";
+                                    if (userPermission.id == 69) attributes["selected"] = ""
+                                    +UserPermissions.User.displayName
                                 }
                             }
                         }
 
-                        if (user.id != ownUserId) {
+                        if (user.id != ownUser.userId) {
                             td(classes="pl-md") {
                                 div(classes="horizontal space-between align-center") {
                                     a(classes="btn btn-red", href="#delete-user-${userId}") {
@@ -142,11 +140,11 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
     modal(id="create-invite") {
         h2{ +"Maak uitnodiging"}
 
-        p { +"Vul hieronder een wachtwoord in (optioneel) en klik op de knop om een uitnodiging te maken"}
+        p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken"}
 
         form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
-                label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord (optioneel)" }
+                label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord." }
                 input(classes="input", type=InputType.password, name="create_group_invite")
             }
 
