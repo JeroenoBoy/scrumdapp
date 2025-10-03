@@ -15,7 +15,7 @@ group = "com.jeroenvdg"
 version = "0.0.1"
 
 application {
-    mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
+    mainClass = "io.ktor.netty.EngineMain"
 }
 
 tasks.withType<Jar> {
