@@ -23,7 +23,10 @@ fun FlowContent.aboutPage() {
 
     p { +"De ultieme check-in manager voor jouw project." }
     p {
-        +"Scrumdapp, aka Scrum Daddy App is ontwikkeld uit frustratie om makkelijk check-ins bij te houden van je team. Wij willen hier een simpelere manier om dit bij te houden met een prachtige UI en security & privacy features by design. `(*>﹏<*)′ "
+        +""" 
+            Scrumdapp, aka Scrum Daily App is ontwikkeld uit frustratie om makkelijk check-ins bij te houden van je team. Wij willen hier een simpelere manier om dit bij te houden met een prachtige
+            UI en security & privacy features by design. `(*>﹏<*)′ 
+        """
     }
     p {
         +"""
