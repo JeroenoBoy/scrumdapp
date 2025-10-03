@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "com.jeroenvdg"
-version = "0.1.0"
+version = "0.1.1"
 
 application {
     mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
