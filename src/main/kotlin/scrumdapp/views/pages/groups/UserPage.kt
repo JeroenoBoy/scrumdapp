@@ -46,7 +46,7 @@ fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<Us
                     val user = users.find { user -> user.id == ownUser.userId} ?: users.first()
                     val userPermission = userGroups.find { it.userId == ownUser.userId }?.permissions ?: UserPermissions.User
                     td(classes="text-ellipse name-field") { +user.name}
-                    td(classes="text-ellipse bl") { +userPermission.displayName}
+                    td(classes="text-ellipse pl-lg") { +userPermission.displayName}
                 }
 
                 for (user in users.filter { it.id != ownUser.userId }.sortedBy { it.name }) {
@@ -73,6 +73,11 @@ fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<Us
                                     value = "1"
                                     if (userPermission.id == 1) attributes["selected"] = ""
                                     +UserPermissions.CheckinManagement.displayName
+                                }
+                                option(classes = "orange") {
+                                    value = "68"
+                                    if (userPermission.id == 68) attributes["selected"] = ""
+                                    +UserPermissions.Coach.displayName
                                 }
                                 option(classes = "aqua") {
                                     value = "69";

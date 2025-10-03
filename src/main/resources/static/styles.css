@@ -367,6 +367,10 @@ hr {
     color: var(--purple)
 }
 
+.select-role:has(option[value="68"]:checked) {
+    color: var(--orange)
+}
+
 .select-role:has(option[value="69"]:checked) {
     color: var(--aqua)
 }
@@ -702,6 +706,10 @@ hr {
 
 .pl-md {
     padding-left: var(--gap-md) !important;
+}
+
+.pl-lg {
+    padding-left: var(--gap-lg) !important;
 }
 
 .g-md {
