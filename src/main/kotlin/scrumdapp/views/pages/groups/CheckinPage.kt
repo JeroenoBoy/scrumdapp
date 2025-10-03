@@ -36,7 +36,7 @@ val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-d
 
 fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
 
-    h2 { +"Checkin voor "; b { +date } }
+    h2 { +"Check-in voor "; b { +date } }
 
     table(classes="checkin-table") {
         thead {
