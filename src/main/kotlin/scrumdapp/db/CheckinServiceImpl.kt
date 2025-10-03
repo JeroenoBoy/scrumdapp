@@ -48,7 +48,9 @@ class CheckinServiceImpl: CheckinService {
                 .where {GroupCheckins.groupId eq groupId and (GroupCheckins.date eq date)}
                 .map { resultRowToCheckin(it) }
 
-            users.map { u -> checkins.find { c -> u.first == c.userId } ?: Checkin(-1, groupId, u.second, u.first, null, null, null, date, null) }
+            users
+                .map { u -> checkins.find { c -> u.first == c.userId } ?: Checkin(-1, groupId, u.second, u.first, null, null, null, date, null) }
+                .sortedBy { u -> u.name }
         }
     }
 
