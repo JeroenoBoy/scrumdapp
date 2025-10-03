@@ -41,7 +41,7 @@ import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
-val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
+val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
 
 suspend fun Application.configureGroupRoutes() {
     val userService = dependencies.resolve<UserService>()
