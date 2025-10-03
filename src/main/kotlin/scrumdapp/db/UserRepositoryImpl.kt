@@ -6,11 +6,10 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertReturning
 import org.jetbrains.exposed.sql.update
 
-class UserServiceImpl: UserService {
+class UserRepositoryImpl: UserRepository {
     private fun resultRowToUser(row: ResultRow): User {
         return User(
             id = row[Users.id],

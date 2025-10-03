@@ -2,15 +2,13 @@ package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
-import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.kotlin.datetime.date
 
-class CheckinServiceImpl: CheckinService {
+class CheckinRepositoryImpl: CheckinRepository {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
         return Checkin(
             id = row[GroupCheckins.id],

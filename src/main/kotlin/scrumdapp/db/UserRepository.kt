@@ -1,6 +1,5 @@
 package com.jeroenvdg.scrumdapp.db
 
-import com.jeroenvdg.scrumdapp.models.UserTable
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,7 +10,7 @@ data class User(
     val profileImage: String,
 )
 
-interface UserService {
+interface UserRepository {
     suspend fun getUser(id: Int): User?
     suspend fun getUserFromDiscordId(discordId: String): User?
     suspend fun getUsers(): List<User>

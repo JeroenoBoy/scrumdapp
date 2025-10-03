@@ -1,8 +1,8 @@
 package com.jeroenvdg.scrumdapp.routes
 
-import com.jeroenvdg.scrumdapp.db.SessionService
+import com.jeroenvdg.scrumdapp.db.SessionRepository
 import com.jeroenvdg.scrumdapp.db.User
-import com.jeroenvdg.scrumdapp.db.UserService
+import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
@@ -32,8 +32,8 @@ suspend fun Application.configureAuthRouting() {
     val env = dependencies.resolve<EnvironmentService>()
     val httpClient = dependencies.resolve<HttpClient>()
     val discordService = dependencies.resolve<DiscordService>()
-    val userService = dependencies.resolve<UserService>()
-    val sessionService = dependencies.resolve<SessionService>()
+    val userRepository = dependencies.resolve<UserRepository>()
+    val sessionRepository = dependencies.resolve<SessionRepository>()
 
     val authorizationServerId = env.getVariable("AUTHORIZATION_SERVER_ID")
 
@@ -74,8 +74,8 @@ suspend fun Application.configureAuthRouting() {
                     }
 
                     // Get user with discordId
-                    val user = userService.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userService)
-                    val session = sessionService.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
+                    val user = userRepository.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
+                    val session = sessionRepository.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
 
                     call.sessions.set(SessionToken(session.token))
                     val redirect = call.sessions.get<RedirectCookie>()
@@ -104,7 +104,7 @@ suspend fun Application.configureAuthRouting() {
             install(IsLoggedIn)
             get {
                 val token = call.userSession.token
-                sessionService.deleteSession(token)
+                sessionRepository.deleteSession(token)
                 call.sessions.clear<SessionToken>()
                 call.respondRedirect("/login")
             }
@@ -116,13 +116,13 @@ suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
                        discordUser: DiscordUser,
                        authorityGuild: String,
                        discordService: DiscordService,
-                       userService: UserService): User {
+                       userRepository: UserRepository): User {
 
     val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
     val name = guildMember.nick ?: discordUser.global_name
     var avatar = guildMember.avatar ?: discordUser.avatar
     if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
 
-    val user = userService.addUser(User(-1, name, discordUser.id.toLong(), avatar ?: ""))
+    val user = userRepository.addUser(User(-1, name, discordUser.id.toLong(), avatar ?: ""))
     return user!!
 }

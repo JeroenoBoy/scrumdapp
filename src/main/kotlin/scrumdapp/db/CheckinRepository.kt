@@ -17,7 +17,7 @@ data class Checkin(
     var comment: String?
 )
 
-interface CheckinService {
+interface CheckinRepository {
     suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin>
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
     suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate>

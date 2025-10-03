@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.format.DateTimeFormatter
 
-class GroupServiceImpl: GroupService {
+class GroupRepositoryImpl: GroupRepository {
     private fun resultRowToGroup(row: ResultRow): Group {
         return Group(
             id = row[Groups.id],

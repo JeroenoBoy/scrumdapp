@@ -1,11 +1,10 @@
 package com.scrumdapp.scrumdapp.middleware
 
 import com.jeroenvdg.scrumdapp.db.Group
-import com.jeroenvdg.scrumdapp.db.GroupService
+import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.middleware.hasUser
 import com.jeroenvdg.scrumdapp.middleware.user
-import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createRouteScopedPlugin
@@ -28,7 +27,7 @@ val ApplicationCall.groupUser: UserGroup
     get() = attributes[groupUserAttributeKey]
 
 class GroupProviderConfig() {
-    lateinit var groupService: GroupService
+    lateinit var groupRepository: GroupRepository
 }
 
 class PermProviderConfig() {
@@ -36,7 +35,7 @@ class PermProviderConfig() {
 }
 
 val IsInGroup = createRouteScopedPlugin("Group Provider", ::GroupProviderConfig) {
-    val groupService = pluginConfig.groupService
+    val groupService = pluginConfig.groupRepository
     onCall { call ->
         if (!call.hasUser) return@onCall
         val userId = call.user.id

@@ -1,9 +1,7 @@
 package com.jeroenvdg.scrumdapp.db
 
-import com.jeroenvdg.scrumdapp.models.GroupsTable
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
 
 data class Group(
     val id: Int,
@@ -26,7 +24,7 @@ data class Groupinvite(
     val password: String?,
 )
 
-interface GroupService {
+interface GroupRepository {
     suspend fun allGroup(): List<Group>
     suspend fun getGroup(id: Int): Group?
     suspend fun getGroupMembers(id: Int): List<User>

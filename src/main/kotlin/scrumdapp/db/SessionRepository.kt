@@ -10,18 +10,16 @@ import kotlinx.datetime.toInstant
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertReturning
-import kotlin.random.Random
 
-interface SessionService {
+interface SessionRepository {
     suspend fun getSession(token: String): UserSession?
     suspend fun createSession(userId: Int, refreshToken: String, accesToken: String, accesTokenExpiry: GMTDate): UserSession
     suspend fun revokeAllSessions(userId: Int)
     suspend fun deleteSession(token: String)
 }
 
-class SessionServiceImpl: SessionService {
+class SessionRepositoryImpl: SessionRepository {
     override suspend fun getSession(token: String): UserSession? {
         return dbQuery {
             val statement = UserSessions.select(UserSessions.fields).where(UserSessions.token eq token)

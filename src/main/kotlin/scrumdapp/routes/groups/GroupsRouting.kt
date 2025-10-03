@@ -1,10 +1,10 @@
 package com.jeroenvdg.scrumdapp.routes.groups
 
 
-import com.jeroenvdg.scrumdapp.db.CheckinService
+import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.Group
-import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.UserService
+import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
@@ -13,7 +13,6 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.services.EncryptionService
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
-import com.jeroenvdg.scrumdapp.views.pages.groups.checkinDates
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupConfigContent
@@ -44,9 +43,9 @@ import kotlin.random.Random
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
 
 suspend fun Application.configureGroupRoutes() {
-    val userService = dependencies.resolve<UserService>()
-    val groupService = dependencies.resolve<GroupService>()
-    val checkinService = dependencies.resolve<CheckinService>()
+    val userRepository = dependencies.resolve<UserRepository>()
+    val groupRepository = dependencies.resolve<GroupRepository>()
+    val checkinRepository = dependencies.resolve<CheckinRepository>()
     val encryptionService = dependencies.resolve<EncryptionService>()
 
     val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
@@ -80,9 +79,9 @@ suspend fun Application.configureGroupRoutes() {
             post {
                 try {
                     val groupName = call.receiveParameters()["group_name"].toString()
-                    val newGroup = groupService.createGroup(Group(0, groupName, null))
+                    val newGroup = groupRepository.createGroup(Group(0, groupName, null))
                     if (newGroup != null) {
-                        groupService.addGroupMember(newGroup.id, call.user.id, UserPermissions.LordOfScrum)
+                        groupRepository.addGroupMember(newGroup.id, call.user.id, UserPermissions.LordOfScrum)
                         return@post call.respondRedirect("/groups/${newGroup.id}")
                     }
                     call.respond(HttpStatusCode.InternalServerError)
@@ -94,7 +93,7 @@ suspend fun Application.configureGroupRoutes() {
             }
 
             route("/{groupid}") {
-                install(IsInGroup) { this.groupService = groupService }
+                install(IsInGroup) { this.groupRepository = groupRepository }
 
                 get {
                     // example url: /groups/{groupid}?date={YYYY-MM-DD}
@@ -106,9 +105,9 @@ suspend fun Application.configureGroupRoutes() {
                     }
 
                     val group = call.group
-                    val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                    val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
-                    val checkinDates = checkinService.getCheckinDates(group.id, 10)
+                    val checkins = checkinRepository.getGroupCheckins(group.id, isoDate)
+                    val userPerm = groupRepository.getGroupMemberPermissions(group.id, call.userSession.userId)
+                    val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -144,9 +143,9 @@ suspend fun Application.configureGroupRoutes() {
                         }
 
                         val group = call.group
-                        val checkins = checkinService.getGroupCheckins(group.id, isoDate)
-                        val userPerm = groupService.getGroupMemberPermissions(group.id, call.userSession.userId)
-                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
+                        val checkins = checkinRepository.getGroupCheckins(group.id, isoDate)
+                        val userPerm = groupRepository.getGroupMemberPermissions(group.id, call.userSession.userId)
+                        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
                             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -163,7 +162,7 @@ suspend fun Application.configureGroupRoutes() {
                         if (isoDate == null) { return@post call.respond(HttpStatusCode.BadRequest, "Invalid date format. Expected YYYY-MM-DD") }
 
                         val group = call.group
-                        val checkins = checkinService.getGroupCheckins(group.id, isoDate)
+                        val checkins = checkinRepository.getGroupCheckins(group.id, isoDate)
                         val body = call.receiveParameters()
 
                         for (checkin in checkins) {
@@ -186,7 +185,7 @@ suspend fun Application.configureGroupRoutes() {
                             }
                         }
 
-                        checkinService.saveGroupCheckin(checkins)
+                        checkinRepository.saveGroupCheckin(checkins)
                         call.respondRedirect("/groups/${group.id}?date=${dateParam}")
                     }
                 }
@@ -197,9 +196,9 @@ suspend fun Application.configureGroupRoutes() {
                     get {
                         val group = call.group
                         val userPerm = call.groupUser.permissions
-                        val groupMembers = groupService.getGroupMembers(group.id)
-                        val groupUsers = groupService.getGroupUsers(group.id)
-                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
+                        val groupMembers = groupRepository.getGroupMembers(group.id)
+                        val groupUsers = groupRepository.getGroupUsers(group.id)
+                        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
                             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -221,7 +220,7 @@ suspend fun Application.configureGroupRoutes() {
 
                                 if (userId != null && permId != null) {
                                     if (userPerm.id < permId) {
-                                        val success = groupService.alterGroupMemberPerms(call.group.id, userId, UserPermissions.get(permId))
+                                        val success = groupRepository.alterGroupMemberPerms(call.group.id, userId, UserPermissions.get(permId))
                                         if (!success) {
                                             return@post call.respondRedirect("/groups/${call.group.id}/users#alter-failed")
                                         }
@@ -238,7 +237,7 @@ suspend fun Application.configureGroupRoutes() {
                     post("/delete-user") {
                         val userId = call.queryParameters["id"]?.toIntOrNull()
                         val group = call.group
-                        val groupUsers = groupService.getGroupUsers(group.id)
+                        val groupUsers = groupRepository.getGroupUsers(group.id)
                         val filteredList = groupUsers.filter { it.id == userId}
 
                         println("userid: $userId, filterlist: $filteredList")
@@ -246,7 +245,7 @@ suspend fun Application.configureGroupRoutes() {
                         if (userId == null || filteredList.isEmpty()) { return@post call.respondRedirect("/groups/${group.id}/users")}
 
                         // add check to confirm that person to delete isn't higher in hierarchy
-                        groupService.deleteGroupMember(group.id, userId)
+                        groupRepository.deleteGroupMember(group.id, userId)
                         call.respondRedirect("/groups/${group.id}/users")
                     }
 
@@ -260,7 +259,7 @@ suspend fun Application.configureGroupRoutes() {
                             return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
                         } else {
                             try {
-                                groupService.createGroupInvite(group.id, token, encryptionService.hashValue(password))
+                                groupRepository.createGroupInvite(group.id, token, encryptionService.hashValue(password))
                             } catch (e: Exception) {
                                 // Throw error modal
                             }
@@ -282,7 +281,7 @@ suspend fun Application.configureGroupRoutes() {
                 get("/trends") {
                     val group = call.group
                     val userPerm = call.groupUser.permissions
-                    val checkinDates = checkinService.getCheckinDates(group.id, 10)
+                    val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                     call.respondHtml {
                         dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -298,7 +297,7 @@ suspend fun Application.configureGroupRoutes() {
                     get {
                         val group = call.group
                         val groupUser = call.groupUser
-                        val checkinDates = checkinService.getCheckinDates(group.id, 10)
+                        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
                             dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
@@ -317,7 +316,7 @@ suspend fun Application.configureGroupRoutes() {
                         if (name == call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config") }
                         if (!nameRegex.matches(name)) { return@post call.respondRedirect("/groups/${group.id}/config") }
 
-                        groupService.updateGroup(group.id, name=name)
+                        groupRepository.updateGroup(group.id, name=name)
                         call.respondRedirect("/groups/${group.id}/config")
                     }
 
@@ -328,7 +327,7 @@ suspend fun Application.configureGroupRoutes() {
                         if (bannerImage == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
                         if (bannerImage == call.group.bannerImage) { return@post call.respondRedirect("/groups/${group.id}/config") }
 
-                        groupService.updateGroup(group.id, bannerImage=bannerImage)
+                        groupRepository.updateGroup(group.id, bannerImage=bannerImage)
                         call.respondRedirect("/groups/${group.id}/config")
                     }
 
@@ -337,7 +336,7 @@ suspend fun Application.configureGroupRoutes() {
                         val group = call.group
                         if (name != call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config#delete-failed") }
 
-                        groupService.deleteGroup(group.id)
+                        groupRepository.deleteGroup(group.id)
                         call.respondRedirect("/home")
                     }
                 }

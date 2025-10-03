@@ -40,10 +40,10 @@ suspend fun Application.module() {
     dependencies { provide<EnvironmentService> { env } }
     val database = initializeDatabase()
     val encryptionService = EncryptionServiceImpl(env)
-    val userService = UserServiceImpl()
-    val sessionService = SessionServiceImpl()
-    val groupService = GroupServiceImpl()
-    val checkinService = CheckinServiceImpl()
+    val userService = UserRepositoryImpl()
+    val sessionService = SessionRepositoryImpl()
+    val groupService = GroupRepositoryImpl()
+    val checkinService = CheckinRepositoryImpl()
 
     install(CallLogging)
     install(CachingHeaders) {
@@ -66,8 +66,8 @@ suspend fun Application.module() {
     }
 
     install(UserProvider) {
-        this.userService = userService
-        this.sessionService = sessionService
+        this.userRepository = userService
+        this.sessionRepository = sessionService
     }
 
     dependencies {
@@ -76,10 +76,10 @@ suspend fun Application.module() {
         provide { GroupsTable(database) }
         provide { httpClient }
         provide { encryptionService }
-        provide<UserService> { userService }
-        provide<GroupService> { groupService }
-        provide<CheckinService> { checkinService }
-        provide<SessionService> { sessionService }
+        provide<UserRepository> { userService }
+        provide<GroupRepository> { groupService }
+        provide<CheckinRepository> { checkinService }
+        provide<SessionRepository> { sessionService }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
 

@@ -1,7 +1,7 @@
 package com.jeroenvdg.scrumdapp.routes
 
-import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.UserService
+import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
@@ -23,8 +23,8 @@ import kotlinx.html.p
 import kotlinx.html.strong
 
 suspend fun Application.configureRouting() {
-    val users = dependencies.resolve<UserService>()
-    val groups = dependencies.resolve<GroupService>()
+    val users = dependencies.resolve<UserRepository>()
+    val groups = dependencies.resolve<GroupRepository>()
 
     routing {
         get("/") {

@@ -1,11 +1,8 @@
 package com.jeroenvdg.scrumdapp.middleware
 
-import com.jeroenvdg.scrumdapp.db.Group
-import com.jeroenvdg.scrumdapp.db.GroupService
-import com.jeroenvdg.scrumdapp.db.SessionService
+import com.jeroenvdg.scrumdapp.db.SessionRepository
 import com.jeroenvdg.scrumdapp.db.User
-import com.jeroenvdg.scrumdapp.db.UserService
-import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.models.UserSession
 import com.jeroenvdg.scrumdapp.routes.SessionToken
 import io.ktor.server.application.ApplicationCall
@@ -23,8 +20,8 @@ import kotlinx.serialization.Serializable
 data class RedirectCookie(val to: String)
 
 class UserProviderConfig() {
-    lateinit var userService: UserService
-    lateinit var sessionService: SessionService
+    lateinit var userRepository: UserRepository
+    lateinit var sessionRepository: SessionRepository
 }
 
 private val userSessionAttributeKey = AttributeKey<UserSession>("User Session")
@@ -49,8 +46,8 @@ val ApplicationCall.userSession: UserSession
     get() = attributes[userSessionAttributeKey]
 
 val UserProvider = createRouteScopedPlugin("User Provider", ::UserProviderConfig) {
-    val userService = pluginConfig.userService
-    val sessionService = pluginConfig.sessionService
+    val userService = pluginConfig.userRepository
+    val sessionService = pluginConfig.sessionRepository
     onCall { call ->
         val sessionToken = call.sessions.get<SessionToken>()?.token ?: return@onCall
         val session = sessionService.getSession(sessionToken) ?: return@onCall call.sessions.clear<SessionToken>()
