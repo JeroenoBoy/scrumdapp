@@ -27,6 +27,15 @@ class UserServiceImpl: UserService {
                 .singleOrNull()?.let { resultRowToUser(it) } }
     }
 
+    override suspend fun getUserFromDiscordId(discordId: String): User? {
+        val ldId = discordId.toLongOrNull()
+        if (ldId == null) { return null }
+        return dbQuery {
+            Users.select(Users.fields)
+                .where(Users.discordId eq ldId)
+                .singleOrNull()?.let { resultRowToUser(it) } }
+    }
+
     override suspend fun getUsers(): List<User> {
         return dbQuery {
             Users.selectAll().map { resultRowToUser(it) }

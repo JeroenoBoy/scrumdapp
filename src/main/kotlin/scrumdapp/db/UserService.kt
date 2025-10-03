@@ -13,6 +13,7 @@ data class User(
 
 interface UserService {
     suspend fun getUser(id: Int): User?
+    suspend fun getUserFromDiscordId(discordId: String): User?
     suspend fun getUsers(): List<User>
     suspend fun addUser(user: User): User?
     suspend fun alterUser(user: User): Boolean

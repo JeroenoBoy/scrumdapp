@@ -74,7 +74,7 @@ suspend fun Application.configureAuthRouting() {
                     }
 
                     // Get user with discordId
-                    val user = userService.getUser(1) ?: createUser(principal, discordUser, authorizationServerId, discordService, userService)
+                    val user = userService.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userService)
                     val session = sessionService.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
 
                     call.sessions.set(SessionToken(session.token))
