@@ -701,7 +701,7 @@ hr {
 }
 
 .pl-md {
-    padding-left: var(--gap-md);
+    padding-left: var(--gap-md) !important;
 }
 
 .g-md {
