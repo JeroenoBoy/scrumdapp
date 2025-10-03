@@ -93,7 +93,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     }
     div(classes="flex-1")
     div(classes="horizontal g-md justify-end") {
-        if (perms.id >= UserPermissions.CheckinManagement.id) {
+        if (perms.id <= UserPermissions.CheckinManagement.id) {
             a(href="/groups/${group.id}/edit?date=${date}", classes="btn") {
                 icon(iconName="edit", classes="blue")
                 +"Pas aan"
