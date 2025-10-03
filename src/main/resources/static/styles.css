@@ -178,6 +178,7 @@ hr {
 
 .checkin-table {
     width: 100%;
+    border-collapse: collapse; /* I still hate this but people like itm ore */
 }
 
 .checkin-table th {
@@ -497,6 +498,12 @@ hr {
     padding: var(--gap-lg);
     border: 1px dashed var(--gray);
     border-radius: var(--radius);
+}
+
+.stars > .icon {
+    font-size: var(--font-size-md);
+    width: var(--font-size-md);
+    height: var(--font-size-md);
 }
 
 /* Navbar */

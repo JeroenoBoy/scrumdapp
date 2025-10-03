@@ -7,6 +7,7 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.utils.isNewCheckin
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.stars
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -58,24 +59,26 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
                         td(classes="pl-md " + checkin.presence!!.color) { +checkin.presence!!.key }
                     }
                     td(classes="text-center " + checkinColorMap[checkin.checkinStars ?: 11]) {
-                        if (checkin.checkinStars == null) {
-                            +"-"
-                        } else {
-                            +floor(checkin.checkinStars!! * 0.5f).toInt().toString()
-                            if (checkin.checkinStars!! % 2 == 1) {
-                                +".5"
-                            }
-                        }
+                        stars(checkin.checkinStars)
+//                        if (checkin.checkinStars == null) {
+//                            +"-"
+//                        } else {
+//                            +floor(checkin.checkinStars!! * 0.5f).toInt().toString()
+//                            if (checkin.checkinStars!! % 2 == 1) {
+//                                +".5"
+//                            }
+//                        }
                     }
                     td(classes="text-center " + checkinColorMap[checkin.checkupStars ?: 11]) {
-                        if (checkin.checkupStars == null) {
-                            +"-"
-                        } else {
-                            +floor(checkin.checkupStars!! * 0.5f).toInt().toString()
-                            if (checkin.checkupStars!! % 2 == 1) {
-                                +".5"
-                            }
-                        }
+                        stars(checkin.checkupStars)
+//                        if (checkin.checkupStars == null) {
+//                            +"-"
+//                        } else {
+//                            +floor(checkin.checkupStars!! * 0.5f).toInt().toString()
+//                            if (checkin.checkupStars!! % 2 == 1) {
+//                                +".5"
+//                            }
+//                        }
                     }
                     td(classes="horizontal justify-between align-center max-w-om") {
                         if (checkin.comment != null) {

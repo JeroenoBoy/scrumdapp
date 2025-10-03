@@ -25,9 +25,10 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
         link("/static/styles.css", rel="stylesheet")
         link("https://fonts.googleapis.com", rel = "preconnect")
         link("https://fonts.gstatic.com", rel = "preconnect")
+        styleLink("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined")
         styleLink("https://fonts.googleapis.com/css2?family=Libertinus+Mono&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap")
-        styleLink("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,arrow_back,bar_chart,cancel,check,delete_forever,edit,groups," +
-                "logout,settings,texture,undo")
+//        styleLink("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,arrow_back,bar_chart,cancel,check,delete_forever,edit,groups," +
+//                "logout,settings,texture,undo")
     }
     body {
         builder()
