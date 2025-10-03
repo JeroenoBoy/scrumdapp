@@ -39,9 +39,9 @@ class CheckinServiceImpl: CheckinService {
         return dbQuery {
             UserGroups
                 .innerJoin(Users, { UserGroups.userId }, { Users.id }) // Get name
-                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }) // Get checkin
+                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }, { GroupCheckins.date eq date }) // Get checkin
                 .select(GroupCheckins.fields + UserGroups.groupId + Users.id + Users.name)
-                .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) and ((GroupCheckins.date eq date) or (GroupCheckins.date.isNull())) }
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) }
                 .map { Checkin(
                         id = it.getOrNull(GroupCheckins.id) ?: -1,
                         groupId = it[UserGroups.groupId],
