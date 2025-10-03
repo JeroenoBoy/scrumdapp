@@ -204,7 +204,7 @@ suspend fun Application.configureGroupRoutes() {
                         call.respondHtml {
                             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                                 groupPage(checkinDates, group, userPerm) {
-                                    userEditContent(call.groupUser.userId, group, groupMembers, groupUsers)
+                                    userEditContent(call.groupUser, group, groupMembers, groupUsers)
                                 }
                             }
                         }

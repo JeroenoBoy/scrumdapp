@@ -27,7 +27,7 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.html.p
 
-fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>, userGroups: List<UserGroup>) {
+fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
     val token = 111
 
     h2 { +"Gebruikers aanpassen"}
@@ -46,27 +46,21 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
                     val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
                     tr {
                         td(classes="text-ellipse name-field") { +user.name }
-                        if (user.id == ownUserId) {
+                        if (user.id == ownUser.userId) {
                             td(classes="text-ellipse name-field-bl") {+userPermission.displayName}
                         } else {
                             td(classes="pl-md") {
                                 select(classes = "input select-role w-full text-ellipse") {
                                     name = "role-${user.id}"
-                                    option(classes = "red",) {
-                                        value = "-2";
-                                        if (userPermission.id >= -2) attributes["disabled"] = ""
-                                        if (userPermission.id == -2) attributes["selected"] = ""
-                                        +UserPermissions.LordOfScrum.displayName
-                                    }
                                     option(classes = "yellow") {
                                         value = "-1";
-                                        if (userPermission.id >= -1) attributes["disabled"] = ""
+                                        if (ownUser.permissions.id >= -1) attributes["disabled"] = ""
                                         if (userPermission.id == -1) attributes["selected"] = ""
                                         +UserPermissions.ScrumDad.displayName
                                     }
                                     option(classes = "blue") {
                                         value = "0";
-                                        if (userPermission.id >= 0) attributes["disabled"] = ""
+                                        if (ownUser.permissions.id >= 0) attributes["disabled"] = ""
                                         if (userPermission.id == 0) attributes["selected"] = ""
                                         +UserPermissions.UserManagement.displayName
                                     }
@@ -84,7 +78,7 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
                             }
                         }
 
-                        if (user.id != ownUserId) {
+                        if (user.id != ownUser.userId) {
                             td(classes="pl-md") {
                                 div(classes="horizontal space-between align-center") {
                                     a(classes="btn btn-red", href="#delete-user-${userId}") {
@@ -142,11 +136,11 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
     modal(id="create-invite") {
         h2{ +"Maak uitnodiging"}
 
-        p { +"Vul hieronder een wachtwoord in (optioneel) en klik op de knop om een uitnodiging te maken"}
+        p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken"}
 
         form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
-                label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord (optioneel)" }
+                label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord." }
                 input(classes="input", type=InputType.password, name="create_group_invite")
             }
 
