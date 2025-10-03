@@ -39,7 +39,7 @@ interface GroupService {
     suspend fun createGroup(group: Group): Group?
     suspend fun updateGroup(groupId: Int, name: String? = null, bannerImage: String? = null)
     suspend fun deleteGroup(groupId: Int)
-    suspend fun addGroupMember(groupId: Int, user: User, permission: UserPermissions = UserPermissions.User)
+    suspend fun addGroupMember(groupId: Int, userId: Int, permission: UserPermissions = UserPermissions.User)
     suspend fun alterGroupMemberPerms(groupId: Int, userId: Int, permission: UserPermissions): Boolean
     suspend fun deleteGroupMember(groupId: Int, userId: Int): Boolean
     suspend fun getGroupInvite(token: String): Groupinvite?

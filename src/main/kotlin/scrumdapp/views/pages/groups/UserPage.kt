@@ -188,7 +188,7 @@ fun FlowContent.userEditContent(ownUserId: Int, group: Group, users: List<User>,
 fun FlowContent.userInviteContent(group: Group, url: String) {
     h2 {+"Groepsuitnodiging"}
     div(classes="spacer-lg")
-    p {+"Waarschuwing: de volgende link is geldig voor 1 dag, daarna dient een nieuwe link aan te worden gemaakt!"}
+    p {+"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!"}
     div(classes="input-group") {
         label(classes="input-label") {+"Link"}
         input(type= InputType.text, classes="input") {value=url}
