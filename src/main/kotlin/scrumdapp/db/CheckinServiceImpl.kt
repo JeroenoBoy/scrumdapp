@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.kotlin.datetime.date
 
 class CheckinServiceImpl: CheckinService {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
@@ -36,21 +37,24 @@ class CheckinServiceImpl: CheckinService {
 
     override suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin> {
         return dbQuery {
-            val users = UserGroups
-                .innerJoin(Users, { UserGroups.userId }, { Users.id })
-                .select(Users.id, Users.name)
-                .where { (UserGroups.groupId eq groupId) }
-                .map { Pair(it[Users.id], it[Users.name]) }
-
-            val checkins = GroupCheckins
-                .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
-                .select(GroupCheckins.fields + Users.name)
-                .where {GroupCheckins.groupId eq groupId and (GroupCheckins.date eq date)}
-                .map { resultRowToCheckin(it) }
-
-            users
-                .map { u -> checkins.find { c -> u.first == c.userId } ?: Checkin(-1, groupId, u.second, u.first, null, null, null, date, null) }
-                .sortedBy { u -> u.name }
+            UserGroups
+                .innerJoin(Users, { UserGroups.userId }, { Users.id }) // Get name
+                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }) // Get checkin
+                .select(GroupCheckins.fields + UserGroups.groupId + Users.id + Users.name)
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) and ((GroupCheckins.date eq date) or (GroupCheckins.date.isNull())) }
+                .map { Checkin(
+                        id = it.getOrNull(GroupCheckins.id) ?: -1,
+                        groupId = it[UserGroups.groupId],
+                        name = it[Users.name],
+                        userId = it[Users.id],
+                        presence = it.getOrNull(GroupCheckins.presence),
+                        date = it.getOrNull(GroupCheckins.date) ?: date,
+                        checkinStars = it.getOrNull(GroupCheckins.checkinStars),
+                        checkupStars = it.getOrNull(GroupCheckins.checkupStars),
+                        comment = it.getOrNull(GroupCheckins.comment),
+                    )
+                }
+                .sortedBy { it.name }
         }
     }
 
