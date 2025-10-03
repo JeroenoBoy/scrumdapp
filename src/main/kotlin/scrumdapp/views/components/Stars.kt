@@ -20,13 +20,6 @@ fun FlowContent.stars(amount: Int?, classes: String? = null) {
             } else {
                 icon("star")
             }
-//            if ((i-1)*2+1 > amount) {
-//                icon("star_half")
-//            } else if (i*2 > amount) {
-//                icon("star")
-//            } else {
-//                icon("star_outline")
-//            }
         }
     }
 }
