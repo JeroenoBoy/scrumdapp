@@ -37,7 +37,7 @@ class CheckinRepositoryImpl: CheckinRepository {
         return dbQuery {
             UserGroups
                 .innerJoin(Users, { UserGroups.userId }, { Users.id }) // Get name
-                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }, { GroupCheckins.date eq date }) // Get checkin
+                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }, { (GroupCheckins.date eq date) and (GroupCheckins.groupId eq groupId) }) // Get checkin
                 .select(GroupCheckins.fields + UserGroups.groupId + Users.id + Users.name)
                 .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) }
                 .map { Checkin(
