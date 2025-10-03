@@ -85,8 +85,8 @@ fun FlowContent.checkinDates(dates: List<LocalDate>, group: Group, perms: UserPe
                     +"+"
                 }
             }
+            hr {}
         }
-        hr {}
         div(classes="vertical g-md") { style="max-height: 15em;overflow-y: scroll;padding:2px"
             for (date in dates) {
                 val y = date.year.toString().padStart(4, '0')
