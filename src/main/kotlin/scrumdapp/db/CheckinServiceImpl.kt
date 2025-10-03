@@ -39,7 +39,7 @@ class CheckinServiceImpl: CheckinService {
             val users = UserGroups
                 .innerJoin(Users, { UserGroups.userId }, { Users.id })
                 .select(Users.id, Users.name)
-                .where { (UserGroups.id eq groupId) }
+                .where { (UserGroups.groupId eq groupId) }
                 .map { Pair(it[Users.id], it[Users.name]) }
 
             val checkins = GroupCheckins
