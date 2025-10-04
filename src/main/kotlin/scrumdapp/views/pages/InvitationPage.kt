@@ -56,4 +56,16 @@ fun FlowContent.invitationpage(group: Group, token: String) {
             }
         }
     }
+
+    modal(id="expired-failure") {
+        h2 {+"Fout"}
+        div(classes="spacer-lg")
+        p {+"De uitnodiging bestaat niet of is verlopen. Vraag je scrummaster om een nieuwe link."}
+        div(classes="horizontal g-md justify-end") {
+            a(classes="btn", href="#") {
+                icon(iconName="undo", classes="grey")
+                +"Terug"
+            }
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package com.jeroenvdg.scrumdapp.db
 
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 data class Group(
     val id: Int,
@@ -20,7 +20,7 @@ data class Groupinvite(
     val id: Int,
     val groupId: Int,
     val token: String,
-    val createdAt: LocalDate,
+    val createdAt: LocalDateTime,
     val password: String?,
 )
 
@@ -42,5 +42,5 @@ interface GroupRepository {
     suspend fun deleteGroupMember(groupId: Int, userId: Int): Boolean
     suspend fun getGroupInvite(token: String): Groupinvite?
     suspend fun createGroupInvite(groupId: Int, token: String, password: String?)
-    suspend fun deleteGroupInvite(groupId: Int, user: User)
+    suspend fun deleteGroupInvite(inviteId: Int): Boolean
 }

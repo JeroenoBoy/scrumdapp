@@ -55,7 +55,7 @@ class GroupsTable(database: Database) {
         val groupId = optReference("group_id", Groups.id, onDelete = ReferenceOption.CASCADE)
         val token = varchar("token", 64)
         val password = varchar("password", 255).nullable()
-        val createdAt = date("created_at")
+        val createdAt = datetime("created_at")
 
         override val primaryKey = PrimaryKey(id)
     }

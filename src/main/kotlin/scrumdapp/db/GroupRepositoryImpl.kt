@@ -4,7 +4,9 @@ import com.jeroenvdg.scrumdapp.Database.dbQuery
 import com.jeroenvdg.scrumdapp.models.GroupsTable.*
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.models.UserTable.*
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.time.format.DateTimeFormatter
@@ -178,7 +180,7 @@ class GroupRepositoryImpl: GroupRepository {
     }
 
     override suspend fun createGroupInvite(groupId: Int, token: String, password: String?) {
-        val createdDate = LocalDate.parse(java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+        val createdDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
          return dbQuery {
             GroupInvite.insert {
                 it[this.groupId] = groupId
@@ -190,10 +192,10 @@ class GroupRepositoryImpl: GroupRepository {
     }
 
 
-    override suspend fun deleteGroupInvite(groupId: Int, user: User) { // Not finished, discuss with Jeroen
+    override suspend fun deleteGroupInvite(inviteId: Int): Boolean {
         return dbQuery {
-            GroupInvite.deleteWhere { GroupInvite.groupId eq groupId }
-        }
+            GroupInvite.deleteWhere { GroupInvite.id eq inviteId }
+        }>0
     }
 
 
