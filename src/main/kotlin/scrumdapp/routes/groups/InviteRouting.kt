@@ -9,14 +9,22 @@ import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.invitationpage
 import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
+import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 suspend fun Application.configureInviteRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
@@ -25,6 +33,11 @@ suspend fun Application.configureInviteRoutes() {
     val tokenLength = 60
     val tokenRegex = Regex("^[A-Za-z0-9]{$tokenLength}")
 
+    fun CheckTokenExpiry(targetDate: LocalDateTime, days: Int): Boolean {
+        val expiryDate = Clock.System.now().plus(days * 24, DateTimeUnit.HOUR).toLocalDateTime(TimeZone.currentSystemDefault())
+        return targetDate >= expiryDate
+
+    }
     routing {
         route("/invitations") {
             install(IsLoggedIn)
@@ -55,9 +68,15 @@ suspend fun Application.configureInviteRoutes() {
                 }
 
                 val invite = groupRepository.getGroupInvite(token) ?: return@post call.respondRedirect("/invitations#password-failure?token=$token")
-                val groupUsers = groupRepository.getGroupUsers(invite.groupId)
+
+
+                if (CheckTokenExpiry(invite.createdAt, 14)) {
+                    groupRepository.deleteGroupInvite(invite.id)
+                    return@post call.respondRedirect("/invitations#expired-failure")
+                }
 
                 if (encryptionService.compareHash(password, invite.password?: "")) {
+                    val groupUsers = groupRepository.getGroupUsers(invite.groupId)
                     if (groupUsers.any { it.userId == call.user.id}) {
                         return@post call.respondRedirect("/groups/${invite.groupId}")
                     }

@@ -261,7 +261,7 @@ suspend fun Application.configureGroupRoutes() {
                             try {
                                 groupRepository.createGroupInvite(group.id, token, encryptionService.hashValue(password))
                             } catch (e: Exception) {
-                                // Throw error modal
+                                print(e.message)
                             }
                         }
 
