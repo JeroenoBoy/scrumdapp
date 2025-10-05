@@ -97,10 +97,7 @@ fun Route.groupsRoutes() {
 }
 
 suspend fun Application.configureGroupRoutes() {
-    val userRepository = dependencies.resolve<UserRepository>()
     val groupRepository = dependencies.resolve<GroupRepository>()
-    val checkinRepository = dependencies.resolve<CheckinRepository>()
-    val encryptionService = dependencies.resolve<EncryptionService>()
 
     routing {
         route<Groups> {
