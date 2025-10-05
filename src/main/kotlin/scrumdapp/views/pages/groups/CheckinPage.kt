@@ -5,9 +5,12 @@ import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.utils.isNewCheckin
+import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
+import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import com.jeroenvdg.scrumdapp.views.components.stars
+import kotlinx.datetime.LocalDate
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -16,7 +19,6 @@ import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
-import kotlinx.html.i
 import kotlinx.html.input
 import kotlinx.html.option
 import kotlinx.html.p
@@ -29,15 +31,14 @@ import kotlinx.html.textArea
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
-import kotlin.math.floor
 import kotlin.random.Random
 
 
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
+fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: LocalDate, perms: UserPermissions) {
 
-    h2 { +"Check-in voor "; b { +date } }
+    h2 { +"Check-in voor "; b { +(date.scrumdappFormat()) } }
 
     table(classes="checkin-table") {
         thead {
@@ -97,7 +98,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     div(classes="flex-1")
     div(classes="horizontal g-md justify-end") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
-            a(href="/groups/${group.id}/edit?date=${date}", classes="btn") {
+            a(href="/groups/${group.id}/edit?date=${date.scrumdappUrlFormat()}", classes="btn") {
                 icon(iconName="edit", classes="blue")
                 +"Pas aan"
             }
@@ -105,7 +106,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     }
 }
 
-fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, date: String) {
+fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, date: LocalDate) {
     fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
         select(classes="input select-checkin w-full text-ellipse") { this.name=name
             option(classes="gray") {value=""; if (selectedValue == null) { selected = true }; +"---" }
@@ -126,7 +127,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
     val isNewCheckin = checkins.isNewCheckin()
     val id = Random.nextInt(999999)
 
-    h2 { +"Checkin voor "; b { +date } }
+    h2 { +"Checkin voor "; b { +date.scrumdappFormat() } }
 
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
@@ -215,7 +216,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                         +"Annuleren"
                     }
                 } else {
-                    a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
+                    a(href="/groups/${group.id}?date=${date.scrumdappUrlFormat()}", classes="btn btn-red") {
                         icon(iconName="cancel", classes="bg-hard")
                         +"Annuleren"
                     }
@@ -226,7 +227,7 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
 
     if (!isNewCheckin) {
         modal(id="confirm-delete-$id") {
-            form(action = "/groups/${group.id}/delete-checkin?date=${date}", method = FormMethod.post, classes = "vertical g-md") {
+            form(action = "/groups/${group.id}/delete-checkin?date=${date.scrumdappUrlFormat()}", method = FormMethod.post, classes = "vertical g-md") {
                 h2(classes = "modal-title") { +"Checkin verwijderen" }
                 p { +"Weet je zeker dat je de checkin wilt verwijderen?" }
                 div(classes = "horizontal g-md justify-end") {

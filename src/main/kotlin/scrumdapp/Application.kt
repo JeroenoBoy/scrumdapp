@@ -27,6 +27,7 @@ import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.di.*
+import io.ktor.server.resources.Resources
 import io.ktor.server.sessions.*
 
 fun main(args: Array<String>) {
@@ -70,6 +71,8 @@ suspend fun Application.module() {
         this.userRepository = userService
         this.sessionRepository = sessionService
     }
+
+    install(Resources)
 
     dependencies {
         provide { database }

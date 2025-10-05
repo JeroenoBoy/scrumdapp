@@ -22,6 +22,7 @@ import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.strong
 
+
 suspend fun Application.configureRouting() {
     val users = dependencies.resolve<UserRepository>()
     val groups = dependencies.resolve<GroupRepository>()
