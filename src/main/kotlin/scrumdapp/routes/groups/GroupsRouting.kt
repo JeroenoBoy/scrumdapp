@@ -10,7 +10,9 @@ import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.EncryptionService
+import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
@@ -47,6 +49,8 @@ suspend fun Application.configureGroupRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
     val checkinRepository = dependencies.resolve<CheckinRepository>()
     val encryptionService = dependencies.resolve<EncryptionService>()
+    val userService = UserService(groupRepository, checkinRepository, encryptionService)
+    val checkinService = CheckinService(checkinRepository, groupRepository)
 
     val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
     fun checkDateSyntax(input: String): String {
@@ -195,15 +199,13 @@ suspend fun Application.configureGroupRoutes() {
 
                     get {
                         val group = call.group
-                        val userPerm = call.groupUser.permissions
-                        val groupMembers = groupRepository.getGroupMembers(group.id)
-                        val groupUsers = groupRepository.getGroupUsers(group.id)
+                        val userDashboardData = userService.getUserDashboardDate(group.id)
                         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
                         call.respondHtml {
                             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                                groupPage(checkinDates, group, userPerm) {
-                                    userEditContent(call.groupUser, group, groupMembers, groupUsers)
+                                groupPage(checkinDates, group, call.groupUser.permissions) {
+                                    userEditContent(call.groupUser, group, userDashboardData.groupMembers, userDashboardData.groupUsers)
                                 }
                             }
                         }
@@ -212,40 +214,30 @@ suspend fun Application.configureGroupRoutes() {
                     post("/alter-users") {
                         val params = call.receiveParameters()
                         val userPerm = call.groupUser.permissions
-
-                        for((key, value) in params.entries()) {
-                            if(key.startsWith("role-")) {
-                                val userId = key.removePrefix("role-").toIntOrNull()
-                                val permId = value.firstOrNull()?.toIntOrNull()
-
-                                if (userId != null && permId != null) {
-                                    if (userPerm.id < permId) {
-                                        val success = groupRepository.alterGroupMemberPerms(call.group.id, userId, UserPermissions.get(permId))
-                                        if (!success) {
-                                            return@post call.respondRedirect("/groups/${call.group.id}/users#alter-failed")
-                                        }
-                                    } else {
-                                        return@post call.respondRedirect("/groups/${call.group.id}/users#alter-failed")
-                                    }
-                                }
+                        val permChanges = params.entries()
+                            .filter { it.key.startsWith("role-")}
+                            .mapNotNull { entry ->
+                                val userId = entry.key.removePrefix("role-").toIntOrNull()
+                                val permId = entry.value.firstOrNull()?.toIntOrNull()
+                                if (userId != null && permId != null) userId to permId else null
                             }
-                        }
-
-                        call.respondRedirect("/groups/${call.group.id}/users#alter-success")
+                            .toMap()
+                        val success = userService.alterUserPermissions(call.group.id, permChanges, userPerm)
+                        val response = if (success) { "alter-success" } else { "alter-failed" }
+                        call.respondRedirect("/groups/${call.group.id}/users#$response")
                     }
 
                     post("/delete-user") {
                         val userId = call.queryParameters["id"]?.toIntOrNull()
                         val group = call.group
-                        val groupUsers = groupRepository.getGroupUsers(group.id)
-                        val filteredList = groupUsers.filter { it.id == userId}
 
-                        println("userid: $userId, filterlist: $filteredList")
+                        if (userId == null) { return@post call.respondRedirect("/groups/${group.id}/users")} else {
+                            val success = userService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
+                            if (!success) {
+                                return@post call.respondRedirect("/groups/${group.id}/users")
+                            }
+                        }
 
-                        if (userId == null || filteredList.isEmpty()) { return@post call.respondRedirect("/groups/${group.id}/users")}
-
-                        // add check to confirm that person to delete isn't higher in hierarchy
-                        groupRepository.deleteGroupMember(group.id, userId)
                         call.respondRedirect("/groups/${group.id}/users")
                     }
 
@@ -346,7 +338,7 @@ suspend fun Application.configureGroupRoutes() {
 }
 
 fun clamp(value: Int, min: Int, max: Int): Int {
-    if (value > max) return max;
-    if (value < min) return min;
+    if (value > max) return max
+    if (value < min) return min
     return value
 }
