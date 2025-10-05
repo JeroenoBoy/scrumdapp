@@ -20,7 +20,7 @@ enum class Presence(val color: String, val key: String) {
     Sick("blue", "Ziek"),
 }
 
-class GroupsTable(database: Database) {
+class GroupsTable {
     object Groups: Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", 50)

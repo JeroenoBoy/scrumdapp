@@ -11,9 +11,11 @@ import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
 import com.jeroenvdg.scrumdapp.routes.invites.configureInviteRoutes
+import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.DotenvService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
+import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import io.ktor.client.*
@@ -41,10 +43,10 @@ suspend fun Application.module() {
     dependencies { provide<EnvironmentService> { env } }
     val database = initializeDatabase()
     val encryptionService = EncryptionServiceImpl(env)
-    val userService = UserRepositoryImpl()
-    val sessionService = SessionRepositoryImpl()
-    val groupService = GroupRepositoryImpl()
-    val checkinService = CheckinRepositoryImpl()
+    val userRepository = UserRepositoryImpl()
+    val sessionRepository = SessionRepositoryImpl()
+    val groupRepository = GroupRepositoryImpl()
+    val checkinRepository = CheckinRepositoryImpl()
 
     install(CallLogging)
     install(CachingHeaders) {
@@ -68,22 +70,22 @@ suspend fun Application.module() {
     }
 
     install(UserProvider) {
-        this.userRepository = userService
-        this.sessionRepository = sessionService
+        this.userRepository = userRepository
+        this.sessionRepository = sessionRepository
     }
 
     install(Resources)
 
     dependencies {
         provide { database }
-        provide { UserTable(database) }
-        provide { GroupsTable(database) }
         provide { httpClient }
         provide { encryptionService }
-        provide<UserRepository> { userService }
-        provide<GroupRepository> { groupService }
-        provide<CheckinRepository> { checkinService }
-        provide<SessionRepository> { sessionService }
+        provide { UserService(groupRepository, checkinRepository, encryptionService) }
+        provide { CheckinService(checkinRepository, groupRepository) }
+        provide<UserRepository> { userRepository }
+        provide<GroupRepository> { groupRepository }
+        provide<CheckinRepository> { checkinRepository }
+        provide<SessionRepository> { sessionRepository }
         provide<DiscordService> { DiscordServiceImpl(httpClient) }
     }
 

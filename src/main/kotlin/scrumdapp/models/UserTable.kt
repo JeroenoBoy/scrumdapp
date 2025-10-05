@@ -23,7 +23,7 @@ data class UserSession(
     val createdAt: GMTDate
 );
 
-class UserTable(database: Database) {
+class UserTable {
     object Users : Table() {
         val id = integer("id").autoIncrement()
         val name = varchar("name", length = 50)
