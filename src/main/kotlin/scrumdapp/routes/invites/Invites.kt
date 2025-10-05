@@ -1,4 +1,4 @@
-package com.jeroenvdg.scrumdapp.routes.groups
+package com.jeroenvdg.scrumdapp.routes.invites
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
@@ -9,11 +9,9 @@ import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.invitationpage
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
-import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post

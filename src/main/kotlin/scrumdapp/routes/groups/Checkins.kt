@@ -14,20 +14,13 @@ import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.scrumdapp.scrumdapp.middleware.group
 import com.scrumdapp.scrumdapp.middleware.groupUser
-import io.ktor.http.HttpMethod
 import io.ktor.server.resources.href
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.routing.Route
-import io.ktor.server.resources.get
-import io.ktor.server.resources.handle
-import io.ktor.server.resources.resource
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.application
-import io.ktor.server.routing.method
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
 
 fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
@@ -69,6 +62,7 @@ fun Route.groupEditCheckinRoutes() {
             }
         }
     }
+
     typedPost<Groups.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
