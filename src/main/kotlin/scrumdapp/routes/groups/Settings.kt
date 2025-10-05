@@ -34,8 +34,8 @@ fun Route.groupSettingsRoutes() {
 
         call.respondHtml {
             dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
-                groupPage(checkinDates, group, groupUser.permissions) {
-                    groupConfigContent(group, groupUser, backgrounds)
+                groupPage(application, checkinDates, group, groupUser.permissions) {
+                    groupConfigContent(application, group, groupUser, backgrounds)
                 }
             }
         }

@@ -35,8 +35,8 @@ fun Route.groupCheckinRoutes() {
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(checkinDates, group, userPerm) {
-                    checkinWidget(checkins, group, date, call.groupUser.permissions)
+                groupPage(application, checkinDates, group, userPerm) {
+                    checkinWidget(application, checkins, group, date, call.groupUser.permissions)
                 }
             }
         }
@@ -56,8 +56,8 @@ fun Route.groupEditCheckinRoutes() {
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(checkinDates, group, userPerm) {
-                    editableCheckinWidget(checkins, group, date)
+                groupPage(application, checkinDates, group, userPerm) {
+                    editableCheckinWidget(application, checkins, group, date)
                 }
             }
         }

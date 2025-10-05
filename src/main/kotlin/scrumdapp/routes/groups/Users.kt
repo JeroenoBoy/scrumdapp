@@ -34,8 +34,8 @@ fun Route.groupUserRoutes() {
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(checkinDates, group, groupUser.permissions) {
-                    userEditContent(groupUser, group, userDashboardData.groupMembers, userDashboardData.groupUsers)
+                groupPage(application, checkinDates, group, groupUser.permissions) {
+                    userEditContent(application, groupUser, group, userDashboardData.groupMembers, userDashboardData.groupUsers)
                 }
             }
         }

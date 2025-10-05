@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.routes.groups.Groups.Id.Trends
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.EncryptionService
 import com.jeroenvdg.scrumdapp.services.UserService
@@ -36,13 +37,13 @@ val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8",
 val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
 @Resource("/groups")
-class Groups() {
+class Groups {
 
     @Resource("{groupId}")
     class Id(val parent: Groups = Groups(), val groupId: Int, val date: String? = null) {
 
         @Resource("edit")
-        class Edit(val parent: Id)
+        class Edit(val parent: Id) { constructor(groupId: Int, date: String? = null): this(Id(groupId=groupId, date=date))}
 
         @Resource("trends")
         class Trends(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))}

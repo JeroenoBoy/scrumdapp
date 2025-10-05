@@ -4,8 +4,11 @@ import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.routes.groups.Groups
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -27,12 +30,12 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.html.p
 
-fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
+fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
     val token = 111
 
     h2 { +"Gebruikers aanpassen"}
     div(classes="spacer-lg")
-    form(action="/groups/${group.id}/users/alter-users", method=FormMethod.post, classes="vertical g-md flex-1") {
+    form(method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
             thead {
                 tr {
@@ -127,7 +130,7 @@ fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<Us
             }
 
 
-            form(action="/groups/${group.id}/users/delete-user?id=${user.id}", method= FormMethod.post) {
+            form(action=application.href(Groups.Id.Users.Delete(group.id)), method= FormMethod.post) {
                 div(classes = "horizontal g-md justify-end") {
                     a(classes="btn btn-green", href="#") {
                         icon(iconName="undo", classes="bg-hard")
@@ -188,7 +191,7 @@ fun FlowContent.userEditContent(ownUser: UserGroup, group: Group, users: List<Us
     }
 }
 
-fun FlowContent.userInviteContent(group: Group, url: String) {
+fun FlowContent.userInviteContent(application: Application, group: Group, url: String) {
     h2 {+"Groepsuitnodiging"}
     div(classes="spacer-lg")
     p {+"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!"}
@@ -198,7 +201,7 @@ fun FlowContent.userInviteContent(group: Group, url: String) {
     }
 
     div(classes="horizontal g-md justify-end") {
-        a(classes="btn", href="/groups/${group.id}/users") {
+        a(classes="btn", href=application.href(Groups.Id.Users(group.id))) {
             icon(iconName="check", classes="gray")
             +"Gelukt?"
         }
