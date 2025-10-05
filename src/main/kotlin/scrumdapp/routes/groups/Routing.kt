@@ -37,17 +37,31 @@ val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
 @Resource("/groups")
 class Groups() {
+
     @Resource("{groupId}")
     class Id(val parent: Groups = Groups(), val groupId: Int, val date: String? = null) {
+
         @Resource("edit")
         class Edit(val parent: Id)
+
+        @Resource("trends")
+        class Trends(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))}
+
         @Resource("users")
         class Users(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))
             @Resource("delete")
             class Delete(val parent: Users) { constructor(groupId: Int): this(Users(Id(groupId=groupId))) }
         }
-        @Resource("trends")
-        class Trends(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))}
+
+        @Resource("settings")
+        class Settings(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))
+            @Resource("change-name")
+            class ChangeName(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+            @Resource("change-background")
+            class ChangeBackground(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+            @Resource("delete")
+            class Delete(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+        }
 
         fun getDateParam(): String {
             return checkDateSyntax(date ?: java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
@@ -108,6 +122,11 @@ suspend fun Application.configureGroupRoutes() {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupUserRoutes()
                 }
+
+                route<Groups.Id.Settings> {
+                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
+                    groupSettingsRoutes()
+                }
             }
         }
 //        route("/groups") {
@@ -141,55 +160,6 @@ suspend fun Application.configureGroupRoutes() {
 //                    }
 //                }
 //
-//                route("/config") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.ScrumDad }
-//
-//                    get {
-//                        val group = call.group
-//                        val groupUser = call.groupUser
-//                        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
-//
-//                        call.respondHtml {
-//                            dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
-//                                groupPage(checkinDates, group, groupUser.permissions) {
-//                                    groupConfigContent(group, groupUser, backgrounds)
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                    val nameRegex = Regex("^[a-zA-Z0-9_ ]{3,50}$")
-//                    post("/change-name") {
-//                        val name = call.receiveParameters()["group_name"]
-//                        val group = call.group
-//                        if (name == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//                        if (name == call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//                        if (!nameRegex.matches(name)) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//
-//                        groupRepository.updateGroup(group.id, name=name)
-//                        call.respondRedirect("/groups/${group.id}/config")
-//                    }
-//
-//                    post("/change-image") {
-//                        val bannerImage = call.receiveParameters()["img"]
-//                        val group = call.group
-//                        if (!backgrounds.contains(bannerImage)) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//                        if (bannerImage == null) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//                        if (bannerImage == call.group.bannerImage) { return@post call.respondRedirect("/groups/${group.id}/config") }
-//
-//                        groupRepository.updateGroup(group.id, bannerImage=bannerImage)
-//                        call.respondRedirect("/groups/${group.id}/config")
-//                    }
-//
-//                    post("/delete-group") {
-//                        val name = call.receiveParameters()["delete_group_name"]
-//                        val group = call.group
-//                        if (name != call.group.name) { return@post call.respondRedirect("/groups/${group.id}/config#delete-failed") }
-//
-//                        groupRepository.deleteGroup(group.id)
-//                        call.respondRedirect("/home")
-//                    }
-//                }
 //            }
 //        }
     }
