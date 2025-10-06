@@ -23,7 +23,7 @@ import io.ktor.server.routing.application
 fun Route.createInvitationsRoute() {
     val inviteService = application.dependencies.resolveBlocking<InviteService>()
 
-    typedPost<Invitations.CreateInvitation>() {
+    typedPost<Invitations.CreateInvitation.Id>() {
         val group = call.group
         val password = call.receiveParameters()["create_group_invite"]
 

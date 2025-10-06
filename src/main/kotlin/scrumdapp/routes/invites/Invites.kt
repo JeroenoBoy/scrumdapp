@@ -49,8 +49,8 @@ suspend fun Application.configureInviteRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
 
     routing {
-        install(IsLoggedIn)
         route<Invitations> {
+            install(IsLoggedIn)
 
             route<Invitations.AcceptInvitations> {
                 acceptInvitationsRoute()
