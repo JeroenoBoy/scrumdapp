@@ -161,12 +161,6 @@ suspend fun Application.configureGroupRoutes() {
     }
 }
 
-fun generateRandomToken(length: Int): String {
-    val randomGenerator = Random(System.currentTimeMillis())
-    val validChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-    return(1..length).map { validChars.random(randomGenerator) }.joinToString("")
-}
-
 fun parseIsoDate(input: String): LocalDate? {
     return try {
         LocalDate.parse(input)

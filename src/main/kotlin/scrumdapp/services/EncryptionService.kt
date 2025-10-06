@@ -8,10 +8,12 @@ import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import javax.crypto.spec.GCMParameterSpec
+import kotlin.random.Random
 
 private const val saltLength = 10
 
 interface EncryptionService {
+    fun generateRandomToken(length: Int): String
     fun hashValue(value: String): String
     fun compareHash(value: String, hash: String): Boolean
     fun encryptString(value: String): String
@@ -20,6 +22,12 @@ interface EncryptionService {
 
 class EncryptionServiceImpl(envService: EnvironmentService) : EncryptionService {
     val env = envService
+
+    override fun generateRandomToken(length: Int): String {
+        val randomGenerator = Random(System.currentTimeMillis())
+        val validChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return(1..length).map { validChars.random(randomGenerator) }.joinToString("")
+    }
 
     override fun hashValue(value: String): String {
         val salt = ByteArray(saltLength)

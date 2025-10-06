@@ -5,11 +5,13 @@ import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.Groups
+import com.jeroenvdg.scrumdapp.routes.invites.Invitations
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
+import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
@@ -150,7 +152,7 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
 
         p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken"}
 
-        form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
+        form(action=application.href(Invitations.CreateInvitation.Id(groupId = group.id)), method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
                 label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord." }
                 input(classes="input", type=InputType.password, name="create_group_invite")
