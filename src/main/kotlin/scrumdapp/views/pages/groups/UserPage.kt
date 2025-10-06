@@ -33,8 +33,6 @@ import kotlinx.html.tr
 import kotlinx.html.p
 
 fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
-    val token = 111
-
     h2 { +"Gebruikers aanpassen"}
     div(classes="spacer-lg")
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
