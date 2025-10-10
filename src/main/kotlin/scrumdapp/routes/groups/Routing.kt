@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
 val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
-@Resource("/groups")
+@Resource("groups")
 class GroupsRouter {
 
     @Resource("{groupId}")
