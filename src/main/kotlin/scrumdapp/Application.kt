@@ -4,8 +4,6 @@ import com.jeroenvdg.scrumdapp.Database.initializeDatabase
 import com.jeroenvdg.scrumdapp.db.*
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
-import com.jeroenvdg.scrumdapp.models.GroupsTable
-import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
 import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting

@@ -1,5 +1,8 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
+import com.jeroenvdg.scrumdapp.routes.AuthRouter
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
@@ -9,14 +12,14 @@ import kotlinx.html.p
 import kotlinx.html.strong
 
 
-fun FlowContent.loginPage() {
+fun FlowContent.loginPage(application: Application) {
     div(classes = "c-x") {
         div(classes = "card mt-c") {
             h1(classes = "card-title text-center") { +"Scrumdapp" }
             p { +"Super geweldige check-in manager app" }
             p { +"Alleen voor "; strong { +"Open-ICT" }; +" studenten" }
             div(classes = "spacer-lg") {}
-            a(href="/auth/login", classes="btn btn-blue horizontal g-lg align-center justify-center") {
+            a(href=application.href(AuthRouter.Login), classes="btn btn-blue horizontal g-lg align-center justify-center") {
                 img(src="/static/icons/discord.svg", alt="Discord Logo", classes="icon")
                 +"Log-in met Discord"
             }

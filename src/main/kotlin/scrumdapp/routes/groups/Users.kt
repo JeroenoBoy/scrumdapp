@@ -1,7 +1,6 @@
 package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
-import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
@@ -20,13 +19,12 @@ import io.ktor.server.resources.href
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.application
-import io.ktor.server.routing.route
 
 fun Route.groupUserRoutes() {
     val userService = application.dependencies.resolveBlocking<UserService>()
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
 
-    typedGet<Groups.Id.Users> { groupUserParams ->
+    typedGet<GroupsRouter.Id.Users> { groupUserParams ->
         val group = call.group
         val groupUser = call.groupUser
         val userDashboardData = userService.getUserDashboardDate(group.id)
@@ -41,7 +39,7 @@ fun Route.groupUserRoutes() {
         }
     }
 
-    typedPost<Groups.Id.Users> { groupUserParams ->
+    typedPost<GroupsRouter.Id.Users> { groupUserParams ->
         val params = call.receiveParameters()
         val userPerm = call.groupUser.permissions
         val permChanges = params.entries()
@@ -61,21 +59,21 @@ fun Route.groupUserRoutes() {
         call.respondRedirect("/groups/${call.group.id}/users#$response")
     }
 
-    route<Groups.Id.Users.Delete> {
-        typedPost<Groups.Id.Users.Delete> { deleteGroupParams ->
+    route<GroupsRouter.Id.Users.Delete> {
+        typedPost<GroupsRouter.Id.Users.Delete> { deleteGroupParams ->
             val userId = call.queryParameters["id"]?.toIntOrNull()
             val group = call.group
 
             if (userId == null) {
-                return@typedPost call.respondRedirect(application.href(Groups.Id.Users(group.id)))
+                return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
             }
 
             val success = userService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
             if (!success) {
-                return@typedPost call.respondRedirect(application.href(Groups.Id.Users(group.id)))
+                return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
             }
 
-            call.respondRedirect(application.href(Groups.Id.Users(group.id)))
+            call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
         }
     }
 }

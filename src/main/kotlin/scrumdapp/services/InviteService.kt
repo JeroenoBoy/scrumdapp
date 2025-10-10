@@ -1,10 +1,7 @@
 package com.jeroenvdg.scrumdapp.services
 
-import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.Groupinvite
-import com.jeroenvdg.scrumdapp.models.GroupsTable
-import com.jeroenvdg.scrumdapp.routes.groups.Groups
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit

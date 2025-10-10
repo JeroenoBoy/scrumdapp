@@ -2,7 +2,7 @@ package com.jeroenvdg.scrumdapp.routes.invites
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.userSession
-import com.jeroenvdg.scrumdapp.routes.groups.Groups
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.utils.href
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
@@ -48,7 +48,7 @@ fun Route.acceptInvitationsRoute() {
 
         val success = inviteService.checkGroupTokenAccess(userId, invite, password)
         if (success) {
-            call.respondRedirect(application.href(Groups.Id(groupId = invite.groupId)))
+            call.respondRedirect(application.href(GroupsRouter.Id(groupId = invite.groupId)))
         } else {
             call.respondRedirect(application.href(Invitations.AcceptInvitations(token = token), "password-mistake"))
         }

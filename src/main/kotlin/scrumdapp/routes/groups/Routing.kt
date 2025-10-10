@@ -1,17 +1,11 @@
 package com.jeroenvdg.scrumdapp.routes.groups
 
 
-import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
-import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.routes.groups.Groups.Id.Trends
-import com.jeroenvdg.scrumdapp.services.CheckinService
-import com.jeroenvdg.scrumdapp.services.EncryptionService
-import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
@@ -31,16 +25,15 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.datetime.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.random.Random
 
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
 val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
 @Resource("/groups")
-class Groups {
+class GroupsRouter {
 
     @Resource("{groupId}")
-    class Id(val parent: Groups = Groups(), val groupId: Int, val date: String? = null) {
+    class Id(val parent: GroupsRouter = GroupsRouter(), val groupId: Int, val date: String? = null) {
 
         @Resource("edit")
         class Edit(val parent: Id) { constructor(groupId: Int, date: String? = null): this(Id(groupId=groupId, date=date))}
@@ -101,25 +94,25 @@ suspend fun Application.configureGroupRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
 
     routing {
-        route<Groups> {
+        route<GroupsRouter> {
             install(IsLoggedIn)
             groupsRoutes()
 
-            route<Groups.Id> {
+            route<GroupsRouter.Id> {
                 install(IsInGroup) { this.groupRepository = groupRepository }
                 groupCheckinRoutes()
 
-                route<Groups.Id.Edit> {
+                route<GroupsRouter.Id.Edit> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
                 }
 
-                route<Groups.Id.Users> {
+                route<GroupsRouter.Id.Users> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupUserRoutes()
                 }
 
-                route<Groups.Id.Settings> {
+                route<GroupsRouter.Id.Settings> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupSettingsRoutes()
                 }

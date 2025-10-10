@@ -26,7 +26,7 @@ fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
 
-    typedGet<Groups.Id> { groupData ->
+    typedGet<GroupsRouter.Id> { groupData ->
         val date = groupData.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -47,7 +47,7 @@ fun Route.groupEditCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
 
-    typedGet<Groups.Id.Edit> { groupEditData ->
+    typedGet<GroupsRouter.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -63,7 +63,7 @@ fun Route.groupEditCheckinRoutes() {
         }
     }
 
-    typedPost<Groups.Id.Edit> { groupEditData ->
+    typedPost<GroupsRouter.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -90,6 +90,6 @@ fun Route.groupEditCheckinRoutes() {
         }
 
         checkinRepository.saveGroupCheckin(checkins)
-        call.respondRedirect(application.href(Groups.Id(groupId=group.id, date=groupEditData.parent.date)))
+        call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
     }
 }
