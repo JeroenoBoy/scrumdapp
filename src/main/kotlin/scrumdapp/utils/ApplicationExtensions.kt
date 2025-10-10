@@ -12,7 +12,5 @@ inline fun <reified T>DependencyResolver.resolveBlocking(): T {
 }
 
 inline fun <reified T: Any>Application.href(type: T, fragment: String): String {
-    val builder = URLBuilder(fragment=fragment)
-    this.href(type, builder)
-    return builder.toString()
+    return "${this.href(type)}#${fragment}"
 }
