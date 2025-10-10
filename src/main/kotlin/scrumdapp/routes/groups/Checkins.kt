@@ -76,7 +76,6 @@ fun Route.groupEditCheckinRoutes() {
             return@typedPost call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
         }
 
-        checkinRepository.saveGroupCheckin(checkins)
         call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
     }
 }
