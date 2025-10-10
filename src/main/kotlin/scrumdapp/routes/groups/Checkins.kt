@@ -4,6 +4,7 @@ import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.Presence
+import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.utils.typedPost
@@ -46,6 +47,7 @@ fun Route.groupCheckinRoutes() {
 fun Route.groupEditCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
+    val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
     typedGet<Groups.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
@@ -67,29 +69,11 @@ fun Route.groupEditCheckinRoutes() {
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val body = call.receiveParameters()
+        val success = checkinService.handleBatchCheckin(date, checkins, call.receiveParameters())
 
-        for (checkin in checkins) {
-            checkin.date = date
-            if (body.contains("checkin-${checkin.userId}")) {
-                checkin.checkinStars = body["checkin-${checkin.userId}"]?.toIntOrNull()
-                if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!, 0, 10)
-            }
-            if (body.contains("checkup-${checkin.userId}")) {
-                checkin.checkupStars = body["checkup-${checkin.userId}"]?.toIntOrNull()
-                if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!, 0, 10)
-            }
-            if (body.contains("presence-${checkin.userId}")) {
-                val presneceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
-                checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
-            }
-            if (body.contains("comment-${checkin.userId}")) {
-                checkin.comment = body["comment-${checkin.userId}"]
-                if (checkin.comment.isNullOrBlank()) checkin.comment = null
-            }
+        if (!success) {
+            // TO DO: Handle this
         }
-
-        checkinRepository.saveGroupCheckin(checkins)
         call.respondRedirect(application.href(Groups.Id(groupId=group.id, date=groupEditData.parent.date)))
     }
 }
