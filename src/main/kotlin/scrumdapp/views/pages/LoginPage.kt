@@ -19,7 +19,7 @@ fun FlowContent.loginPage(application: Application) {
             p { +"Super geweldige check-in manager app" }
             p { +"Alleen voor "; strong { +"Open-ICT" }; +" studenten" }
             div(classes = "spacer-lg") {}
-            a(href=application.href(AuthRouter.Login), classes="btn btn-blue horizontal g-lg align-center justify-center") {
+            a(href=application.href(AuthRouter.Login()), classes="btn btn-blue horizontal g-lg align-center justify-center") {
                 img(src="/static/icons/discord.svg", alt="Discord Logo", classes="icon")
                 +"Log-in met Discord"
             }
