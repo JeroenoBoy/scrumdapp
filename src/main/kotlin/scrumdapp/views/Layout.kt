@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.views
 
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.views.components.navbar
+import io.ktor.server.application.Application
 import io.ktor.server.routing.RoutingCall
 import kotlinx.html.BODY
 import kotlinx.html.FlowContent
@@ -39,7 +40,7 @@ fun HTML.dashboardLayout(pageData: DashboardPageData, builder: FlowContent.() ->
     mainLayout(PageData(pageData.title)) {
         div { id = "app"
             img(alt="bg-img", src="/static/backgrounds/${pageData.background ?: "15"}.webp", classes="bg-img")
-            navbar(pageData.call.user)
+            navbar(pageData.call.application, pageData.call.user)
             div(classes="nav-height")
             div(classes="spacer-xl")
             div(classes="container-parent") {

@@ -1,8 +1,11 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.routes.invites.Invitations
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -14,13 +17,13 @@ import kotlinx.html.h2
 import kotlinx.html.input
 import kotlinx.html.p
 
-fun FlowContent.invitationpage(group: Group, token: String) {
+fun FlowContent.invitationpage(application: Application, group: Group, token: String) {
     div(classes="c-x") {
         div(classes="card mt-c") {
             h1(classes="card-title") {+"Je bent uitgenodigd voor ${group.name}" }
             p { +"Voordat je aan de slag kan met je checkin, moet je hieronder het wachtwoord invullen dat je van je scrummaster hebt gekregen."}
             div(classes="spacer-lg")
-            form(action="/invitations?token=${token}", method= FormMethod.post) {
+            form(action=application.href(Invitations.AcceptInvitations(token = token)), method= FormMethod.post) {
                 div(classes="vertical") {
                     input(classes="input", type=InputType.password, name="group_password")
                     div(classes="spacer-lg")

@@ -4,8 +4,6 @@ import com.jeroenvdg.scrumdapp.Database.initializeDatabase
 import com.jeroenvdg.scrumdapp.db.*
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
-import com.jeroenvdg.scrumdapp.models.GroupsTable
-import com.jeroenvdg.scrumdapp.models.UserTable
 import com.jeroenvdg.scrumdapp.routes.SessionToken
 import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
@@ -15,6 +13,7 @@ import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.DotenvService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
+import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
@@ -48,6 +47,20 @@ suspend fun Application.module() {
     val groupRepository = GroupRepositoryImpl()
     val checkinRepository = CheckinRepositoryImpl()
 
+    dependencies {
+        provide { database }
+        provide { httpClient }
+        provide { encryptionService }
+        provide { UserService(groupRepository, checkinRepository, encryptionService) }
+        provide { CheckinService(checkinRepository, groupRepository) }
+        provide { InviteService(groupRepository, encryptionService) }
+        provide<UserRepository> { userRepository }
+        provide<GroupRepository> { groupRepository }
+        provide<CheckinRepository> { checkinRepository }
+        provide<SessionRepository> { sessionRepository }
+        provide<DiscordService> { DiscordServiceImpl(httpClient) }
+    }
+
     install(CallLogging)
     install(CachingHeaders) {
         options { _, outgoingContent ->
@@ -69,25 +82,9 @@ suspend fun Application.module() {
         cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
     }
 
-    install(UserProvider) {
-        this.userRepository = userRepository
-        this.sessionRepository = sessionRepository
-    }
+    install(UserProvider)
 
     install(Resources)
-
-    dependencies {
-        provide { database }
-        provide { httpClient }
-        provide { encryptionService }
-        provide { UserService(groupRepository, checkinRepository, encryptionService) }
-        provide { CheckinService(checkinRepository, groupRepository) }
-        provide<UserRepository> { userRepository }
-        provide<GroupRepository> { groupRepository }
-        provide<CheckinRepository> { checkinRepository }
-        provide<SessionRepository> { sessionRepository }
-        provide<DiscordService> { DiscordServiceImpl(httpClient) }
-    }
 
     configureGroupRoutes()
     configureInviteRoutes()

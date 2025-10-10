@@ -2,6 +2,8 @@ package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.middleware.group
+import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.services.CheckinService
@@ -13,8 +15,6 @@ import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
-import com.scrumdapp.scrumdapp.middleware.group
-import com.scrumdapp.scrumdapp.middleware.groupUser
 import io.ktor.server.resources.href
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
@@ -27,7 +27,7 @@ fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
 
-    typedGet<Groups.Id> { groupData ->
+    typedGet<GroupsRouter.Id> { groupData ->
         val date = groupData.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -49,7 +49,7 @@ fun Route.groupEditCheckinRoutes() {
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
     val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
-    typedGet<Groups.Id.Edit> { groupEditData ->
+    typedGet<GroupsRouter.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -65,7 +65,7 @@ fun Route.groupEditCheckinRoutes() {
         }
     }
 
-    typedPost<Groups.Id.Edit> { groupEditData ->
+    typedPost<GroupsRouter.Id.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -74,6 +74,8 @@ fun Route.groupEditCheckinRoutes() {
         if (!success) {
             // TO DO: Handle this
         }
-        call.respondRedirect(application.href(Groups.Id(groupId=group.id, date=groupEditData.parent.date)))
+
+        checkinRepository.saveGroupCheckin(checkins)
+        call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
     }
 }

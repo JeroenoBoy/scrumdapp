@@ -1,13 +1,13 @@
-package com.scrumdapp.scrumdapp.middleware
+package com.jeroenvdg.scrumdapp.middleware
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.UserGroup
-import com.jeroenvdg.scrumdapp.middleware.hasUser
-import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createRouteScopedPlugin
+import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.response.respondRedirect
 import io.ktor.util.AttributeKey
 
@@ -26,22 +26,18 @@ val ApplicationCall.group: Group
 val ApplicationCall.groupUser: UserGroup
     get() = attributes[groupUserAttributeKey]
 
-class GroupProviderConfig() {
-    lateinit var groupRepository: GroupRepository
-}
-
 class PermProviderConfig() {
     var permissions: UserPermissions = UserPermissions.User
 }
 
-val IsInGroup = createRouteScopedPlugin("Group Provider", ::GroupProviderConfig) {
-    val groupService = pluginConfig.groupRepository
+val IsInGroup = createRouteScopedPlugin("Group Provider") {
+    val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
     onCall { call ->
         if (!call.hasUser) return@onCall
         val userId = call.user.id
         val groupId = call.parameters["groupId"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/home")
-        val group = groupService.getGroup(groupId) ?: return@onCall call.respondRedirect("/home")
-        val groupUser = groupService.getGroupUser(groupId, userId) ?: return@onCall call.respondRedirect("/home")
+        val group = groupRepository.getGroup(groupId) ?: return@onCall call.respondRedirect("/home")
+        val groupUser = groupRepository.getGroupUser(groupId, userId) ?: return@onCall call.respondRedirect("/home")
         call.attributes[groupAttributeKey] = group
         call.attributes[groupUserAttributeKey] = groupUser
     }

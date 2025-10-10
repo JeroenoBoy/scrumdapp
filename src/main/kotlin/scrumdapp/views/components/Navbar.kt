@@ -1,16 +1,19 @@
 package com.jeroenvdg.scrumdapp.views.components
 
 import com.jeroenvdg.scrumdapp.db.User
+import com.jeroenvdg.scrumdapp.routes.AboutRouter
+import com.jeroenvdg.scrumdapp.routes.HomeRouter
+import com.jeroenvdg.scrumdapp.routes.LogoutRouter
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.a
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.header
 import kotlinx.html.i
 import kotlinx.html.img
-import kotlinx.html.span
 
-fun FlowContent.navbar(user: User) {
+fun FlowContent.navbar(application: Application, user: User) {
     header(classes="nav") {
         div(classes="nav-group") {
 //            a(href="/home", classes="nav-button r-full px-sm") { icon("arrow_back") }
@@ -18,9 +21,9 @@ fun FlowContent.navbar(user: User) {
             i(classes="px-lg") { +"Scrumdapp" }
         }
         div(classes="nav-group justify-center") {
-            a(href="/home", classes="nav-button") { +"Home" }
-            a(href="/dagboek", classes="nav-button") { +"Dagboek" }
-            a(href="/about", classes="nav-button") { +"Over" }
+            a(href=application.href(HomeRouter()), classes="nav-button") { +"Home" }
+            a(href="/", classes="nav-button") { +"Dagboek" }
+            a(href=application.href(AboutRouter()), classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {
             div(classes="dropdown horizontal align-center g-md") {
@@ -33,7 +36,7 @@ fun FlowContent.navbar(user: User) {
                         icon(iconName="settings", classes="purple")
                         +"Settings"
                     }
-                    a(href="/logout", classes="nav-button") {
+                    a(href=application.href(LogoutRouter()), classes="nav-button") {
                         icon(iconName="logout", classes="red")
                         +"Logout"
                     }

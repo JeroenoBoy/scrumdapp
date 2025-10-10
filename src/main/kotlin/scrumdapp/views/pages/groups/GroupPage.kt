@@ -2,8 +2,7 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.routes.groups.Groups
-import com.jeroenvdg.scrumdapp.utils.href
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.icon
@@ -25,18 +24,18 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                     div(classes="card vertical g-md") {
                         i(classes="px-lg text-center") {+"Pagina's"}
                         hr {}
-                        a(href=application.href(Groups.Id.Trends(group.id)), classes="btn b-none px-lg") {
+                        a(href=application.href(GroupsRouter.Id.Trends(group.id)), classes="btn b-none px-lg") {
                             icon(iconName="bar_chart", classes="yellow")
                             +"Trends"
                         }
                         if (perms.id <= UserPermissions.UserManagement.id) {
-                            a(href=application.href(Groups.Id.Users(group.id)), classes="btn b-none px-lg") {
+                            a(href=application.href(GroupsRouter.Id.Users(group.id)), classes="btn b-none px-lg") {
                                 icon(iconName="groups", classes="blue")
                                 +"Gebruikers"
                             }
                         }
                         if (perms.id <= UserPermissions.ScrumDad.id) {
-                            a(href=application.href(Groups.Id.Settings(group.id)), classes="btn b-none px-lg") {
+                            a(href=application.href(GroupsRouter.Id.Settings(group.id)), classes="btn b-none px-lg") {
                                 icon(iconName="settings", classes="purple")
                                 +"Instellingen"
                             }
@@ -54,7 +53,7 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
     }
     if (perms.id <= UserPermissions.CheckinManagement.id) {
         modal("create-checkin-$rng") {
-            form(action=application.href(Groups.Id.Edit(group.id)), method=FormMethod.get, classes="vertical g-md") {
+            form(action=application.href(GroupsRouter.Id.Edit(group.id)), method=FormMethod.get, classes="vertical g-md") {
                 h2 { +"Nieuwe Check-in" }
 
                 div(classes="input-group") {
@@ -95,7 +94,7 @@ fun FlowContent.checkinDates(application: Application, dates: List<LocalDate>, g
         }
         div(classes="vertical g-md") { style="max-height: 15em;overflow-y: scroll;padding:2px"
             for (date in dates) {
-                a(classes = "btn b-none px-lg text-center", href=application.href(Groups.Id(groupId=group.id, date=date.scrumdappUrlFormat()))) {
+                a(classes = "btn b-none px-lg text-center", href=application.href(GroupsRouter.Id(groupId=group.id, date=date.scrumdappUrlFormat()))) {
                     span(classes="gray") { +date.scrumdappFormat() }
                 }
             }

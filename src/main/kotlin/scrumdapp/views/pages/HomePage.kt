@@ -1,8 +1,11 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -11,15 +14,12 @@ import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.img
 import kotlinx.html.a
-import kotlinx.html.classes
-import kotlinx.html.dialog
 import kotlinx.html.form
-import kotlinx.html.id
 import kotlinx.html.input
 import kotlinx.html.label
 import kotlinx.html.span
 
-fun FlowContent.homePage(groups: List<Group>) {
+fun FlowContent.homePage(application: Application, groups: List<Group>) {
     div(classes="horizontal w-full justify-between align-center") {
         h1 { +"Scrumdapp" }
         div(classes="vertical justify-center h-full") {
@@ -32,24 +32,24 @@ fun FlowContent.homePage(groups: List<Group>) {
 
     div(classes="grid row-3 g-md") {
         for (group in groups) {
-            groupWidget(group)
+            groupWidget(application, group)
         }
     }
 
-    createGroupModal()
+    createGroupModal(application)
 }
 
-fun FlowContent.groupWidget(group: Group) {
-    a(href = "/groups/${group.id}", classes="card btn-card") {
+fun FlowContent.groupWidget(application: Application, group: Group) {
+    a(href=application.href(GroupsRouter.Id(groupId=group.id)), classes="card btn-card") {
         h2(classes="card-title") {+group.name}
 //        p(classes="muted") {+group.owner.name}
         img(alt="card image", src="/static/backgrounds/thumbnails/${group.bannerImage ?: "15"}.webp", classes="card-img") {}
     }
 }
 
-fun FlowContent.createGroupModal() {
+fun FlowContent.createGroupModal(application: Application) {
     modal(id="new-group") {
-        form(action="/groups", method=FormMethod.post, classes="vertical g-md") {
+        form(action=application.href(GroupsRouter()), method=FormMethod.post, classes="vertical g-md") {
             h2(classes="modal-title") { +"Nieuwe Groep" }
             div(classes="input-group") {
                 label(classes="input-label") { htmlFor="group_name"; +"Groep Naam" }

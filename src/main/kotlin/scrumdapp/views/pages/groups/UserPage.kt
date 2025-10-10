@@ -4,7 +4,8 @@ import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.routes.groups.Groups
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
+import com.jeroenvdg.scrumdapp.routes.invites.Invitations
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
@@ -14,7 +15,6 @@ import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
-import kotlinx.html.br
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -128,7 +128,7 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
             }
 
 
-            form(action=application.href(Groups.Id.Users.Delete(group.id)), method= FormMethod.post) {
+            form(action=application.href(GroupsRouter.Id.Users.Delete(group.id)), method= FormMethod.post) {
                 div(classes = "horizontal g-md justify-end") {
                     a(classes="btn btn-green", href="#") {
                         icon(iconName="undo", classes="bg-hard")
@@ -148,7 +148,7 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
 
         p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken"}
 
-        form(action="/groups/${group.id}/users/create-invite", method=FormMethod.post, classes="vertical g-md") {
+        form(action=application.href(Invitations.CreateInvitation.Id(groupId = group.id)), method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
                 label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord." }
                 input(classes="input", type=InputType.password, name="create_group_invite")
@@ -199,7 +199,7 @@ fun FlowContent.userInviteContent(application: Application, group: Group, url: S
     }
 
     div(classes="horizontal g-md justify-end") {
-        a(classes="btn", href=application.href(Groups.Id.Users(group.id))) {
+        a(classes="btn", href=application.href(GroupsRouter.Id.Users(group.id))) {
             icon(iconName="check", classes="gray")
             +"Gelukt?"
         }

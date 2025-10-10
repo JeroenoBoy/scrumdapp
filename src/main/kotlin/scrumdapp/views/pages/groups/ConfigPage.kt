@@ -3,10 +3,9 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.routes.groups.Groups
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
-import io.ktor.resources.href
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
@@ -14,7 +13,6 @@ import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -31,7 +29,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
 
     div(classes="spacer-lg")
 
-    form(action=application.href(Groups.Id.Settings.ChangeName(group.id)), method=FormMethod.post) {
+    form(action=application.href(GroupsRouter.Id.Settings.ChangeName(group.id)), method=FormMethod.post) {
         div(classes="input-group") {
             label(classes="input-label") { htmlFor="group_name"; +"Groep Naam" }
             input(classes="input", name="group_name") {
@@ -91,7 +89,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
                         }
                     }
                 } else {
-                    form(action=application.href(Groups.Id.Settings.ChangeBackground(group.id)), method=FormMethod.post, classes="relative ratio-43") {
+                    form(action=application.href(GroupsRouter.Id.Settings.ChangeBackground(group.id)), method=FormMethod.post, classes="relative ratio-43") {
                         input(type=InputType.hidden, name="img") { value=background }
                         img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
                         div(classes="hacky-icon pick-bg-btn") {
@@ -147,14 +145,14 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
             +"' in het veld hieronder en click op verwijder om de groep te verwijderen."
         }
 
-        form(action=application.href(Groups.Id.Settings.Delete(group.id)), method=FormMethod.post, classes="vertical g-md") {
+        form(action=application.href(GroupsRouter.Id.Settings.Delete(group.id)), method=FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
                 label(classes="input-label") { htmlFor="group_name"; +"Groep Naam" }
                 input(classes="input", name="delete_group_name") { value="" }
             }
 
             div(classes="horizontal g-md justify-end") {
-                a(classes = "btn btn-green", href = "#") {
+                a(classes = "btn btn-green", href="#") {
                     icon(iconName = "undo", classes = "bg-hard")
                     +"Stop"
                 }
@@ -172,7 +170,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
             +"Je hebt de verkeerde groeps naam ingevult."
         }
         div(classes="horizontal g-md justify-end") {
-            a(classes = "btn", href = "#") {
+            a(classes="btn", href="#") {
                 icon(iconName = "undo", classes = "gray")
                 +"Oke"
             }
