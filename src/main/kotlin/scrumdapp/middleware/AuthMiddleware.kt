@@ -5,8 +5,10 @@ import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.db.UserRepository
 import com.jeroenvdg.scrumdapp.models.UserSession
 import com.jeroenvdg.scrumdapp.routes.SessionToken
+import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createRouteScopedPlugin
+import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.uri
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.sessions.clear
@@ -18,11 +20,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RedirectCookie(val to: String)
-
-class UserProviderConfig() {
-    lateinit var userRepository: UserRepository
-    lateinit var sessionRepository: SessionRepository
-}
 
 private val userSessionAttributeKey = AttributeKey<UserSession>("User Session")
 private val userAttributeKey = AttributeKey<User>("User")
@@ -45,13 +42,13 @@ val ApplicationCall.hasUser: Boolean
 val ApplicationCall.userSession: UserSession
     get() = attributes[userSessionAttributeKey]
 
-val UserProvider = createRouteScopedPlugin("User Provider", ::UserProviderConfig) {
-    val userService = pluginConfig.userRepository
-    val sessionService = pluginConfig.sessionRepository
+val UserProvider = createRouteScopedPlugin("User Provider") {
+    val userRepository = application.dependencies.resolveBlocking<UserRepository>()
+    val sessionRepository = application.dependencies.resolveBlocking<SessionRepository>()
     onCall { call ->
         val sessionToken = call.sessions.get<SessionToken>()?.token ?: return@onCall
-        val session = sessionService.getSession(sessionToken) ?: return@onCall call.sessions.clear<SessionToken>()
-        val user = userService.getUser(session.userId) ?: return@onCall call.sessions.clear<SessionToken>()
+        val session = sessionRepository.getSession(sessionToken) ?: return@onCall call.sessions.clear<SessionToken>()
+        val user = userRepository.getUser(session.userId) ?: return@onCall call.sessions.clear<SessionToken>()
         call.attributes.put(userAttributeKey, user)
         call.attributes.put(userSessionAttributeKey, session)
     }

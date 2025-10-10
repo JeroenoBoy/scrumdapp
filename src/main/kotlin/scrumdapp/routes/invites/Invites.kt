@@ -1,20 +1,24 @@
-package com.jeroenvdg.scrumdapp.routes.groups
+package com.jeroenvdg.scrumdapp.routes.invites
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
+import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
+import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.services.EncryptionService
+import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.invitationpage
+import io.ktor.resources.Resource
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
-import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -26,7 +30,45 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
+
+@Resource("invitations")
+class Invitations {
+
+    @Resource("accept")
+    class AcceptInvitations(val parent: Invitations = Invitations(), val token: String? = null)
+
+    @Resource("create")
+    class CreateInvitation(val parent: Invitations = Invitations()) {
+
+        @Resource("{groupId}")
+        class Id(val parent: CreateInvitation = CreateInvitation(), val groupId: Int)
+    }
+}
+
 suspend fun Application.configureInviteRoutes() {
+    val groupRepository = dependencies.resolve<GroupRepository>()
+
+    routing {
+        route<Invitations> {
+            install(IsLoggedIn)
+
+            route<Invitations.AcceptInvitations> {
+                acceptInvitationsRoute()
+            }
+
+            route<Invitations.CreateInvitation> {
+                route<Invitations.CreateInvitation.Id> {
+                    install(IsInGroup)
+                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
+                    createInvitationsRoute()
+                }
+
+            }
+        }
+    }
+}
+
+/*suspend fun Application.configureInviteRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
     val encryptionService = dependencies.resolve<EncryptionService>()
 
@@ -89,4 +131,4 @@ suspend fun Application.configureInviteRoutes() {
             }
         }
     }
-}
+} */

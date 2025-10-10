@@ -10,15 +10,18 @@ import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
+import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.pages.loginPage
 import com.jeroenvdg.scrumdapp.views.mainLayout
 import io.ktor.client.*
 import io.ktor.http.*
+import io.ktor.resources.Resource
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.html.*
 import io.ktor.server.plugins.di.*
+import io.ktor.server.resources.href
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
@@ -27,6 +30,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SessionToken(val token: String)
+
+@Resource("auth")
+class AuthRouter() {
+    @Resource("login")
+    class Login(val parent: AuthRouter = AuthRouter())
+    @Resource("callback")
+    class Callback(val parent: AuthRouter = AuthRouter())
+}
+
+@Resource("login")
+class LoginRouter()
+
+@Resource("logout")
+class LogoutRouter()
 
 suspend fun Application.configureAuthRouting() {
     val env = dependencies.resolve<EnvironmentService>()
@@ -56,57 +73,61 @@ suspend fun Application.configureAuthRouting() {
     }
 
     routing {
-        route("/auth") {
+        route<AuthRouter> {
             install(IsLoggedOut)
             authenticate("auth-oauth-discord") {
-                get("/login") { } // Magically redirects to the callback
-                get("/callback") {
-                    val principal = call.principal<OAuthAccessTokenResponse.OAuth2>()
-                    val state = principal?.state
-                    if (principal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                    if (principal.refreshToken == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                    if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                route<AuthRouter.Login> {
+                    get {  } // Gets overridden bij authenticate fn
+                }
+                route<AuthRouter.Callback> {
+                    get {
+                        val principal = call.principal<OAuthAccessTokenResponse.OAuth2>()
+                        val state = principal?.state
+                        if (principal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                        if (principal.refreshToken == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                        if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
 
-                    val tokenExpiry = GMTDate() + principal.expiresIn * 1000
+                        val tokenExpiry = GMTDate() + principal.expiresIn * 1000
 
-                    val discordUser = discordService.getUser(principal.accessToken).getOrElse {
-                        return@get call.respond(HttpStatusCode.Unauthorized, "Failed to log in")
-                    }
+                        val discordUser = discordService.getUser(principal.accessToken).getOrElse {
+                            return@get call.respond(HttpStatusCode.Unauthorized, "Failed to log in")
+                        }
 
-                    // Get user with discordId
-                    val user = userRepository.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
-                    val session = sessionRepository.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
+                        // Get user with discordId
+                        val user = userRepository.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
+                        val session = sessionRepository.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
 
-                    call.sessions.set(SessionToken(session.token))
-                    val redirect = call.sessions.get<RedirectCookie>()
-                    if (redirect != null) {
-                        call.sessions.clear<RedirectCookie>()
-                        call.respondRedirect(redirect.to)
-                    } else {
-                        call.respondRedirect("/home")
+                        call.sessions.set(SessionToken(session.token))
+                        val redirect = call.sessions.get<RedirectCookie>()
+                        if (redirect != null) {
+                            call.sessions.clear<RedirectCookie>()
+                            call.respondRedirect(redirect.to)
+                        } else {
+                            call.respondRedirect("/home")
+                        }
                     }
                 }
             }
         }
 
-        route("/login") {
+        route<LoginRouter> {
             install(IsLoggedOut)
             get {
                 call.respondHtml {
                     mainLayout(PageData("Login")) {
-                        loginPage()
+                        loginPage(application)
                     }
                 }
             }
         }
 
-        route("/logout") {
+        route<LogoutRouter> {
             install(IsLoggedIn)
             get {
                 val token = call.userSession.token
                 sessionRepository.deleteSession(token)
                 call.sessions.clear<SessionToken>()
-                call.respondRedirect("/login")
+                call.respondRedirect(href(LoginRouter()))
             }
         }
     }

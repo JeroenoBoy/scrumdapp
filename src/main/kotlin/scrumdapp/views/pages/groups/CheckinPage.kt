@@ -4,10 +4,16 @@ import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.utils.isNewCheckin
+import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
+import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import com.jeroenvdg.scrumdapp.views.components.stars
+import io.ktor.server.application.Application
+import io.ktor.server.resources.href
+import kotlinx.datetime.LocalDate
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
@@ -16,7 +22,7 @@ import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
-import kotlinx.html.i
+import kotlinx.html.h3
 import kotlinx.html.input
 import kotlinx.html.option
 import kotlinx.html.p
@@ -29,15 +35,14 @@ import kotlinx.html.textArea
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
-import kotlin.math.floor
 import kotlin.random.Random
 
 
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: String, perms: UserPermissions) {
+fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate, perms: UserPermissions) {
 
-    h2 { +"Check-in voor "; b { +date } }
+    h2 { +"Check-in voor "; b { +(date.scrumdappFormat()) } }
 
     table(classes="checkin-table") {
         thead {
@@ -97,7 +102,7 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     div(classes="flex-1")
     div(classes="horizontal g-md justify-end") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
-            a(href="/groups/${group.id}/edit?date=${date}", classes="btn") {
+            a(href=application.href(GroupsRouter.Id.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
                 icon(iconName="edit", classes="blue")
                 +"Pas aan"
             }
@@ -105,28 +110,28 @@ fun FlowContent.checkinWidget(checkins: List<Checkin>, group: Group, date: Strin
     }
 }
 
-fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, date: String) {
+fun FlowContent.editableCheckinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate) {
     fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
         select(classes="input select-checkin w-full text-ellipse") { this.name=name
-            option(classes="gray") {value=""; if (selectedValue == null) { selected = true }; +"---" }
-            option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected = true }; +"0"}
-            option(classes="red") {value="1"; if (selectedValue == 1) { selected = true }; +"0.5"}
-            option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected = true }; +"1"}
-            option(classes="orange") {value="3"; if (selectedValue == 3) { selected = true }; +"1.5"}
-            option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected = true }; +"2"}
-            option(classes="yellow") {value="5"; if (selectedValue == 5) { selected = true }; +"2.5"}
-            option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected = true }; +"3"}
-            option(classes="green") {value="7"; if (selectedValue == 7) { selected = true }; +"3.5"}
-            option(classes="aqua") {value="8"; if (selectedValue == 8) { selected = true }; +"4"}
-            option(classes="blue") {value="9"; if (selectedValue == 9) { selected = true }; +"4.5"}
-            option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected = true }; +"5"}
+            option(classes="gray") {value=""; if (selectedValue == null) { selected=true }; +"---" }
+            option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected=true }; +"0"}
+            option(classes="red") {value="1"; if (selectedValue == 1) { selected=true }; +"0.5"}
+            option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected=true }; +"1"}
+            option(classes="orange") {value="3"; if (selectedValue == 3) { selected=true }; +"1.5"}
+            option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected=true }; +"2"}
+            option(classes="yellow") {value="5"; if (selectedValue == 5) { selected=true }; +"2.5"}
+            option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected=true }; +"3"}
+            option(classes="green") {value="7"; if (selectedValue == 7) { selected=true }; +"3.5"}
+            option(classes="aqua") {value="8"; if (selectedValue == 8) { selected=true }; +"4"}
+            option(classes="blue") {value="9"; if (selectedValue == 9) { selected=true }; +"4.5"}
+            option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected=true }; +"5"}
         }
     }
 
-    val isNewCheckin = checkins.isNewCheckin()
-    val id = Random.nextInt(999999)
+    val isNewCheckin=checkins.isNewCheckin()
+    val id=Random.nextInt(999999)
 
-    h2 { +"Checkin voor "; b { +date } }
+    h2 { +"Checkin voor "; b { +date.scrumdappFormat() } }
 
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
         table(classes="checkin-table") {
@@ -145,12 +150,12 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                         td(classes="text-ellpise name-field") { +checkin.name }
                         td(classes="pl-md ") {
                             select(classes="input select-presence w-full text-ellipse") { name="presence-${checkin.userId}"
-                                option(classes="gray") {value=""; if (checkin.presence == null) { selected = true } ; +"---" }
-                                option(classes="green") {value="0"; if (checkin.presence == Presence.OnTime) { selected = true }; +"Op Tijd" }
-                                option(classes="yellow") {value="1"; if (checkin.presence == Presence.Late) { selected = true }; +"Te Laat" }
-                                option(classes="green-dim") {value="2"; if (checkin.presence == Presence.VerifiedAbsent) { selected = true } ; +"Goorloofd Afwezig" }
-                                option(classes="red") {value="3"; if (checkin.presence == Presence.Absent) { selected = true }; +"Ongeoorloofd Afwezig" }
-                                option(classes="blue") {value="4"; if (checkin.presence == Presence.Sick) { selected = true }; +"Ziek" }
+                                option(classes="gray") {value=""; if (checkin.presence == null) { selected=true } ; +"---" }
+                                option(classes="green") {value="0"; if (checkin.presence == Presence.OnTime) { selected=true }; +"Op Tijd" }
+                                option(classes="yellow") {value="1"; if (checkin.presence == Presence.Late) { selected=true }; +"Te Laat" }
+                                option(classes="green-dim") {value="2"; if (checkin.presence == Presence.VerifiedAbsent) { selected=true } ; +"Goorloofd Afwezig" }
+                                option(classes="red") {value="3"; if (checkin.presence == Presence.Absent) { selected=true }; +"Ongeoorloofd Afwezig" }
+                                option(classes="blue") {value="4"; if (checkin.presence == Presence.Sick) { selected=true }; +"Ziek" }
                             }
                         }
                         td {
@@ -185,10 +190,10 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
             div(classes="hacky-icon") {
                 if (!isNewCheckin) {
                     icon(iconName="check", classes="blue")
-                    input(type = InputType.submit, classes = "btn") { value = "Toepassen" }
+                    input(type=InputType.submit, classes="btn") { value="Toepassen" }
                 } else {
                     icon(iconName="add", classes="blue")
-                    input(type = InputType.submit, classes = "btn") { value = "Maak checkin" }
+                    input(type=InputType.submit, classes="btn") { value="Maak checkin" }
                 }
             }
             if (!isNewCheckin) {
@@ -209,16 +214,9 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
                     icon(iconName="undo", classes="gray")
                     +"Nee"
                 }
-                if (isNewCheckin) {
-                    a(href="/groups/${group.id}", classes="btn btn-red") {
-                        icon(iconName="cancel", classes="bg-hard")
-                        +"Annuleren"
-                    }
-                } else {
-                    a(href="/groups/${group.id}?date=${date}", classes="btn btn-red") {
-                        icon(iconName="cancel", classes="bg-hard")
-                        +"Annuleren"
-                    }
+                a(href=application.href(GroupsRouter.Id(groupId=group.id, date=date.scrumdappUrlFormat())), classes="btn btn-red") {
+                    icon(iconName="cancel", classes="bg-hard")
+                    +"Annuleren"
                 }
             }
         }
@@ -226,17 +224,18 @@ fun FlowContent.editableCheckinWidget(checkins: List<Checkin>, group: Group, dat
 
     if (!isNewCheckin) {
         modal(id="confirm-delete-$id") {
-            form(action = "/groups/${group.id}/delete-checkin?date=${date}", method = FormMethod.post, classes = "vertical g-md") {
-                h2(classes = "modal-title") { +"Checkin verwijderen" }
+            form(action="/TODO", method=FormMethod.post, classes="vertical g-md") {
+                h2(classes="modal-title") { +"Checkin verwijderen" }
+                h3(classes="red") { +"TODO" }
                 p { +"Weet je zeker dat je de checkin wilt verwijderen?" }
-                div(classes = "horizontal g-md justify-end") {
-                    a(href = "#", classes = "btn") {
-                        icon(iconName = "undo", classes = "gray")
+                div(classes="horizontal g-md justify-end") {
+                    a(href="#", classes="btn") {
+                        icon(iconName="undo", classes="gray")
                         +"Nee"
                     }
-                    div(classes = "hacky-icon") {
-                        icon(iconName = "delete_forever", classes = "bg-hard")
-                        input(type = InputType.submit, classes = "btn btn-red") { value = "Verwijderen" }
+                    div(classes="hacky-icon") {
+                        icon(iconName="delete_forever", classes="bg-hard")
+                        input(type=InputType.submit, classes="btn btn-red") { value="Verwijderen" }
                     }
                 }
             }
