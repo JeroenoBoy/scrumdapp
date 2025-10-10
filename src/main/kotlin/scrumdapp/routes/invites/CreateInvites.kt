@@ -1,5 +1,7 @@
 package com.jeroenvdg.scrumdapp.routes.invites
 
+import com.jeroenvdg.scrumdapp.middleware.group
+import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.utils.href
@@ -9,8 +11,6 @@ import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.userInviteContent
-import com.scrumdapp.scrumdapp.middleware.group
-import com.scrumdapp.scrumdapp.middleware.groupUser
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.plugins.origin

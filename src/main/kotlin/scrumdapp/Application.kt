@@ -47,6 +47,20 @@ suspend fun Application.module() {
     val groupRepository = GroupRepositoryImpl()
     val checkinRepository = CheckinRepositoryImpl()
 
+    dependencies {
+        provide { database }
+        provide { httpClient }
+        provide { encryptionService }
+        provide { UserService(groupRepository, checkinRepository, encryptionService) }
+        provide { CheckinService(checkinRepository, groupRepository) }
+        provide { InviteService(groupRepository, encryptionService) }
+        provide<UserRepository> { userRepository }
+        provide<GroupRepository> { groupRepository }
+        provide<CheckinRepository> { checkinRepository }
+        provide<SessionRepository> { sessionRepository }
+        provide<DiscordService> { DiscordServiceImpl(httpClient) }
+    }
+
     install(CallLogging)
     install(CachingHeaders) {
         options { _, outgoingContent ->
@@ -68,26 +82,9 @@ suspend fun Application.module() {
         cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
     }
 
-    install(UserProvider) {
-        this.userRepository = userRepository
-        this.sessionRepository = sessionRepository
-    }
+    install(UserProvider)
 
     install(Resources)
-
-    dependencies {
-        provide { database }
-        provide { httpClient }
-        provide { encryptionService }
-        provide { UserService(groupRepository, checkinRepository, encryptionService) }
-        provide { CheckinService(checkinRepository, groupRepository) }
-        provide { InviteService(groupRepository, encryptionService) }
-        provide<UserRepository> { userRepository }
-        provide<GroupRepository> { groupRepository }
-        provide<CheckinRepository> { checkinRepository }
-        provide<SessionRepository> { sessionRepository }
-        provide<DiscordService> { DiscordServiceImpl(httpClient) }
-    }
 
     configureGroupRoutes()
     configureInviteRoutes()

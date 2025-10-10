@@ -3,13 +3,13 @@ package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
+import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
-import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
-import com.scrumdapp.scrumdapp.middleware.IsInGroup
 import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.serialization.JsonConvertException
@@ -99,7 +99,7 @@ suspend fun Application.configureGroupRoutes() {
             groupsRoutes()
 
             route<GroupsRouter.Id> {
-                install(IsInGroup) { this.groupRepository = groupRepository }
+                install(IsInGroup)
                 groupCheckinRoutes()
 
                 route<GroupsRouter.Id.Edit> {

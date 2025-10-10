@@ -1,6 +1,8 @@
 package com.jeroenvdg.scrumdapp.routes.invites
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.middleware.HasCorrectPerms
+import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.middleware.userSession
@@ -10,8 +12,6 @@ import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.invitationpage
-import com.scrumdapp.scrumdapp.middleware.HasCorrectPerms
-import com.scrumdapp.scrumdapp.middleware.IsInGroup
 import io.ktor.resources.Resource
 import io.ktor.server.application.Application
 import io.ktor.server.html.respondHtml
@@ -58,7 +58,7 @@ suspend fun Application.configureInviteRoutes() {
 
             route<Invitations.CreateInvitation> {
                 route<Invitations.CreateInvitation.Id> {
-                    install(IsInGroup) { this.groupRepository = groupRepository}
+                    install(IsInGroup)
                     install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
                     createInvitationsRoute()
                 }
