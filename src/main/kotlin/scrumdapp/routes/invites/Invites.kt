@@ -31,13 +31,13 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 
-@Resource("/invitations")
+@Resource("invitations")
 class Invitations {
 
-    @Resource("/accept")
+    @Resource("accept")
     class AcceptInvitations(val parent: Invitations = Invitations(), val token: String? = null)
 
-    @Resource("/create")
+    @Resource("create")
     class CreateInvitation(val parent: Invitations = Invitations()) {
 
         @Resource("{groupId}")

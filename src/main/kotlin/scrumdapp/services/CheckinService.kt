@@ -19,7 +19,6 @@ class CheckinService(
     private val groupRepository: GroupRepository,
 ) {
 
-
     suspend fun handleBatchCheckin(date: LocalDate, checkins: List<Checkin>, body: Parameters): Boolean {
         for (checkin in checkins) {
             checkin.date = date

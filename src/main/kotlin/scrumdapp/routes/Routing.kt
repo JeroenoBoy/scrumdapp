@@ -18,10 +18,10 @@ import io.ktor.server.resources.href
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-@Resource("/home")
+@Resource("home")
 class HomeRouter()
 
-@Resource("/about")
+@Resource("about")
 class AboutRouter()
 
 suspend fun Application.configureRouting() {

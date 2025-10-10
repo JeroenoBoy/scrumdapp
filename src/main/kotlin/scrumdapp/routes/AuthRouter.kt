@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SessionToken(val token: String)
 
-@Resource("/auth")
+@Resource("auth")
 class AuthRouter() {
     @Resource("login")
     class Login(val parent: AuthRouter = AuthRouter())
@@ -39,10 +39,10 @@ class AuthRouter() {
     class Callback(val parent: AuthRouter = AuthRouter())
 }
 
-@Resource("/login")
+@Resource("login")
 class LoginRouter()
 
-@Resource("/logout")
+@Resource("logout")
 class LogoutRouter()
 
 suspend fun Application.configureAuthRouting() {
