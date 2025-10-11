@@ -11,6 +11,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
+import kotlinx.html.ImgLoading
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
@@ -86,7 +87,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
             for (background in backgrounds) {
                 if (background == (group.bannerImage ?: "15")) {
                     div(classes="relative ratio-43") {
-                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full", loading=ImgLoading.lazy)
                         a(href="#", classes="btn btn-green pick-bg-btn") {
                             icon(iconName="check", classes="bg-hard")
                             +"Huidige"
@@ -95,7 +96,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
                 } else {
                     form(action=application.href(GroupsRouter.Group.Settings.ChangeBackground(group.id)), method=FormMethod.post, classes="relative ratio-43") {
                         input(type=InputType.hidden, name="img") { value=background }
-                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full", loading=ImgLoading.lazy)
                         div(classes="hacky-icon pick-bg-btn") {
                             icon(iconName="check", classes="bg-hard")
                             input(type=InputType.submit, classes="btn btn-gray") { value="Kies" }
