@@ -15,6 +15,7 @@ import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.services.UserService
+import com.jeroenvdg.scrumdapp.services.configureExceptionService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import io.ktor.client.*
@@ -86,6 +87,7 @@ suspend fun Application.module() {
 
     install(Resources)
 
+    configureExceptionService()
     configureGroupRoutes()
     configureInviteRoutes()
     configureRouting()
