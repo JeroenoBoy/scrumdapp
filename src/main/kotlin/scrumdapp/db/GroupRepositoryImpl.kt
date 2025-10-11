@@ -9,7 +9,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import java.time.format.DateTimeFormatter
 
 class GroupRepositoryImpl: GroupRepository {
     private fun resultRowToGroup(row: ResultRow): Group {
@@ -39,10 +38,15 @@ class GroupRepositoryImpl: GroupRepository {
         )
     }
 
-    private fun groupUser(row: ResultRow): UserGroup {
-        return UserGroup(
+    private fun groupUser(row: ResultRow): GroupUser {
+        return GroupUser(
             id = row[UserGroups.id],
-            userId = row[UserGroups.userId]!!,
+            user = User(
+                id=row[Users.id],
+                name = row[Users.name],
+                discordId = row[Users.discordId],
+                profileImage = row[Users.profileImage],
+            ),
             groupId = row[UserGroups.groupId]!!,
             permissions = UserPermissions.get(row[UserGroups.permissions])
         )
@@ -101,19 +105,22 @@ class GroupRepositoryImpl: GroupRepository {
         }
     }
 
-    override suspend fun getGroupUser(groupId: Int, userId: Int): UserGroup? {
+    override suspend fun getGroupUser(groupId: Int, userId: Int): GroupUser? {
         return dbQuery {
             val groupUser = UserGroups
-                .select(UserGroups.fields)
+                .innerJoin(Users)
+                .select(Users.fields + UserGroups.id + UserGroups.groupId + UserGroups.permissions)
                 .where { (UserGroups.groupId eq groupId) and (UserGroups.userId eq userId) }
                 .singleOrNull()
             if (groupUser == null) null else groupUser(groupUser)
         }
     }
 
-    override suspend fun getGroupUsers(groupId: Int): List<UserGroup> {
+    override suspend fun getGroupUsers(groupId: Int): List<GroupUser> {
         return dbQuery {
-            UserGroups.select(UserGroups.fields)
+            UserGroups
+                .innerJoin(Users)
+                .select(Users.fields + UserGroups.id + UserGroups.groupId + UserGroups.permissions)
                 .where(UserGroups.groupId eq groupId)
                 .map { groupUser(it)}
         }

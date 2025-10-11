@@ -9,10 +9,10 @@ data class Group(
     val bannerImage: String?,
 )
 
-data class UserGroup(
+data class GroupUser(
     val id: Int,
     val groupId: Int,
-    val userId: Int,
+    val user: User,
     val permissions: UserPermissions,
 )
 
@@ -29,8 +29,8 @@ interface GroupRepository {
     suspend fun getGroup(id: Int): Group?
     suspend fun getGroupMembers(id: Int): List<User>
     suspend fun getUserGroups(id: Int): List<Group>
-    suspend fun getGroupUser(groupId: Int, userId: Int): UserGroup?
-    suspend fun getGroupUsers(groupId: Int): List<UserGroup>
+    suspend fun getGroupUser(groupId: Int, userId: Int): GroupUser?
+    suspend fun getGroupUsers(groupId: Int): List<GroupUser>
     suspend fun getGroupMemberPermissions(groupId: Int, userid: Int): UserPermissions
     suspend fun compareGroupMemberAccess(groupId: Int, userid: Int): Boolean
     suspend fun compareGroupMemberPermissions(groupId: Int, userid: Int, permission: UserPermissions): Boolean

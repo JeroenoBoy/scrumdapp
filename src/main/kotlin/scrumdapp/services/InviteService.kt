@@ -28,7 +28,7 @@ class InviteService(
 
         if (encryptionService.compareHash(password, invite.password?: "")) {
             val groupUsers = groupRepository.getGroupUsers(invite.groupId)
-            if (groupUsers.any { it.userId == userId }) return true
+            if (groupUsers.any { it.user.id == userId }) return true
 
             groupRepository.addGroupMember(invite.groupId, userId)
             return true

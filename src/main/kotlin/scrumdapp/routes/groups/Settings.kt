@@ -26,7 +26,7 @@ fun Route.groupSettingsRoutes() {
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
     val nameRegex = Regex("^[a-zA-Z0-9_ ]{3,50}$")
 
-    typedGet<GroupsRouter.Id.Settings> { settingsParams ->
+    typedGet<GroupsRouter.Group.Settings> { settingsParams ->
         val group = call.group
         val groupUser = call.groupUser
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
@@ -40,38 +40,38 @@ fun Route.groupSettingsRoutes() {
         }
     }
 
-    route<GroupsRouter.Id.Settings.ChangeName> {
-        typedPost<GroupsRouter.Id.Settings.ChangeName> { changeNameRouteParams ->
+    route<GroupsRouter.Group.Settings.ChangeName> {
+        typedPost<GroupsRouter.Group.Settings.ChangeName> { changeNameRouteParams ->
             val name = call.receiveParameters()["group_name"]
             val group = call.group
-            if (name == null) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
-            if (name == call.group.name) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
-            if (!nameRegex.matches(name)) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
+            if (name == null) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
+            if (name == call.group.name) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
+            if (!nameRegex.matches(name)) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
 
             groupRepository.updateGroup(group.id, name=name)
-            call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id)))
+            call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id)))
         }
     }
 
-    route<GroupsRouter.Id.Settings.ChangeBackground> {
-        typedPost<GroupsRouter.Id.Settings.ChangeBackground> {
+    route<GroupsRouter.Group.Settings.ChangeBackground> {
+        typedPost<GroupsRouter.Group.Settings.ChangeBackground> {
             val bannerImage = call.receiveParameters()["img"]
             val group = call.group
-            if (!backgrounds.contains(bannerImage)) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
-            if (bannerImage == null) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
-            if (bannerImage == call.group.bannerImage) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id))) }
+            if (!backgrounds.contains(bannerImage)) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
+            if (bannerImage == null) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
+            if (bannerImage == call.group.bannerImage) { return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id))) }
 
             groupRepository.updateGroup(group.id, bannerImage = bannerImage)
-            call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id)))
+            call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id)))
         }
     }
 
-    route<GroupsRouter.Id.Settings.Delete> {
-        typedPost<GroupsRouter.Id.Settings.Delete> {
+    route<GroupsRouter.Group.Settings.Delete> {
+        typedPost<GroupsRouter.Group.Settings.Delete> {
             val name = call.receiveParameters()["delete_group_name"]
             val group = call.group
             if (name != call.group.name) {
-                return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Settings(group.id), "delete-failed"))
+                return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id), "delete-failed"))
             }
 
             groupRepository.deleteGroup(group.id)

@@ -1,9 +1,10 @@
 package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
+import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
-import com.jeroenvdg.scrumdapp.services.UserService
+import com.jeroenvdg.scrumdapp.services.GroupService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -21,25 +22,26 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.application
 
 fun Route.groupUserRoutes() {
-    val userService = application.dependencies.resolveBlocking<UserService>()
+    val groupService = application.dependencies.resolveBlocking<GroupService>()
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
+    val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
 
-    typedGet<GroupsRouter.Id.Users> { groupUserParams ->
+    typedGet<GroupsRouter.Group.Users> { groupUserParams ->
         val group = call.group
         val groupUser = call.groupUser
-        val userDashboardData = userService.getUserDashboardDate(group.id)
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val groupUsers = groupRepository.getGroupUsers(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
-                    userEditContent(application, groupUser, group, userDashboardData.groupMembers, userDashboardData.groupUsers)
+                    userEditContent(application, groupUser, group, groupUsers)
                 }
             }
         }
     }
 
-    typedPost<GroupsRouter.Id.Users> { groupUserParams ->
+    typedPost<GroupsRouter.Group.Users> { groupUserParams ->
         val params = call.receiveParameters()
         val userPerm = call.groupUser.permissions
         val permChanges = params.entries()
@@ -50,7 +52,7 @@ fun Route.groupUserRoutes() {
                 if (userId != null && permId != null) userId to permId else null
             }
             .toMap()
-        val success = userService.alterUserPermissions(call.group.id, permChanges, userPerm)
+        val success = groupService.alterUserPermissions(call.group.id, permChanges, userPerm)
         val response = if (success) {
             "alter-success"
         } else {
@@ -59,21 +61,17 @@ fun Route.groupUserRoutes() {
         call.respondRedirect("/groups/${call.group.id}/users#$response")
     }
 
-    route<GroupsRouter.Id.Users.Delete> {
-        typedPost<GroupsRouter.Id.Users.Delete> { deleteGroupParams ->
-            val userId = call.queryParameters["id"]?.toIntOrNull()
+    route<GroupsRouter.Group.Users.Delete> {
+        typedPost<GroupsRouter.Group.Users.Delete> { deleteParams ->
+            val userId = deleteParams.userId
             val group = call.group
 
-            if (userId == null) {
-                return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
-            }
-
-            val success = userService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
+            val success = groupService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
             if (!success) {
-                return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
+                return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))
             }
 
-            call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id)))
+            call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))
         }
     }
 }

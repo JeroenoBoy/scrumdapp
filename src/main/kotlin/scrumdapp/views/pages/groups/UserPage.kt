@@ -1,8 +1,7 @@
 package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Group
-import com.jeroenvdg.scrumdapp.db.User
-import com.jeroenvdg.scrumdapp.db.UserGroup
+import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.routes.invites.Invitations
@@ -30,7 +29,7 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.html.p
 
-fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, group: Group, users: List<User>, userGroups: List<UserGroup>) {
+fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
     h2 { +"Gebruikers aanpassen"}
     div(classes="spacer-lg")
     form(method=FormMethod.post, classes="vertical g-md flex-1") {
@@ -44,43 +43,40 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
             }
             tbody {
                 tr {
-                    val user = users.find { user -> user.id == ownUser.userId} ?: users.first()
-                    val userPermission = userGroups.find { it.userId == ownUser.userId }?.permissions ?: UserPermissions.User
-                    td(classes="text-ellipse name-field") { +user.name}
-                    td(classes="text-ellipse pl-lg") { +userPermission.displayName}
+                    td(classes="text-ellipse name-field") { +mySelf.user.name}
+                    td(classes="text-ellipse pl-lg") { +mySelf.permissions.displayName}
                 }
 
-                for (user in users.filter { it.id != ownUser.userId }.sortedBy { it.name }) {
-                    val userId = user.id.toString()
-                    val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
+                for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
+                    val userPermission = groupUser.permissions
                     tr {
-                        td(classes="text-ellipse name-field") { +user.name }
+                        td(classes="text-ellipse name-field") { +groupUser.user.name }
                         td(classes="pl-md") {
-                            select(classes = "input select-role w-full text-ellipse") {
-                                name = "role-${user.id}"
-                                option(classes = "yellow") {
+                            select(classes="input select-role w-full text-ellipse") {
+                                name = "role-${groupUser.id}"
+                                option(classes="yellow") {
                                     value = "-1";
-                                    if (ownUser.permissions.id >= -1) attributes["disabled"] = ""
+                                    if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
                                     if (userPermission.id == -1) attributes["selected"] = ""
                                     +UserPermissions.ScrumDad.displayName
                                 }
-                                option(classes = "blue") {
+                                option(classes="blue") {
                                     value = "0";
-                                    if (ownUser.permissions.id >= 0) attributes["disabled"] = ""
+                                    if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
                                     if (userPermission.id == 0) attributes["selected"] = ""
                                     +UserPermissions.UserManagement.displayName
                                 }
-                                option(classes = "purple") {
+                                option(classes="purple") {
                                     value = "1"
                                     if (userPermission.id == 1) attributes["selected"] = ""
                                     +UserPermissions.CheckinManagement.displayName
                                 }
-                                option(classes = "orange") {
+                                option(classes="orange") {
                                     value = "68"
                                     if (userPermission.id == 68) attributes["selected"] = ""
                                     +UserPermissions.Coach.displayName
                                 }
-                                option(classes = "aqua") {
+                                option(classes="aqua") {
                                     value = "69";
                                     if (userPermission.id == 69) attributes["selected"] = ""
                                     +UserPermissions.User.displayName
@@ -88,10 +84,10 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
                             }
                         }
 
-                        if (user.id != ownUser.userId) {
+                        if (groupUser.id != mySelf.id) {
                             td(classes="pl-md") {
                                 div(classes="horizontal space-between align-center") {
-                                    a(classes="btn btn-red", href="#delete-user-${userId}") {
+                                    a(classes="btn btn-red", href="#delete-user-${groupUser.user.id}") {
                                         icon(iconName="delete_forever", classes="bg-hard")
                                         +"Verwijder gebruiker"
                                     }
@@ -118,8 +114,8 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
     }
 
     // This is disgusting and I know it
-    for (user in users) {
-        modal(id="delete-user-${user.id}") {
+    for (groupUser in groupUsers) {
+        modal(id="delete-user-${groupUser.user.id}") {
             h2 { +"Verwijder gebruiker"}
             p {
                 +"Wanneer je een gebruiker verwijderd worden ook"
@@ -128,8 +124,8 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
             }
 
 
-            form(action=application.href(GroupsRouter.Id.Users.Delete(group.id)), method= FormMethod.post) {
-                div(classes = "horizontal g-md justify-end") {
+            form(action=application.href(GroupsRouter.Group.Users.Delete(group.id, groupUser.user.id)), method= FormMethod.post) {
+                div(classes="horizontal g-md justify-end") {
                     a(classes="btn btn-green", href="#") {
                         icon(iconName="undo", classes="bg-hard")
                         +"Terug"
@@ -199,7 +195,7 @@ fun FlowContent.userInviteContent(application: Application, group: Group, url: S
     }
 
     div(classes="horizontal g-md justify-end") {
-        a(classes="btn", href=application.href(GroupsRouter.Id.Users(group.id))) {
+        a(classes="btn", href=application.href(GroupsRouter.Group.Users(group.id))) {
             icon(iconName="check", classes="gray")
             +"Gelukt?"
         }

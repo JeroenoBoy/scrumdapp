@@ -5,7 +5,6 @@ import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.middleware.userSession
-import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -27,16 +26,16 @@ fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
 
-    typedGet<GroupsRouter.Id> { groupData ->
+    typedGet<GroupsRouter.Group> { groupData ->
         val date = groupData.getIsoDateParam()
         val group = call.group
+        val groupUser = call.groupUser
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val userPerm = groupRepository.getGroupMemberPermissions(group.id, call.userSession.userId)
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(application, checkinDates, group, userPerm) {
+                groupPage(application, checkinDates, group, groupUser.permissions) {
                     checkinWidget(application, checkins, group, date, call.groupUser.permissions)
                 }
             }
@@ -49,7 +48,7 @@ fun Route.groupEditCheckinRoutes() {
     val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
     val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
-    typedGet<GroupsRouter.Id.Edit> { groupEditData ->
+    typedGet<GroupsRouter.Group.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -65,7 +64,7 @@ fun Route.groupEditCheckinRoutes() {
         }
     }
 
-    typedPost<GroupsRouter.Id.Edit> { groupEditData ->
+    typedPost<GroupsRouter.Group.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -73,9 +72,9 @@ fun Route.groupEditCheckinRoutes() {
 
         if (!success) {
             // TO DO: Handle this
-            return@typedPost call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
+            return@typedPost call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
         }
 
-        call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
+        call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
     }
 }

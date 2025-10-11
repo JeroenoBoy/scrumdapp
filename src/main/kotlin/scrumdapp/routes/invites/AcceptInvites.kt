@@ -48,7 +48,7 @@ fun Route.acceptInvitationsRoute() {
 
         val success = inviteService.checkGroupTokenAccess(userId, invite, password)
         if (success) {
-            call.respondRedirect(application.href(GroupsRouter.Id(groupId = invite.groupId)))
+            call.respondRedirect(application.href(GroupsRouter.Group(groupId = invite.groupId)))
         } else {
 
             call.respondRedirect(application.href(Invitations.AcceptInvitations(token = token), "password-mistake"))
