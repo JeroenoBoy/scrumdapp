@@ -711,6 +711,10 @@ hr {
     padding-right: var(--gap-xl);
 }
 
+.pl-sm {
+    padding-left: var(--gap-sm) !important;
+}
+
 .pl-md {
     padding-left: var(--gap-md) !important;
 }
@@ -823,6 +827,10 @@ hr {
 
 .b-none {
     border: none;
+}
+
+.br-gray {
+    border-right: 1px solid var(--gray-dim);
 }
 
 .rounded {

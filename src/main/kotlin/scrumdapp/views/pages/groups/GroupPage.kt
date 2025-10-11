@@ -46,7 +46,7 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
 //            }
         }
         div(classes="flex-1") {
-            main(classes="card flex-1 vertical g-md") { id="group-content"
+            main(classes="flex-1 vertical g-md") { id="group-content"
                 block()
             }
         }

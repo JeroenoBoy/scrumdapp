@@ -5,6 +5,7 @@ import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.routes.invites.Invitations
+import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
@@ -30,66 +31,68 @@ import kotlinx.html.tr
 import kotlinx.html.p
 
 fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
-    h2 { +"Gebruikers aanpassen"}
-    div(classes="spacer-lg")
-    form(method=FormMethod.post, classes="vertical g-md flex-1") {
-        table(classes="checkin-table") {
-            thead {
-                tr {
-                    th(classes="text-left name-field") {+"Naam"}
-                    th(classes="text-left pl-md") {+"Rol"}
-                    th(classes="text-left pl-md") {+"Danger zone"}
-                }
-            }
-            tbody {
-                tr {
-                    td(classes="text-ellipse name-field") { +mySelf.user.name}
-                    td(classes="text-ellipse pl-lg") { +mySelf.permissions.displayName}
-                }
-
-                for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
-                    val userPermission = groupUser.permissions
+    card {
+        h2 { +"Gebruikers aanpassen" }
+        div(classes="spacer-lg")
+        form(method = FormMethod.post, classes="vertical g-md flex-1") {
+            table(classes="checkin-table") {
+                thead {
                     tr {
-                        td(classes="text-ellipse name-field") { +groupUser.user.name }
-                        td(classes="pl-md") {
-                            select(classes="input select-role w-full text-ellipse") {
-                                name = "role-${groupUser.id}"
-                                option(classes="yellow") {
-                                    value = "-1";
-                                    if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
-                                    if (userPermission.id == -1) attributes["selected"] = ""
-                                    +UserPermissions.ScrumDad.displayName
-                                }
-                                option(classes="blue") {
-                                    value = "0";
-                                    if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
-                                    if (userPermission.id == 0) attributes["selected"] = ""
-                                    +UserPermissions.UserManagement.displayName
-                                }
-                                option(classes="purple") {
-                                    value = "1"
-                                    if (userPermission.id == 1) attributes["selected"] = ""
-                                    +UserPermissions.CheckinManagement.displayName
-                                }
-                                option(classes="orange") {
-                                    value = "68"
-                                    if (userPermission.id == 68) attributes["selected"] = ""
-                                    +UserPermissions.Coach.displayName
-                                }
-                                option(classes="aqua") {
-                                    value = "69";
-                                    if (userPermission.id == 69) attributes["selected"] = ""
-                                    +UserPermissions.User.displayName
+                        th(classes="text-left name-field") { +"Naam" }
+                        th(classes="text-left pl-md") { +"Rol" }
+                        th(classes="text-left pl-md") { +"Danger zone" }
+                    }
+                }
+                tbody {
+                    tr {
+                        td(classes="text-ellipse name-field") { +mySelf.user.name }
+                        td(classes="text-ellipse pl-lg") { +mySelf.permissions.displayName }
+                    }
+
+                    for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
+                        val userPermission = groupUser.permissions
+                        tr {
+                            td(classes="text-ellipse name-field") { +groupUser.user.name }
+                            td(classes="pl-md") {
+                                select(classes="input select-role w-full text-ellipse") {
+                                    name = "role-${groupUser.id}"
+                                    option(classes="yellow") {
+                                        value = "-1";
+                                        if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
+                                        if (userPermission.id == -1) attributes["selected"] = ""
+                                        +UserPermissions.ScrumDad.displayName
+                                    }
+                                    option(classes="blue") {
+                                        value = "0";
+                                        if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
+                                        if (userPermission.id == 0) attributes["selected"] = ""
+                                        +UserPermissions.UserManagement.displayName
+                                    }
+                                    option(classes="purple") {
+                                        value = "1"
+                                        if (userPermission.id == 1) attributes["selected"] = ""
+                                        +UserPermissions.CheckinManagement.displayName
+                                    }
+                                    option(classes="orange") {
+                                        value = "68"
+                                        if (userPermission.id == 68) attributes["selected"] = ""
+                                        +UserPermissions.Coach.displayName
+                                    }
+                                    option(classes="aqua") {
+                                        value = "69";
+                                        if (userPermission.id == 69) attributes["selected"] = ""
+                                        +UserPermissions.User.displayName
+                                    }
                                 }
                             }
-                        }
 
-                        if (groupUser.id != mySelf.id) {
-                            td(classes="pl-md") {
-                                div(classes="horizontal space-between align-center") {
-                                    a(classes="btn btn-red", href="#delete-user-${groupUser.user.id}") {
-                                        icon(iconName="delete_forever", classes="bg-hard")
-                                        +"Verwijder gebruiker"
+                            if (groupUser.id != mySelf.id) {
+                                td(classes="pl-md") {
+                                    div(classes="horizontal space-between align-center") {
+                                        a(classes="btn btn-red", href="#delete-user-${groupUser.user.id}") {
+                                            icon(iconName="delete_forever", classes="bg-hard")
+                                            +"Verwijder gebruiker"
+                                        }
                                     }
                                 }
                             }
@@ -97,23 +100,24 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                     }
                 }
             }
-        }
-        div(classes="flex-1") {
+            div(classes="flex-1") {
 
-        }
-        div(classes="horizontal g-md justify-end") {
-            div(classes="hacky-icon") {
-                icon(iconName="check", classes="blue")
-                input(type=InputType.submit, classes="btn") { value="Toepassen"}
             }
-            a(classes="btn", href="#create-invite") {
-                icon(iconName="add", classes="green")
-                +"Maak uitnodiging"
+            div(classes="horizontal g-md justify-end") {
+                div(classes="hacky-icon") {
+                    icon(iconName = "check", classes="blue")
+                    input(type = InputType.submit, classes="btn") { value = "Toepassen" }
+                }
+                a(classes="btn", href = "#create-invite") {
+                    icon(iconName = "add", classes="green")
+                    +"Maak uitnodiging"
+                }
             }
         }
     }
 
     // This is disgusting and I know it
+    // No it's not, it's fine
     for (groupUser in groupUsers) {
         modal(id="delete-user-${groupUser.user.id}") {
             h2 { +"Verwijder gebruiker"}
@@ -186,18 +190,20 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
 }
 
 fun FlowContent.userInviteContent(application: Application, group: Group, url: String) {
-    h2 {+"Groepsuitnodiging"}
-    div(classes="spacer-lg")
-    p {+"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!"}
-    div(classes="input-group") {
-        label(classes="input-label") {+"Link"}
-        input(type= InputType.text, classes="input") {value=url}
-    }
+    card {
+        h2 { +"Groepsuitnodiging" }
+        div(classes="spacer-lg")
+        p { +"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!" }
+        div(classes="input-group") {
+            label(classes="input-label") { +"Link" }
+            input(type=InputType.text, classes="input") { value = url }
+        }
 
-    div(classes="horizontal g-md justify-end") {
-        a(classes="btn", href=application.href(GroupsRouter.Group.Users(group.id))) {
-            icon(iconName="check", classes="gray")
-            +"Gelukt?"
+        div(classes="horizontal g-md justify-end") {
+            a(classes="btn", href=application.href(GroupsRouter.Group.Users(group.id))) {
+                icon(iconName="check", classes="gray")
+                +"Gelukt?"
+            }
         }
     }
 }

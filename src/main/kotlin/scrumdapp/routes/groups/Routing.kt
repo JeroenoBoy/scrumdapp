@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
+import com.jeroenvdg.scrumdapp.routes.groups.trends.groupTrendsRoutes
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import io.ktor.http.HttpStatusCode
@@ -108,6 +109,10 @@ suspend fun Application.configureGroupRoutes() {
                 route<GroupsRouter.Group.Edit> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
+                }
+
+                route<GroupsRouter.Group.Trends> {
+                    groupTrendsRoutes()
                 }
 
                 route<GroupsRouter.Group.Users> {
