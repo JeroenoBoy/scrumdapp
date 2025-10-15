@@ -825,6 +825,10 @@ hr {
     aspect-ratio: 4/3;
 }
 
+.b-gray {
+    border: 1px solid var(--gray-dim);
+}
+
 .b-none {
     border: none;
 }
