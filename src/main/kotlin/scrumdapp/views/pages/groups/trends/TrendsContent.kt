@@ -5,17 +5,64 @@ import com.jeroenvdg.scrumdapp.views.components.icon
 import kotlinx.html.FlowContent
 import kotlinx.html.h2
 import kotlinx.html.h3
+import kotlinx.html.id
 import kotlinx.html.span
+import kotlinx.html.style
 import kotlinx.html.table
 import kotlinx.html.tbody
 import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
+import kotlinx.html.ul
 
 fun FlowContent.groupTrendsContent() {
     card {
         h2{ +"Trends" }
+    }
+    card { id="trends-chart-1"
+        h3 {+"Presentie Jeroen"}
+        table(classes="charts-css column multiple show-labels data-outside data-spacing-10 big-label") {
+            thead {
+//                tr {
+//                    th { +"Op Tijd" }
+//                    th { +"Te Laat" }
+//                    th { +"Geoorloofd afwezig" }
+//                    th { +"Ongeoorloofd afwezig" }
+//                    th { +"Ziek" }
+//                }
+            }
+            tbody {
+                tr {
+                    th(classes="row") { +"Op Tijd" }
+                    td { style="--size: 0.8"; +"8" }
+                    td { style="--size: 0.8"; +"10 (80%)" }
+                }
+                tr {
+                    th(classes="row") { +"Te Laat" }
+                    td { style="--size: 0.01"; +"0" }
+                    td { style="--size: 0.4"; +"3 (10%)" }
+                }
+                tr {
+                    th(classes="row") { +"Geoorloofd Afwezig" }
+                    td { style="--size: 0.2"; +"2" }
+                    td { style="--size: 0.8"; +"3 (10%)" }
+                }
+                tr {
+                    th(classes="row") { +"Ongeoorloofd Afwezig" }
+                    td { style="--size: 0.01"; +"0" }
+                    td { style="--size: 0.01"; +"0 (0%)" }
+                }
+                tr {
+                    th(classes="row") { +"Ziek" }
+                    td { style="--size: 0.01"; +"0" }
+                    td { style="--size: 0.01"; +"0 (0%)" }
+                }
+            }
+//            ul(classes="charts-css legend") {
+//
+//            }
+        }
     }
     card {
         h3{ +"Presentie" }

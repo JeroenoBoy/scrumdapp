@@ -871,3 +871,11 @@ hr {
     top: 0.4rem;
     overflow: unset;
 }
+table.charts-css.big-label {
+    --labels-size: 4em;
+}
+
+table.charts-css.big-label th {
+    padding-top: 1.2em;
+    justify-content: start !important;
+}
