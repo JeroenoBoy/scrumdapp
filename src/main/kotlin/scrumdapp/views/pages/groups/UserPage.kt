@@ -80,9 +80,44 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                                     value = "69";
                                     if (userPermission.id == 69) attributes["selected"] = ""
                                     +UserPermissions.User.displayName
+                for (user in users.filter { it.id != ownUser.userId }.sortedBy { it.name }) {
+                    val userId = user.id.toString()
+                    val userPermission = userGroups.find { it.userId == user.id }?.permissions ?: UserPermissions.User
+                    if (userPermission.id > ownUser.permissions.id) {
+                        tr {
+                            td(classes="text-ellipse name-field") { +user.name }
+                            td(classes="pl-md") {
+                                select(classes = "input select-role w-full text-ellipse") {
+                                    name = "role-${user.id}"
+                                    option(classes = "yellow") {
+                                        value = "-1";
+                                        if (ownUser.permissions.id >= -1) attributes["disabled"] = ""
+                                        if (userPermission.id == -1) attributes["selected"] = ""
+                                        +UserPermissions.ScrumDad.displayName
+                                    }
+                                    option(classes = "blue") {
+                                        value = "0";
+                                        if (ownUser.permissions.id >= 0) attributes["disabled"] = ""
+                                        if (userPermission.id == 0) attributes["selected"] = ""
+                                        +UserPermissions.UserManagement.displayName
+                                    }
+                                    option(classes = "purple") {
+                                        value = "1"
+                                        if (userPermission.id == 1) attributes["selected"] = ""
+                                        +UserPermissions.CheckinManagement.displayName
+                                    }
+                                    option(classes = "orange") {
+                                        value = "68"
+                                        if (userPermission.id == 68) attributes["selected"] = ""
+                                        +UserPermissions.Coach.displayName
+                                    }
+                                    option(classes = "aqua") {
+                                        value = "69";
+                                        if (userPermission.id == 69) attributes["selected"] = ""
+                                        +UserPermissions.User.displayName
+                                    }
                                 }
                             }
-                        }
 
                         if (groupUser.id != mySelf.id) {
                             td(classes="pl-md") {
@@ -90,10 +125,23 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                                     a(classes="btn btn-red", href="#delete-user-${groupUser.user.id}") {
                                         icon(iconName="delete_forever", classes="bg-hard")
                                         +"Verwijder gebruiker"
+                            if (user.id != ownUser.userId) {
+                                td(classes="pl-md") {
+                                    div(classes="horizontal space-between align-center") {
+                                        a(classes="btn btn-red", href="#delete-user-${userId}") {
+                                            icon(iconName="delete_forever", classes="bg-hard")
+                                            +"Verwijder gebruiker"
+                                        }
                                     }
                                 }
                             }
                         }
+                    } else {
+                        tr {
+                            td(classes="text-ellipse name-field") { +user.name}
+                            td(classes="text-ellipse pl-lg") { +userPermission.displayName}
+                        }
+
                     }
                 }
             }
