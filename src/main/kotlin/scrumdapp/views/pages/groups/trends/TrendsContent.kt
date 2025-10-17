@@ -23,7 +23,7 @@ fun FlowContent.groupTrendsContent() {
     }
     card { id="trends-chart-2"
         h3 {+"Presentie overzicht"}
-        table(classes="charts-css column multiple show-labels data-outside data-spacing-10 big-label") {
+        table(classes="charts-css column multiple show-labels data-outside data-spacing-10 datasets-spacing-1 big-label") {
             thead {
 //                tr {
 //                    th { +"Op Tijd" }
@@ -36,11 +36,12 @@ fun FlowContent.groupTrendsContent() {
             tbody {
                 tr {
                     th(classes="row") { +"Op Tijd" }
-                    td { style="--size: 1"; +"8" }
-                    td { style="--size: 0.8"; +"10" }
-                    td { style="--size: 0.3"; +"8" }
-                    td { style="--size: 0.4"; +"8" }
-                    td { style="--size: 0.2"; +"8" }
+                    td(classes="red") { style="--size: 1"; span(classes="bg-hard"){ +"10" } }
+                    td(classes="orange") { style="--size: 0.8"; span(classes="bg-hard"){ +"8" } }
+                    td(classes="yellow") { style="--size: 0.3"; span(classes="bg-hard"){ +"3" } }
+                    td(classes="green") { style="--size: 0.7"; span(classes="bg-hard"){ +"7" } }
+                    td(classes="aqua") { style="--size: 0.2"; span(classes="bg-hard"){ +"2" } }
+                    td(classes="blue") { style="--size: 0.3"; span(classes="bg-hard"){ +"3" } }
                 }
                 tr {
                     th(classes="row") { +"Te Laat" }
