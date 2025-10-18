@@ -6,7 +6,10 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.kotlin.datetime.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
 
 class CheckinRepositoryImpl: CheckinRepository {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
@@ -138,6 +141,28 @@ class CheckinRepositoryImpl: CheckinRepository {
     override suspend fun deleteCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.deleteWhere { GroupCheckins.groupId eq checkin.groupId and (GroupCheckins.userId eq checkin.userId)}>0
+        }
+    }
+
+    override suspend fun getCheckinsBetween(groupId: Int, from: LocalDate, to: LocalDate): List<List<PartialCheckin>> {
+        return dbQuery {
+            val list = UserGroups
+                .innerJoin(Users, { UserGroups.userId }, { Users.id }) // Get name
+                .leftJoin(GroupCheckins, additionalConstraint = { (GroupCheckins.date greaterEq from) and (GroupCheckins.date lessEq to) and (GroupCheckins.groupId eq groupId) }) // Get checkin
+                .select(GroupCheckins.fields + UserGroups.groupId + Users.id + Users.name)
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) }
+                .orderBy(Users.name to SortOrder.DESC, GroupCheckins.date to SortOrder.DESC)
+                .map { PartialCheckin(
+                    id = it.getOrNull(GroupCheckins.id) ?: -1,
+                    groupId = it[UserGroups.groupId],
+                    userId = it[Users.id],
+                    presence = it.getOrNull(GroupCheckins.presence),
+                    date = it.getOrNull(GroupCheckins.date) ?: LocalDate.fromEpochDays(0),
+                    checkinStars = it.getOrNull(GroupCheckins.checkinStars),
+                    checkupStars = it.getOrNull(GroupCheckins.checkupStars),
+                    comment = it.getOrNull(GroupCheckins.comment),
+                ) }
+            emptyList()
         }
     }
 }

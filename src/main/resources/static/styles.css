@@ -37,6 +37,8 @@ h1, h2, h3, h4, h5, h6, p {
     display: block;
 }
 
+li::before { --border-color: var(--color); }
+
 dialog { display: block; }
 dialog:not(:target):not([open]) { display: none; }
 
@@ -875,6 +877,7 @@ hr {
     top: 0.4rem;
     overflow: unset;
 }
+
 table.charts-css.big-label {
     --labels-size: 4em;
 }
@@ -882,4 +885,13 @@ table.charts-css.big-label {
 table.charts-css.big-label th {
     padding-top: 1.2em;
     justify-content: start !important;
+}
+
+.charts-css.legend li::before {
+    border-width: var(--gap-md);
+    border-radius: var(--radius);
+}
+
+.charts-css.legend {
+    --legend-border-color: var(--gray-dim);
 }

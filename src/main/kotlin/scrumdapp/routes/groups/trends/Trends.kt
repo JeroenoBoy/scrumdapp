@@ -25,6 +25,7 @@ fun Route.groupTrendsRoutes() {
         val group = call.group
         val groupUser = call.groupUser
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkins = checkinRepository.getCheckinsBetween(group.id, checkinDates.last(), checkinDates.first())
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {

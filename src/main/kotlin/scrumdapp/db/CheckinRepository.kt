@@ -17,6 +17,17 @@ data class Checkin(
     var comment: String?
 )
 
+data class PartialCheckin(
+    val id: Int,
+    val groupId: Int?,
+    val userId: Int?,
+    var presence: Presence?,
+    var checkinStars: Int?,
+    var checkupStars: Int?,
+    var date: LocalDate,
+    var comment: String?
+)
+
 interface CheckinRepository {
     suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin>
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
@@ -27,4 +38,6 @@ interface CheckinRepository {
     suspend fun saveGroupCheckin(checkins: List<Checkin>)
     suspend fun alterCheckin(checkin: Checkin): Boolean
     suspend fun deleteCheckin(checkin: Checkin): Boolean
+
+    suspend fun getCheckinsBetween(groupId: Int, from: LocalDate, to: LocalDate): List<List<PartialCheckin>>
 }
