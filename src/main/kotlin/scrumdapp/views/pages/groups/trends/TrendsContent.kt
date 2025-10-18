@@ -10,7 +10,7 @@ fun FlowContent.groupTrendsContent(trends: TrendsData) {
         if (amount > 0) {
             td(classes=color) {
                 style="--size: ${max((amount.toFloat() / max(trends.highest, 1)), 0f)}"
-                span(classes="bg-hard pt-sm") {
+                span(classes="bg-hard px-sm text-ellipse no-wrap") { style="overflow: hidden"
                     b {
                         +"${amount}x"
                     }
@@ -27,12 +27,18 @@ fun FlowContent.groupTrendsContent(trends: TrendsData) {
     card { id="trends-chart-2"
         h3 {+"Presentie overzicht"}
         div(classes="horizontal g-md") {
-            table(classes="charts-css flex-1 column stacked show-labels data-outside data-spacing-10 datasets-spacing-1 big-label") {
+            table(classes="charts-css flex-1 bar stacked show-labels data-outside data-spacing-10 datasets-spacing-1 big-label") {
+                style="--labels-size: 8em"
                 thead { }
                 tbody {
                     for (trend in trends) {
                         tr {
-                            th(classes="row") { +trend.userName }
+                            th(classes="row no-wrap") {
+                                val name = trend.userName.split(" ")
+                                +name.first()
+                                if (name.size > 1) { +" ${name.last().first()}" }
+                            }
+                            td { style="--size: 0"; +" " }
                             chartWidget(trend.sickCount, "Ziek", "blue-dim")
                             chartWidget(trend.absentCount, "Ongeoorloofd Afwezig", "red-dim")
                             chartWidget(trend.verifiedAbsentCount, "Geoorloofd Afwezig", "green-dim")

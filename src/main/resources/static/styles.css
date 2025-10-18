@@ -908,3 +908,12 @@ table.charts-css.big-label th {
 .charts-css.legend {
     --legend-border-color: var(--gray-dim);
 }
+
+.charts-css.stacked tbody tr td:nth-child(3) {
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+}
+.charts-css.stacked tbody tr td:last-child {
+    border-top-right-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+}
