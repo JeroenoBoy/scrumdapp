@@ -143,7 +143,7 @@ fun FlowContent.groupTrendsContent() {
             }
             tbody {
                 tr {
-                    td(classes="text-ellipse br-gray") { +"Jeroen van de Geest" }
+                    td(classes="text-ellipse br-gray") { +"Jeroen" }
                     td(classes="pl-md text-center") { icon(iconName="check",classes="green") }
                     td(classes="text-center") { span(classes="yellow") { +"1x T.L." } }
                 }
@@ -162,7 +162,7 @@ fun FlowContent.groupTrendsContent() {
                     }
                 }
                 tr {
-                    td(classes="text-ellipse br-gray") { +"Daan Meijneken" }
+                    td(classes="text-ellipse br-gray") { +"Daan" }
                     td(classes="text-center") {
                         span("px-sm green-dim") {+"3x G.A."}
                         span("px-sm yellow") {+"3x T.L."}
