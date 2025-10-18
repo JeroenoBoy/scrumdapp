@@ -693,6 +693,10 @@ hr {
     padding: var(--gap-sm);
 }
 
+.pt-sm {
+    padding-top: var(--gap-sm);
+}
+
 .px-0 {
     padding-left: 0;
     padding-right: 0;

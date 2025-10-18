@@ -6,9 +6,10 @@ import com.jeroenvdg.scrumdapp.utils.now
 import kotlinx.datetime.LocalDate
 import kotlin.math.max
 
-data class TrendsData(val trends: List<TrendData>, val highest: Int, val from: LocalDate, val to: LocalDate) {
+data class TrendsData(val trends: List<TrendData>, val highest: Int, val from: LocalDate, val to: LocalDate) : Iterable<TrendData> {
     val size get() = trends.size
     operator fun get(i: Int) = trends[i]
+    override fun iterator() = trends.iterator()
 }
 
 data class TrendData(val userId: Int, val userName: String, val groupId: Int) {
@@ -27,6 +28,8 @@ data class TrendData(val userId: Int, val userName: String, val groupId: Int) {
             Presence.Sick -> sickCount++
         }
     }
+
+    fun total() = onTimeCount + lateCount + verifiedAbsentCount + absentCount + sickCount
 
     operator fun get(presence: Presence) : Int {
         return when(presence) {
@@ -59,7 +62,7 @@ class TrendsService(
             if (presenceData.presence != null) {
                 val d = data[presenceData.userId]?: continue
                 d.push(presenceData.presence!!)
-                highest = max(highest, d[presenceData.presence!!])
+                highest = max(highest, d.total())
             }
         }
         return TrendsData(data.values.sortedBy { it.userName }, highest, from, to)
