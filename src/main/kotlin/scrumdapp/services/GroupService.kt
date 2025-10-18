@@ -1,14 +1,15 @@
 package com.jeroenvdg.scrumdapp.services
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 
 class GroupService(
     private val groupRepository: GroupRepository,
 ) {
-    suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, userPerm: UserPermissions): Boolean {
+    suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, user: GroupUser): Boolean {
         for ((userId, permId) in permChanges) {
-            if (userPerm.id < permId) {
+            if (user.permissions.id < permId || userId != user.id) {
                 val success = groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
                 if (!success) { return false }
             } else {
