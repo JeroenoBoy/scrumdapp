@@ -109,6 +109,11 @@ hr {
     white-space: nowrap;
 }
 
+.text-4xl {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+}
+
 .muted {
     color: var(--gray)
 }
