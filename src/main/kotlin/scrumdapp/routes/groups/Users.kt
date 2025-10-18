@@ -61,7 +61,7 @@ fun Route.groupUserRoutes() {
 
     route<GroupsRouter.Id.Users.Delete> {
         typedPost<GroupsRouter.Id.Users.Delete> { deleteGroupParams ->
-            val userId = call.queryParameters["id"]?.toIntOrNull()
+            val userId = call.receiveParameters()["userId"]?.toIntOrNull()
             val group = call.group
 
             if (userId == null) {

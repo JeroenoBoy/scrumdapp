@@ -129,6 +129,11 @@ fun FlowContent.userEditContent(application: Application, ownUser: UserGroup, gr
 
 
             form(action=application.href(GroupsRouter.Id.Users.Delete(group.id)), method= FormMethod.post) {
+                input(type = InputType.hidden) {
+                    name = "userId"
+                    value = user.id.toString()
+                }
+
                 div(classes = "horizontal g-md justify-end") {
                     a(classes="btn btn-green", href="#") {
                         icon(iconName="undo", classes="bg-hard")
