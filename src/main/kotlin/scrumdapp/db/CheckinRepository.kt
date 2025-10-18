@@ -17,15 +17,13 @@ data class Checkin(
     var comment: String?
 )
 
-data class PartialCheckin(
-    val id: Int,
-    val groupId: Int?,
-    val userId: Int?,
+data class PresenceData(
+    val checkinId: Int,
+    val groupId: Int,
+    val userId: Int,
+    val userName: String,
     var presence: Presence?,
-    var checkinStars: Int?,
-    var checkupStars: Int?,
     var date: LocalDate,
-    var comment: String?
 )
 
 interface CheckinRepository {
@@ -39,5 +37,5 @@ interface CheckinRepository {
     suspend fun alterCheckin(checkin: Checkin): Boolean
     suspend fun deleteCheckin(checkin: Checkin): Boolean
 
-    suspend fun getCheckinsBetween(groupId: Int, from: LocalDate, to: LocalDate): List<List<PartialCheckin>>
+    suspend fun getPresenceBetween(groupId: Int, from: LocalDate, to: LocalDate): List<PresenceData>
 }

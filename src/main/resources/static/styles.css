@@ -111,6 +111,11 @@ hr {
     white-space: nowrap;
 }
 
+.no-wrap {
+    white-space: nowrap;
+    text-wrap: nowrap;
+}
+
 .muted {
     color: var(--gray)
 }
@@ -805,6 +810,10 @@ hr {
 
 .justify-end {
     justify-content: end;
+}
+
+.flex-0 {
+    flex: 0;
 }
 
 .flex-1 {

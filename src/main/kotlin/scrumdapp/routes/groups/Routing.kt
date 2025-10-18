@@ -66,8 +66,7 @@ class GroupsRouter {
         }
 
         fun getIsoDateParam(): LocalDate {
-            return parseIsoDate(getDateParam()) ?:
-                throw Exception("Invalid date param, expected yyyy-mm-dd")
+            return parseIsoDate(getDateParam()) ?: throw Exception("Invalid date param, expected yyyy-mm-dd")
         }
     }
 }
@@ -126,39 +125,6 @@ suspend fun Application.configureGroupRoutes() {
                 }
             }
         }
-//        route("/groups") {
-//            install(IsLoggedIn)
-//
-//                TODO: remove this route, seems useless to me now
-//                route("/new-checkin") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
-//                    post {
-//                        val body = call.receiveParameters()
-//                        val date = body["date"]
-//                        if (date == null || !dateRegex.matches(date)) {
-//                            call.respondRedirect("/groups/${call.group.id}", false)
-//                        } else {
-//                            call.respondRedirect("/groups/${call.group.id}/edit?date=${date}", false)
-//                        }
-//                    }
-//                }
-//
-//
-//                get("/trends") {
-//                    val group = call.group
-//                    val userPerm = call.groupUser.permissions
-//                    val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
-//
-//                    call.respondHtml {
-//                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-//                            groupPage(checkinDates, group, userPerm) {
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
     }
 }
 
