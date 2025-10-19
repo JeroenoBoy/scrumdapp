@@ -7,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.response.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,6 +17,24 @@ data class ExceptionContent(
     val stackTrace: String
 )
 
+class NotAuthorizedException(
+    override val message: String,
+    override val code: Int = 401,
+    override val title: String = "Geen toegang ):",
+): AppException(code, message, title, log=false)
+
+class NoAccessException(
+    override val message: String,
+    override val code: Int = 403,
+    override val title: String = "Verboden",
+): AppException(code, message, title, log=false)
+
+class NotFoundException(
+    override val message: String = "De gevraagde pagina is niet gevonden of bestaat niet.",
+    override val code: Int = 404,
+    override val title: String = "Pagina niet gevonden"
+): AppException(code, message, title, log = false)
+
 open class AppException(
     open val code: Int,
     override val message: String,
@@ -25,11 +42,6 @@ open class AppException(
     open val log: Boolean = false // Change this to enum?
 ): RuntimeException(message)
 
-class ValidationException(
-    override val message: String,
-    override val code: Int = 400,
-    override val title: String? = "Validatiefout"
-): AppException(code, message, title, log = false)
 
 fun exceptionFromThrowable(throwable: Throwable): ExceptionContent {
     return when (throwable) {
@@ -45,7 +57,6 @@ fun exceptionFromThrowable(throwable: Throwable): ExceptionContent {
             message = throwable.message ?: "Onbekende fout",
             stackTrace = throwable.stackTraceToString()
         )
-
     }
 }
 
@@ -53,7 +64,6 @@ fun Application.configureExceptionService() {
     install(StatusPages) {
         exception<Throwable> { call, throwable ->
             val content = exceptionFromThrowable(throwable)
-
             call.respondHtml {
                 mainLayout(PageData("Fout-${content.code}")) {
                     errorPage(content)
@@ -68,11 +78,7 @@ fun Application.configureExceptionService() {
         ) {call, statusCode ->
             when(statusCode) {
                 HttpStatusCode.NotFound -> {
-                    call.respondHtml {
-                        mainLayout(PageData("Error")) {
-                            errorPage(ExceptionContent(404, "Pagina niet gevonden", "Dit is gewoon een kleine testje", "meh"))
-                        }
-                    }
+                    throw NotFoundException()
                 }
             }
         }

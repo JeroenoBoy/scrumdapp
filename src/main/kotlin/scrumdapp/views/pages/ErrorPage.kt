@@ -1,10 +1,6 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.services.ExceptionContent
-import com.jeroenvdg.scrumdapp.views.components.forcedModal
-import com.jeroenvdg.scrumdapp.views.components.icon
-import com.jeroenvdg.scrumdapp.views.components.modal
-import io.ktor.server.application.Application
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div

@@ -79,35 +79,3 @@ fun Route.groupUserRoutes() {
         }
     }
 }
-
-//                route("/users") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
-//
-//                    post("/create-invite") {
-//                        val passwordRegex = Regex("^[a-zA-Z0-9_ .,#^!?><]{3,50}")
-//                        val group = call.group
-//                        val token = generateRandomToken(60)
-//                        val password = call.receiveParameters()["create_group_invite"]
-//
-//                        if (password.isNullOrBlank() || !passwordRegex.matches(password)) {
-//                            return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
-//                        } else {
-//                            try {
-//                                groupRepository.createGroupInvite(group.id, token, encryptionService.hashValue(password))
-//                            } catch (e: Exception) {
-//                                print(e.message)
-//                            }
-//                        }
-//
-//                        val origin = call.request.origin.serverHost
-//                        val url = "https://$origin/invitations?token=$token"
-//
-//                        call.respondHtml {
-//                            dashboardLayout(DashboardPageData(group.name, call)) {
-//                                groupPage(emptyList(), group, call.groupUser.permissions) {
-//                                    userInviteContent(group, url)
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
