@@ -3,6 +3,7 @@ package com.jeroenvdg.scrumdapp.routes.groups
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
+import com.jeroenvdg.scrumdapp.services.ExceptionContent
 import com.jeroenvdg.scrumdapp.services.UserService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
@@ -30,9 +31,10 @@ fun Route.groupUserRoutes() {
         val userDashboardData = userService.getUserDashboardDate(group.id)
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
 
+        val exceptiontest = ExceptionContent(404, "not found", "XDD", "no")
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(application, checkinDates, group, groupUser.permissions) {
+                groupPage(application, checkinDates, group, groupUser.permissions, exceptiontest) {
                     userEditContent(application, groupUser, group, userDashboardData.groupMembers, userDashboardData.groupUsers)
                 }
             }
