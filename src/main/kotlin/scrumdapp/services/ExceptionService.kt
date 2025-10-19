@@ -16,6 +16,11 @@ data class ExceptionContent(
     val message: String,
     val stackTrace: String
 )
+class ValidationException(
+    override val message: String = "Er is iets gegaan bij het verwerken van je verzoek, probeer opnieuw.",
+    override val code: Int = 400,
+    override val title: String = "Validatiefout",
+): AppException(code, message, title, log=false)
 
 class NotAuthorizedException(
     override val message: String,
@@ -34,6 +39,12 @@ class NotFoundException(
     override val code: Int = 404,
     override val title: String = "Pagina niet gevonden"
 ): AppException(code, message, title, log = false)
+
+class ServerFaultException(
+    override val message: String = "Er is misgegaan, probeer het later opnieuw.",
+    override val code: Int = 500,
+    override val title: String = "Interne serverfout",
+): AppException(code, message, title, log=false)
 
 open class AppException(
     open val code: Int,
@@ -79,6 +90,12 @@ fun Application.configureExceptionService() {
             when(statusCode) {
                 HttpStatusCode.NotFound -> {
                     throw NotFoundException()
+                }
+                HttpStatusCode.BadRequest -> {
+                    throw ServerFaultException()
+                }
+                HttpStatusCode.InternalServerError -> {
+                    throw ServerFaultException()
                 }
             }
         }
