@@ -15,8 +15,6 @@ data class UserDashboardData(
 
 class UserService(
     private val groupRepository: GroupRepository,
-    private val checkinRepository: CheckinRepository,
-    private val encryptionService: EncryptionService
 ) {
     suspend fun getUserDashboardDate(groupId: Int): UserDashboardData{
         val groupMembers = groupRepository.getGroupMembers(groupId)
@@ -27,8 +25,11 @@ class UserService(
     suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, userPerm: UserPermissions): Boolean {
         for ((userId, permId) in permChanges) {
             if (userPerm.id < permId) {
-                val success = groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
-                if (!success) { return false }
+                try {
+                    groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
+                } catch (e: Exception) {
+                    throw ServerFaultException(message = "Er is iets misgegaan bij aan het aanpassen van de permissies.")
+                }
             } else {
                 return false
             }
@@ -45,8 +46,7 @@ class UserService(
             groupRepository.deleteGroupMember(groupId, targetUserId)
             return true
         } catch (e: Exception) {
-            // Figure out a way to throw exceptions
-            return false
+            throw ServerFaultException()
         }
     }
 

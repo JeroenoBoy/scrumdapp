@@ -3,7 +3,10 @@ package com.jeroenvdg.scrumdapp.routes.groups
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
+import com.jeroenvdg.scrumdapp.services.ExceptionContent
+import com.jeroenvdg.scrumdapp.services.NotFoundException
 import com.jeroenvdg.scrumdapp.services.UserService
+import com.jeroenvdg.scrumdapp.services.toExceptionContent
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -61,7 +64,7 @@ fun Route.groupUserRoutes() {
 
     route<GroupsRouter.Id.Users.Delete> {
         typedPost<GroupsRouter.Id.Users.Delete> { deleteGroupParams ->
-            val userId = call.queryParameters["id"]?.toIntOrNull()
+            val userId = call.receiveParameters()["userId"]?.toIntOrNull()
             val group = call.group
 
             if (userId == null) {
@@ -77,35 +80,3 @@ fun Route.groupUserRoutes() {
         }
     }
 }
-
-//                route("/users") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
-//
-//                    post("/create-invite") {
-//                        val passwordRegex = Regex("^[a-zA-Z0-9_ .,#^!?><]{3,50}")
-//                        val group = call.group
-//                        val token = generateRandomToken(60)
-//                        val password = call.receiveParameters()["create_group_invite"]
-//
-//                        if (password.isNullOrBlank() || !passwordRegex.matches(password)) {
-//                            return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
-//                        } else {
-//                            try {
-//                                groupRepository.createGroupInvite(group.id, token, encryptionService.hashValue(password))
-//                            } catch (e: Exception) {
-//                                print(e.message)
-//                            }
-//                        }
-//
-//                        val origin = call.request.origin.serverHost
-//                        val url = "https://$origin/invitations?token=$token"
-//
-//                        call.respondHtml {
-//                            dashboardLayout(DashboardPageData(group.name, call)) {
-//                                groupPage(emptyList(), group, call.groupUser.permissions) {
-//                                    userInviteContent(group, url)
-//                                }
-//                            }
-//                        }
-//                    }
-//                }

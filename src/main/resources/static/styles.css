@@ -109,6 +109,11 @@ hr {
     white-space: nowrap;
 }
 
+.text-4xl {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+}
+
 .muted {
     color: var(--gray)
 }
@@ -395,6 +400,10 @@ hr {
     width: 100%;
     height: auto;
     aspect-ratio: 4/3;
+}
+
+.min-w-20 {
+    min-width: 20%;
 }
 
 .btn-gh {
