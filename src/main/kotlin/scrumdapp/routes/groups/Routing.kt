@@ -36,7 +36,10 @@ class GroupsRouter {
     class Id(val parent: GroupsRouter = GroupsRouter(), val groupId: Int, val date: String? = null) {
 
         @Resource("edit")
-        class Edit(val parent: Id) { constructor(groupId: Int, date: String? = null): this(Id(groupId=groupId, date=date))}
+        class Edit(val parent: Id) { constructor(groupId: Int, date: String? = null): this(Id(groupId=groupId, date=date))
+            @Resource("delete")
+            class Delete(val parent: Edit) { constructor(groupId: Int, date: String? = null): this(Edit(Id(groupId=groupId, date=date))) }
+        }
 
         @Resource("trends")
         class Trends(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))}

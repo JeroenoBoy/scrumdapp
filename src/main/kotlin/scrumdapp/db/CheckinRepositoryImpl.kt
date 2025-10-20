@@ -7,6 +7,7 @@ import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 
 class CheckinRepositoryImpl: CheckinRepository {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
@@ -135,9 +136,11 @@ class CheckinRepositoryImpl: CheckinRepository {
         }
     }
 
-    override suspend fun deleteCheckin(checkin: Checkin): Boolean {
+    override suspend fun deleteCheckins(checkin: List<Checkin>): Boolean {
         return dbQuery {
-            GroupCheckins.deleteWhere { GroupCheckins.groupId eq checkin.groupId and (GroupCheckins.userId eq checkin.userId)}>0
+            val ids = checkin.map { it.id }
+            val dRows = GroupCheckins.deleteWhere { GroupCheckins.id inList ids }
+            dRows > 0
         }
     }
 }

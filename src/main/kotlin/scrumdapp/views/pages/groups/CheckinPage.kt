@@ -224,7 +224,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
 
     if (!isNewCheckin) {
         modal(id="confirm-delete-$id") {
-            form(action="/TODO", method=FormMethod.post, classes="vertical g-md") {
+            form(action=application.href(GroupsRouter.Id.Edit.Delete(groupId=group.id, date=date.scrumdappUrlFormat())), method=FormMethod.post, classes="vertical g-md") {
                 h2(classes="modal-title") { +"Checkin verwijderen" }
                 h3(classes="red") { +"TODO" }
                 p { +"Weet je zeker dat je de checkin wilt verwijderen?" }

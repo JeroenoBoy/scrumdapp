@@ -26,5 +26,5 @@ interface CheckinRepository {
     suspend fun createGroupCheckin(groupId: Int, checkins: List<Checkin>): List<Checkin>?
     suspend fun saveGroupCheckin(checkins: List<Checkin>)
     suspend fun alterCheckin(checkin: Checkin): Boolean
-    suspend fun deleteCheckin(checkin: Checkin): Boolean
+    suspend fun deleteCheckins(checkin: List<Checkin>): Boolean
 }

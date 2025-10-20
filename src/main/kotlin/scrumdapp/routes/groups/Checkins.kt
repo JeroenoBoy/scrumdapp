@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
+import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.utils.typedPost
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
@@ -22,6 +23,7 @@ import io.ktor.server.request.receiveParameters
 import io.ktor.server.routing.Route
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.application
+import io.ktor.server.routing.route
 
 fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
@@ -78,4 +80,20 @@ fun Route.groupEditCheckinRoutes() {
 
         call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
     }
+
+    route<GroupsRouter.Id.Edit.Delete> {
+        typedPost<GroupsRouter.Id.Edit.Delete> { groupEditData ->
+            val group = call.group
+            val date = groupEditData.parent.parent.getIsoDateParam()
+            try {
+                val checkin = checkinRepository.getGroupCheckins(group.id, date)
+                if (checkin.isNotEmpty()) {checkinRepository.deleteCheckins(checkin)}
+            } catch (e: Exception) {
+                // To Do: integrate this with new error handling from last pr.
+                call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id)))
+            }
+            call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id)))
+        }
+    }
+
 }
