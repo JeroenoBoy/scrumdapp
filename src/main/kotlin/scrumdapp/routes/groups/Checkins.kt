@@ -9,6 +9,7 @@ import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.services.AppException
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.NoAccessException
+import com.jeroenvdg.scrumdapp.services.ServerFaultException
 import com.jeroenvdg.scrumdapp.services.ValidationException
 import com.jeroenvdg.scrumdapp.services.toExceptionContent
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
@@ -96,8 +97,7 @@ fun Route.groupEditCheckinRoutes() {
                 val checkin = checkinRepository.getGroupCheckins(group.id, date)
                 if (checkin.isNotEmpty()) {checkinRepository.deleteCheckins(checkin)}
             } catch (e: Exception) {
-                // To Do: integrate this with new error handling from last pr.
-                call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id)))
+                throw ServerFaultException(message="Er is iets misgegaan bij het verwijderen van de checkin. Probeer opnieuw of neem contact op")
             }
             call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id)))
         }
