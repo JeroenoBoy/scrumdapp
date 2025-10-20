@@ -10,8 +10,8 @@ import kotlinx.html.p
 
 fun FlowContent.errorPage(exception: ExceptionContent) {
     div(classes="c-x") {
-        div(classes="card mt-c") {
-            h1(classes="text-4xl text-center my-auto") {+exception.code.toString()}
+        div(classes="card mt-c min-w-20 text-center") {
+            h1(classes="text-4xl my-auto") {+exception.code.toString()}
             h2(classes="card-title") {+(exception.title?:"Oops! Er is misgegaan")}
             p { +exception.message }
             div(classes="spacer-lg")

@@ -76,7 +76,7 @@ fun Route.groupEditCheckinRoutes() {
             val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
             return@typedPost call.respondHtml {
                 dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                    groupPage(application, checkinDates, group, call.groupUser.permissions, NoAccessException("Xd").toExceptionContent()) {
+                    groupPage(application, checkinDates, group, call.groupUser.permissions, ValidationException().toExceptionContent()) {
                         editableCheckinWidget(application, checkins, group, date)
                     }
                 }

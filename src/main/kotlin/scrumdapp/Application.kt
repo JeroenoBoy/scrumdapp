@@ -52,7 +52,7 @@ suspend fun Application.module() {
         provide { database }
         provide { httpClient }
         provide { encryptionService }
-        provide { UserService(groupRepository, checkinRepository, encryptionService) }
+        provide { UserService(groupRepository) }
         provide { CheckinService(checkinRepository, groupRepository) }
         provide { InviteService(groupRepository, encryptionService) }
         provide<UserRepository> { userRepository }

@@ -402,6 +402,10 @@ hr {
     aspect-ratio: 4/3;
 }
 
+.min-w-20 {
+    min-width: 20%;
+}
+
 .btn-gh {
     padding: var(--gap-sm);
     aspect-ratio: 1;
