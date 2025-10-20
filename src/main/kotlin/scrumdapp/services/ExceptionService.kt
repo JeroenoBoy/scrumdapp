@@ -53,6 +53,9 @@ open class AppException(
     open val log: Boolean = false // Change this to enum?
 ): RuntimeException(message)
 
+fun Throwable.toExceptionContent(): ExceptionContent {
+    return exceptionFromThrowable(this)
+}
 
 fun exceptionFromThrowable(throwable: Throwable): ExceptionContent {
     return when (throwable) {

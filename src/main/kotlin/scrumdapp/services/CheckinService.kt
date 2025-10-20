@@ -31,8 +31,8 @@ class CheckinService(
                 if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!, 0, 10)
             }
             if (body.contains("presence-${checkin.userId}")) {
-                val presneceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
-                checkin.presence = if (presneceVal == null) null else enumValues<Presence>()[presneceVal]
+                val presenceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
+                checkin.presence = if (presenceVal == null) null else enumValues<Presence>()[presenceVal]
             }
             if (body.contains("comment-${checkin.userId}")) {
                 checkin.comment = body["comment-${checkin.userId}"]
