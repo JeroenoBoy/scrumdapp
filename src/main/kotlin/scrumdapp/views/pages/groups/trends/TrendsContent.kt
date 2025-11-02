@@ -35,10 +35,7 @@ fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData,
                 +"Periode"
                 select(classes="input") { name="view"; onChange="this.form.submit()"
                     option { value="all"; selected=view == "all"; +"Alles" }
-                    option { value="1"; selected=view=="1"; +"Sprint 1" }
-                    option { value="2"; selected=view=="2"; +"Sprint 2" }
-                    option { value="3"; selected=view=="3"; +"Sprint 3" }
-                    option { value="4"; selected=view=="4"; +"Sprint 4" }
+                    option { value="1"; selected=view=="1"; +"14 dagen" }
                 }
             }
         }
