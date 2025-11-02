@@ -46,54 +46,62 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                     td(classes="text-ellipse name-field") { +mySelf.user.name}
                     td(classes="text-ellipse pl-lg") { +mySelf.permissions.displayName}
                 }
-
                 for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
                     val userPermission = groupUser.permissions
-                    tr {
-                        td(classes="text-ellipse name-field") { +groupUser.user.name }
-                        td(classes="pl-md") {
-                            select(classes="input select-role w-full text-ellipse") {
-                                name = "role-${groupUser.id}"
-                                option(classes="yellow") {
-                                    value = "-1";
-                                    if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
-                                    if (userPermission.id == -1) attributes["selected"] = ""
-                                    +UserPermissions.ScrumDad.displayName
+                    if (userPermission.id > mySelf.permissions.id) {
+                        tr {
+                            td(classes = "text-ellipse name-field") { +groupUser.user.name }
+                            td(classes = "pl-md") {
+                                select(classes = "input select-role w-full text-ellipse") {
+                                    name = "role-${groupUser.user.id}"
+                                    option(classes = "yellow") {
+                                        value = "-1";
+                                        if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
+                                        if (userPermission.id == -1) attributes["selected"] = ""
+                                        +UserPermissions.ScrumDad.displayName
+                                    }
+                                    option(classes = "blue") {
+                                        value = "0";
+                                        if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
+                                        if (userPermission.id == 0) attributes["selected"] = ""
+                                        +UserPermissions.UserManagement.displayName
+                                    }
+                                    option(classes = "purple") {
+                                        value = "1"
+                                        if (userPermission.id == 1) attributes["selected"] = ""
+                                        +UserPermissions.CheckinManagement.displayName
+                                    }
+                                    option(classes = "orange") {
+                                        value = "68"
+                                        if (userPermission.id == 68) attributes["selected"] = ""
+                                        +UserPermissions.Coach.displayName
+                                    }
+                                    option(classes = "aqua") {
+                                        value = "69";
+                                        if (userPermission.id == 69) attributes["selected"] = ""
+                                        +UserPermissions.User.displayName
+                                    }
                                 }
-                                option(classes="blue") {
-                                    value = "0";
-                                    if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
-                                    if (userPermission.id == 0) attributes["selected"] = ""
-                                    +UserPermissions.UserManagement.displayName
-                                }
-                                option(classes="purple") {
-                                    value = "1"
-                                    if (userPermission.id == 1) attributes["selected"] = ""
-                                    +UserPermissions.CheckinManagement.displayName
-                                }
-                                option(classes="orange") {
-                                    value = "68"
-                                    if (userPermission.id == 68) attributes["selected"] = ""
-                                    +UserPermissions.Coach.displayName
-                                }
-                                option(classes="aqua") {
-                                    value = "69";
-                                    if (userPermission.id == 69) attributes["selected"] = ""
-                                    +UserPermissions.User.displayName
-                                }
-                            }
-                        }
 
-                        if (groupUser.id != mySelf.id) {
-                            td(classes="pl-md") {
-                                div(classes="horizontal space-between align-center") {
-                                    a(classes="btn btn-red", href="#delete-user-${groupUser.user.id}") {
-                                        icon(iconName="delete_forever", classes="bg-hard")
-                                        +"Verwijder gebruiker"
+                            }
+
+                            if (groupUser.id != mySelf.id) {
+                                td(classes = "pl-md") {
+                                    div(classes = "horizontal space-between align-center") {
+                                        a(classes = "btn btn-red", href = "#delete-user-${groupUser.user.id}") {
+                                            icon(iconName = "delete_forever", classes = "bg-hard")
+                                            +"Verwijder gebruiker"
+                                        }
                                     }
                                 }
                             }
                         }
+                    } else {
+                        tr {
+                            td(classes="text-ellipse name-field") { +groupUser.user.name}
+                            td(classes="text-ellipse pl-lg") { +userPermission.displayName}
+                        }
+
                     }
                 }
             }
