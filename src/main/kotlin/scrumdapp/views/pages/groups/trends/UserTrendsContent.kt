@@ -21,6 +21,7 @@ import kotlinx.html.style
 import kotlinx.html.table
 import kotlinx.html.tbody
 import kotlinx.html.td
+import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
 
@@ -49,12 +50,38 @@ fun FlowContent.userTrendsContent(application: Application, user: GroupUser, vie
             }
             tbody {
                 tr {
-                    td {style="--start:0.2;--end:0.5"}
-                    td {style="--start:0.3;--end:0.2"}
+                    td(classes="green") {style="--start:0.2;--end:0.5"}
+                    td(classes="yellow") {style="--start:0.3;--end:0.2"}
                 }
                 tr {
-                    td {style="--start:0.5;--end:0.3"}
-                    td {style="--start:0.2;--end:0.1"}
+                    td(classes="green") {style="--start:0.5;--end:0.3"}
+                    td(classes="yellow") {style="--start:0.2;--end:0.1"}
+                }
+            }
+        }
+    }
+
+    card {
+        h3 { +"Check-ins / Check-ups" }
+        table(classes="charts-css show-labels line multiple show-5-secondary-axes") {
+            thead {
+                tr {
+                    th { attributes["scope"] = "row"; +"5" }
+                    th { attributes["scope"] = "row"; +"4" }
+                    th { attributes["scope"] = "row"; +"3" }
+                    th { attributes["scope"] = "row"; +"2" }
+                    th { attributes["scope"] = "row"; +"1" }
+                    th { attributes["scope"] = "row"; +"0" }
+                }
+            }
+            tbody {
+                tr {
+                    td(classes="yellow") {style="--start:0.2;--end:0.5"}
+                    td(classes="aqua") {style="--start:0.3;--end:0.2"}
+                }
+                tr {
+                    td(classes="yellow") {style="--start:0.5;--end:0.3"}
+                    td(classes="aqua") {style="--start:0.2;--end:1"}
                 }
             }
         }
