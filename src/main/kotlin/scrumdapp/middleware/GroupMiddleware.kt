@@ -5,6 +5,9 @@ import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.UserGroup
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
+import com.jeroenvdg.scrumdapp.services.NotFoundException
+import com.jeroenvdg.scrumdapp.services.NotAuthorizedException
+import com.jeroenvdg.scrumdapp.services.NoAccessException
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createRouteScopedPlugin
 import io.ktor.server.plugins.di.dependencies
@@ -36,8 +39,8 @@ val IsInGroup = createRouteScopedPlugin("Group Provider") {
         if (!call.hasUser) return@onCall
         val userId = call.user.id
         val groupId = call.parameters["groupId"]?.toIntOrNull() ?: return@onCall call.respondRedirect("/home")
-        val group = groupRepository.getGroup(groupId) ?: return@onCall call.respondRedirect("/home")
-        val groupUser = groupRepository.getGroupUser(groupId, userId) ?: return@onCall call.respondRedirect("/home")
+        val group = groupRepository.getGroup(groupId) ?: throw NotFoundException("Groep is niet gevonden")
+        val groupUser = groupRepository.getGroupUser(groupId, userId) ?: throw NotFoundException("Groep is niet gevonden")
         call.attributes[groupAttributeKey] = group
         call.attributes[groupUserAttributeKey] = groupUser
     }
@@ -48,7 +51,7 @@ val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProvider
     onCall { call ->
         val groupUser = call.attributes.getOrNull(groupUserAttributeKey) ?: return@onCall call.respondRedirect("/home")
         if (perm.id < groupUser.permissions.id) {
-            call.respondRedirect("/groups/${call.group.id}")
+            throw NoAccessException("Onvoldoende permissie om deze pagina te bekijken")
         }
     }
 }
