@@ -9,7 +9,7 @@ import io.ktor.server.resources.href
 import kotlinx.html.*
 import kotlin.math.max
 
-fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData) {
+fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData, view: String) {
     fun TR.chartWidget(amount: Int, name: String, color: String) {
         if (amount > 0) {
             td(classes=color) {
@@ -31,12 +31,14 @@ fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData)
     card {
         div(classes="horizontal justify-between align-center w-full") {
             h3 { +"Presentie overzicht" }
-            form {
-                select(classes="input") { name="sprint"
-                    option { value="1"; +"Sprint 1" }
-                    option { value="2"; +"Sprint 2" }
-                    option { value="3"; +"Sprint 3" }
-                    option { value="4"; +"Sprint 4" }
+            form(classes="horizontal g-md align-center") {
+                +"Periode"
+                select(classes="input") { name="view"; onChange="this.form.submit()"
+                    option { value="all"; selected=view == "all"; +"Alles" }
+                    option { value="1"; selected=view=="1"; +"Sprint 1" }
+                    option { value="2"; selected=view=="2"; +"Sprint 2" }
+                    option { value="3"; selected=view=="3"; +"Sprint 3" }
+                    option { value="4"; selected=view=="4"; +"Sprint 4" }
                 }
             }
         }

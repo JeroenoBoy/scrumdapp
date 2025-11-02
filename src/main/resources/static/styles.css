@@ -56,6 +56,12 @@ h2 {
     font-style: italic;
 }
 
+h3 {
+    font-size: var(--font-size-md);
+    margin: var(--gap-sm) 0 var(--gap-md) 0;
+    font-style: italic;
+}
+
 p {
     margin: 0 0 var(--gap-md);
 }

@@ -6,7 +6,7 @@ import com.jeroenvdg.scrumdapp.utils.now
 import kotlinx.datetime.LocalDate
 import kotlin.math.max
 
-data class TrendsData(val trends: List<TrendData>, val highest: Int, val from: LocalDate, val to: LocalDate) : Iterable<TrendData> {
+data class TrendsData(val trends: List<TrendData>, val highest: Int, var from: LocalDate, var to: LocalDate) : Iterable<TrendData> {
     val size get() = trends.size
     operator fun get(i: Int) = trends[i]
     override fun iterator() = trends.iterator()
@@ -48,6 +48,12 @@ class TrendsService(
     suspend fun getRecentData(groupId: Int): TrendsData {
         val to = LocalDate.now()
         val from = LocalDate.fromEpochDays(to.toEpochDays() - 14)
+        return getTrendsData(groupId, from, to)
+    }
+
+    suspend fun getAllTrendsData(groupId: Int): TrendsData {
+        val to = LocalDate.now()
+        val from = LocalDate.fromEpochDays(0)
         return getTrendsData(groupId, from, to)
     }
 

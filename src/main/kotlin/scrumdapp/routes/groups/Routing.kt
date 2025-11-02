@@ -40,7 +40,7 @@ class GroupsRouter {
         class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
 
         @Resource("trends")
-        class Trends(val parent: Group) { constructor(groupId: Int): this(Group(groupId=groupId))
+        class Trends(val parent: Group, val view: String? = null) { constructor(groupId: Int, view: String? = null): this(Group(groupId=groupId))
             @Resource("{userId}")
             class User(val parent: Trends, val userId: Int) { constructor(groupId: Int, userId: Int): this(Trends(groupId), userId) }
         }
