@@ -34,28 +34,31 @@ val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 class GroupsRouter {
 
     @Resource("{groupId}")
-    class Id(val parent: GroupsRouter = GroupsRouter(), val groupId: Int, val date: String? = null) {
+    class Group(val parent: GroupsRouter = GroupsRouter(), val groupId: Int, val date: String? = null) {
 
         @Resource("edit")
-        class Edit(val parent: Id) { constructor(groupId: Int, date: String? = null): this(Id(groupId=groupId, date=date))}
+        class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
 
         @Resource("trends")
-        class Trends(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))}
+        class Trends(val parent: Group) { constructor(groupId: Int): this(Group(groupId=groupId))
+            @Resource("{userId}")
+            class User(val parent: Trends, val userId: Int) { constructor(groupId: Int, userId: Int): this(Trends(groupId), userId) }
+        }
 
         @Resource("users")
-        class Users(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))
+        class Users(val parent: GroupsRouter.Group) { constructor(groupId: Int): this(Group(groupId=groupId))
             @Resource("delete")
-            class Delete(val parent: Users) { constructor(groupId: Int): this(Users(Id(groupId=groupId))) }
+            class Delete(val parent: Users, val userId: Int) { constructor(groupId: Int, userId: Int): this(Users(Group(groupId=groupId)), userId) }
         }
 
         @Resource("settings")
-        class Settings(val parent: Id) { constructor(groupId: Int): this(Id(groupId=groupId))
+        class Settings(val parent: GroupsRouter.Group) { constructor(groupId: Int): this(Group(groupId=groupId))
             @Resource("change-name")
-            class ChangeName(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+            class ChangeName(val parent: Settings) { constructor(groupId: Int): this(Settings(Group(groupId=groupId))) }
             @Resource("change-background")
-            class ChangeBackground(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+            class ChangeBackground(val parent: Settings) { constructor(groupId: Int): this(Settings(Group(groupId=groupId))) }
             @Resource("delete")
-            class Delete(val parent: Settings) { constructor(groupId: Int): this(Settings(Id(groupId=groupId))) }
+            class Delete(val parent: Settings) { constructor(groupId: Int): this(Settings(Group(groupId=groupId))) }
         }
 
         fun getDateParam(): String {
@@ -99,21 +102,21 @@ suspend fun Application.configureGroupRoutes() {
             install(IsLoggedIn)
             groupsRoutes()
 
-            route<GroupsRouter.Id> {
+            route<GroupsRouter.Group> {
                 install(IsInGroup)
                 groupCheckinRoutes()
 
-                route<GroupsRouter.Id.Edit> {
+                route<GroupsRouter.Group.Edit> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
                 }
 
-                route<GroupsRouter.Id.Users> {
+                route<GroupsRouter.Group.Users> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupUserRoutes()
                 }
 
-                route<GroupsRouter.Id.Settings> {
+                route<GroupsRouter.Group.Settings> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupSettingsRoutes()
                 }

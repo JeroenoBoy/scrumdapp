@@ -18,64 +18,64 @@ import kotlin.random.Random
 
 inline fun FlowContent.groupPage(application: Application, checkins: List<LocalDate>, group: Group, perms: UserPermissions, exception: ExceptionContent? = null, crossinline block: MAIN.() -> Unit = {}) {
     var rng = Random.nextInt(9999999)
-    h1 {+group.name}
-    div(classes="horizontal g-lg mb-lg") {
-        aside(classes="vertical relative") {
-//            if (userPermissions.id <= UserPermissions.User.id) {
-                div(classes="vertical g-lg sticky") { style = "top: 4em"
-                    div(classes="card vertical g-md") {
-                        i(classes="px-lg text-center") {+"Pagina's"}
-                        hr {}
-                        a(href=application.href(GroupsRouter.Id.Trends(group.id)), classes="btn b-none px-lg") {
-                            icon(iconName="bar_chart", classes="yellow")
-                            +"Trends"
-                        }
-                        if (perms.id <= UserPermissions.UserManagement.id) {
-                            a(href=application.href(GroupsRouter.Id.Users(group.id)), classes="btn b-none px-lg") {
-                                icon(iconName="groups", classes="blue")
-                                +"Gebruikers"
-                            }
-                        }
-                        if (perms.id <= UserPermissions.ScrumDad.id) {
-                            a(href=application.href(GroupsRouter.Id.Settings(group.id)), classes="btn b-none px-lg") {
-                                icon(iconName="settings", classes="purple")
-                                +"Instellingen"
-                            }
+    h1 { +group.name }
+    div(classes = "horizontal g-lg mb-lg") {
+        aside(classes = "vertical relative") {
+            div(classes = "vertical g-lg sticky") {
+                style = "top: 4em"
+                div(classes = "card vertical g-md") {
+                    i(classes = "px-lg text-center") { +"Pagina's" }
+                    hr {}
+                    a(href = application.href(GroupsRouter.Group.Trends(group.id)), classes = "btn b-none px-lg") {
+                        icon(iconName = "bar_chart", classes = "yellow")
+                        +"Trends"
+                    }
+                    if (perms.id <= UserPermissions.UserManagement.id) {
+                        a(href = application.href(GroupsRouter.Group.Users(group.id)), classes = "btn b-none px-lg") {
+                            icon(iconName = "groups", classes = "blue")
+                            +"Gebruikers"
                         }
                     }
-                    checkinDates(application, checkins, group, perms, rng)
+                    if (perms.id <= UserPermissions.ScrumDad.id) {
+                        a(href = application.href(GroupsRouter.Group.Settings(group.id)), classes = "btn b-none px-lg") {
+                            icon(iconName = "settings", classes = "purple")
+                            +"Instellingen"
+                        }
+                    }
                 }
-//            }
+                checkinDates(application, checkins, group, perms, rng)
+            }
         }
-        div(classes="flex-1") {
-            main(classes="card flex-1 vertical g-md") { id="group-content"
+        div(classes = "flex-1") {
+            main(classes = "card flex-1 vertical g-md") {
+                id = "group-content"
                 block()
             }
         }
     }
     if (perms.id <= UserPermissions.CheckinManagement.id) {
         modal("create-checkin-$rng") {
-            form(action=application.href(GroupsRouter.Id.Edit(group.id)), method=FormMethod.get, classes="vertical g-md") {
+            form(action = application.href(GroupsRouter.Group.Edit(group.id)), method = FormMethod.get, classes = "vertical g-md") {
                 h2 { +"Nieuwe Check-in" }
 
-                div(classes="input-group") {
-                    label(classes="input-label") { htmlFor="date"; +"Check-in datum" }
-                    div(classes="flex-1")
-                    input(type=InputType.date, name="date", classes="btn") {
+                div(classes = "input-group") {
+                    label(classes = "input-label") { htmlFor = "date"; +"Check-in datum" }
+                    div(classes = "flex-1")
+                    input(type = InputType.date, name = "date", classes = "btn") {
                         val today = java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         value = today
                         max = today
                     }
                 }
 
-                div(classes="horizontal g-md justify-end") {
-                    a(href="#", classes="btn") {
-                        icon(iconName="undo", classes="gray")
+                div(classes = "horizontal g-md justify-end") {
+                    a(href = "#", classes = "btn") {
+                        icon(iconName = "undo", classes = "gray")
                         +"Terug"
                     }
-                    div(classes="hacky-icon") {
-                        icon(iconName="add", classes="bg-hard")
-                        input(type=InputType.submit, classes="btn btn-blue") { value="Maak Check-in" }
+                    div(classes = "hacky-icon") {
+                        icon(iconName = "add", classes = "bg-hard")
+                        input(type = InputType.submit, classes = "btn btn-blue") { value = "Maak Check-in" }
                     }
                 }
             }
@@ -88,23 +88,26 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
 }
 
 fun FlowContent.checkinDates(application: Application, dates: List<LocalDate>, group: Group, perms: UserPermissions, rng: Int) {
-    div(classes="card vertical g-md") {
+    div(classes = "card vertical g-md") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
-            div(classes="horizontal justify-between items-center") {
-                i(classes="px-lg my-auto") {+"Data" }
-                a(href="#create-checkin-$rng", classes="btn btn-red") {
+            div(classes = "horizontal justify-between items-center") {
+                i(classes = "px-lg my-auto") { +"Data" }
+                a(href = "#create-checkin-$rng", classes = "btn btn-red") {
                     +"+"
                 }
             }
             hr {}
         }
-        div(classes="vertical g-md") { style="max-height: 15em;overflow-y: scroll;padding:2px"
+        div(classes = "vertical g-md") {
+            style = "max-height: 15em;overflow-y: scroll;padding:2px"
+            a(classes = "btn b-none px-lg text-center", href = application.href(GroupsRouter.Group(groupId = group.id))) {
+                span(classes = "gray") { +"Vandaag" }
+            }
             for (date in dates) {
-                a(classes = "btn b-none px-lg text-center", href=application.href(GroupsRouter.Id(groupId=group.id, date=date.scrumdappUrlFormat()))) {
-                    span(classes="gray") { +date.scrumdappFormat() }
+                a(classes = "btn b-none px-lg text-center", href = application.href(GroupsRouter.Group(groupId = group.id, date = date.scrumdappUrlFormat()))) {
+                    span(classes = "gray") { +date.scrumdappFormat() }
                 }
             }
         }
     }
 }
-

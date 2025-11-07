@@ -102,7 +102,7 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
     div(classes="flex-1")
     div(classes="horizontal g-md justify-end") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
-            a(href=application.href(GroupsRouter.Id.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
+            a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
                 icon(iconName="edit", classes="blue")
                 +"Pas aan"
             }
@@ -214,7 +214,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                     icon(iconName="undo", classes="gray")
                     +"Nee"
                 }
-                a(href=application.href(GroupsRouter.Id(groupId=group.id, date=date.scrumdappUrlFormat())), classes="btn btn-red") {
+                a(href=application.href(GroupsRouter.Group(groupId=group.id, date=date.scrumdappUrlFormat())), classes="btn btn-red") {
                     icon(iconName="cancel", classes="bg-hard")
                     +"Annuleren"
                 }

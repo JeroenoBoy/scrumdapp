@@ -1,28 +1,13 @@
 package com.jeroenvdg.scrumdapp.services
 
-import com.jeroenvdg.scrumdapp.db.CheckinRepository
-import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
-import com.jeroenvdg.scrumdapp.db.User
-import com.jeroenvdg.scrumdapp.db.UserGroup
+import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 
-
-data class UserDashboardData(
-    val groupMembers: List<User>,
-    val groupUsers: List<UserGroup>,
-)
-
-class UserService(
+class GroupService(
     private val groupRepository: GroupRepository,
 ) {
-    suspend fun getUserDashboardDate(groupId: Int): UserDashboardData{
-        val groupMembers = groupRepository.getGroupMembers(groupId)
-        val groupUsers = groupRepository.getGroupUsers(groupId)
-        return UserDashboardData(groupMembers, groupUsers)
-    }
-
-    suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, userPerm: UserPermissions): Boolean {
+    suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, user: GroupUser): Boolean {
         for ((userId, permId) in permChanges) {
             if (userPerm.id < permId) {
                 try {

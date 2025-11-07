@@ -2,7 +2,7 @@ package com.jeroenvdg.scrumdapp.middleware
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
-import com.jeroenvdg.scrumdapp.db.UserGroup
+import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.services.NotFoundException
@@ -15,7 +15,7 @@ import io.ktor.server.response.respondRedirect
 import io.ktor.util.AttributeKey
 
 private val groupAttributeKey = AttributeKey<Group>("Current Group")
-private val groupUserAttributeKey = AttributeKey<UserGroup>("Current Group User")
+private val groupUserAttributeKey = AttributeKey<GroupUser>("Current Group User")
 
 /**
  * Should be checked if it exists with the IsInGroup
@@ -26,7 +26,7 @@ val ApplicationCall.group: Group
 /**
  * Should be checked if it exists with the IsInGroup
  */
-val ApplicationCall.groupUser: UserGroup
+val ApplicationCall.groupUser: GroupUser
     get() = attributes[groupUserAttributeKey]
 
 class PermProviderConfig() {

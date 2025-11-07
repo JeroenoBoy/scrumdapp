@@ -28,7 +28,7 @@ fun Route.createInvitationsRoute() {
         val password = call.receiveParameters()["create_group_invite"]
 
         val token = inviteService.createInviteToken(password, group.id)
-        if (token.isNullOrBlank()) return@typedPost call.respondRedirect(application.href(GroupsRouter.Id.Users(group.id), "create-invite"))
+        if (token.isNullOrBlank()) return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id), "create-invite"))
 
         val origin = call.request.origin.serverHost
         val url = "https://$origin${application.href(Invitations.AcceptInvitations(token = token))}"

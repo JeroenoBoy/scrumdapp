@@ -30,9 +30,10 @@ import io.ktor.server.routing.application
 fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
 
-    typedGet<GroupsRouter.Id> { groupData ->
+    typedGet<GroupsRouter.Group> { groupData ->
         val date = groupData.getIsoDateParam()
         val group = call.group
+        val groupUser = call.groupUser
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val userPerm = call.groupUser.permissions
         val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
@@ -51,7 +52,7 @@ fun Route.groupEditCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
-    typedGet<GroupsRouter.Id.Edit> { groupEditData ->
+    typedGet<GroupsRouter.Group.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -66,7 +67,7 @@ fun Route.groupEditCheckinRoutes() {
         }
     }
 
-    typedPost<GroupsRouter.Id.Edit> { groupEditData ->
+    typedPost<GroupsRouter.Group.Edit> { groupEditData ->
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -83,6 +84,6 @@ fun Route.groupEditCheckinRoutes() {
             }
         }
 
-        call.respondRedirect(application.href(GroupsRouter.Id(groupId=group.id, date=groupEditData.parent.date)))
+        call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
     }
 }
