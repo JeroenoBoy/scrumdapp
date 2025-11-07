@@ -13,6 +13,8 @@
     --font-size-lg: 1.5rem;
     --font-size-xl: 2rem;
 
+    --legend-border-color: var(--gray-dim) !important;
+
     font-family: "Libertinus Serif", serif;
     font-weight: 400;
     font-style: normal;
@@ -91,119 +93,147 @@
 /* Normal Colors */
 
 .red {
+    --color: var(--red);
     color: var(--red);
 }
 
 .green {
+    --color: var(--green);
     color: var(--green);
 }
 
 .yellow {
+    --color: var(--yellow);
     color: var(--yellow);
 }
 
 .blue {
+    --color: var(--blue);
     color: var(--blue);
 }
 
 .purple {
+    --color: var(--purple);
     color: var(--purple);
 }
 
 .aqua {
+    --color: var(--aqua);
     color: var(--aqua);
 }
 
 .gray {
+    --color: var(--gray);
     color: var(--gray);
 }
 
 .orange {
+    --color: var(--orange);
     color: var(--orange);
 }
 
 /* Dim Colors */
 
 .red-dim {
+    --color: var(--red-dim);
     color: var(--red-dim);
 }
 
 .green-dim {
+    --color: var(--green-dim);
     color: var(--green-dim);
 }
 
 .yellow-dim {
+    --color: var(--yellow-dim);
     color: var(--yellow-dim);
 }
 
 .blue-dim {
+    --color: var(--blue-dim);
     color: var(--blue-dim);
 }
 
 .purple-dim {
+    --color: var(--purple-dim);
     color: var(--purple-dim);
 }
 
 .aqua-dim {
+    --color: var(--aqua-dim);
     color: var(--aqua-dim);
 }
 
 .gray-dim {
+    --color: var(--gray-dim);
     color: var(--gray-dim);
 }
 
 .orange-dim {
+    --color: var(--orange-dim);
     color: var(--orange-dim);
 }
 
 /* Foreground Colors */
 
 .fg {
+    --color: var(--fg);
     color: var(--fg);
 }
 
 .fg1 {
+    --color: var(--fg1);
     color: var(--fg1);
 }
 
 .fg2 {
+    --color: var(--fg2);
     color: var(--fg2);
 }
 
 .fg3 {
+    --color: var(--fg3);
     color: var(--fg3);
 }
 
 .fg4 {
+    --color: var(--fg4);
     color: var(--fg4);
 }
 
 /* Background Colors */
 
 .bg-hard {
+    --color: var(--bg_h);
     color: var(--bg_h);
 }
 
 .bg {
+    --color: var(--bg);
     color: var(--bg);
 }
 
 .bg-soft {
+    --color: var(--bg_s);
     color: var(--bg_s);
 }
 
 .bg1 {
+    --color: var(--bg1);
     color: var(--bg1);
 }
 
 .bg2 {
+    --color: var(--bg2);
     color: var(--bg2);
 }
 
 .bg3 {
+    --color: var(--bg3);
     color: var(--bg3);
 }
 
 .bg4 {
+    --color: var(--bg4);
     color: var(--bg4);
 }
