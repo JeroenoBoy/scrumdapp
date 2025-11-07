@@ -43,7 +43,6 @@ fun Route.groupUserRoutes() {
 
     typedPost<GroupsRouter.Group.Users> { groupUserParams ->
         val params = call.receiveParameters()
-        val userPerm = call.groupUser.permissions
         val permChanges = params.entries()
             .filter { it.key.startsWith("role-") }
             .mapNotNull { entry ->
@@ -52,7 +51,7 @@ fun Route.groupUserRoutes() {
                 if (userId != null && permId != null) userId to permId else null
             }
             .toMap()
-        val success = groupService.alterUserPermissions(call.group.id, permChanges, userPerm)
+        val success = groupService.alterUserPermissions(call.group.id, permChanges, call.groupUser)
         val response = if (success) {
             "alter-success"
         } else {

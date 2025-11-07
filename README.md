@@ -4,7 +4,7 @@ Welcome to Scrumdapp! A tool made for squads within Open-ICT to manage their dai
 
 The full tool is build using the latest version of [ktor](https://ktor.io/). 
 
-Fun fact! One of the challenges and design requirments of this tool was to not use any Javascript on the both the front- and backend. This required some creative htmlcss solution to create all the functionality required for Scrumdapp to properly function. 
+Fun fact! One of the challenges and design requirments of this tool was to not use any Javascript on the both the front- and backend. This required some creative htmlcss solutions to create all the functionality required for Scrumdapp to function properly. 
 
 ## Running and hosting scrumdapp
 
