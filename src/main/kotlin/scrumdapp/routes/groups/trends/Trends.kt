@@ -50,22 +50,22 @@ fun Route.groupTrendsRoutes() {
         }
     }
 
-    route<GroupsRouter.Group.Trends.User> {
-        typedGet<GroupsRouter.Group.Trends.User> { userTrends ->
-            val group = call.group
-            val groupUser = call.groupUser
-            val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
-            val targetUser = groupRepository.getGroupUser(userTrends.parent.parent.groupId, userTrends.userId)
-                ?: return@typedGet call.respondRedirect(application.href(GroupsRouter.Group.Trends(group.id)))
-
-            val view = userTrends.parent.view ?: "all"
-            call.respondHtml {
-                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-                    groupPage(application, checkinDates, group, groupUser.permissions) {
-                        userTrendsContent(application, targetUser, view)
-                    }
-                }
-            }
-        }
-    }
+//    route<GroupsRouter.Group.Trends.User> {
+//        typedGet<GroupsRouter.Group.Trends.User> { userTrends ->
+//            val group = call.group
+//            val groupUser = call.groupUser
+//            val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+//            val targetUser = groupRepository.getGroupUser(userTrends.parent.parent.groupId, userTrends.userId)
+//                ?: return@typedGet call.respondRedirect(application.href(GroupsRouter.Group.Trends(group.id)))
+//
+//            val view = userTrends.parent.view ?: "all"
+//            call.respondHtml {
+//                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+//                    groupPage(application, checkinDates, group, groupUser.permissions) {
+//                        userTrendsContent(application, targetUser, view)
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
