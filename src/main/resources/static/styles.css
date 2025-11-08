@@ -563,11 +563,15 @@ hr {
 }
 
 .other-month {
-    --opacity: 0.5
+    --opacity: 0.4;
 }
 
 .not-in-reach {
-    --opacity: 0.5
+    --opacity: 0.6;
+}
+
+.not-in-reach.other-month {
+    --opacity: 0.25;
 }
 
 .today {
