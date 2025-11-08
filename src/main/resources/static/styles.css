@@ -900,6 +900,10 @@ hr {
     flex: 1;
 }
 
+.flex-2 {
+    flex: 2;
+}
+
 .grid {
     display: grid;
 }

@@ -27,20 +27,20 @@ import kotlin.collections.iterator
 fun FlowContent.calendarContent(application: Application, group: Group, dates: MonthData) {
     val today = LocalDate.now()
     card {
-        div(classes="horizontal w-full space-between") {
-            div {
+        div(classes="horizontal w-full justify-between") {
+            div(classes="flex-1") {
 
                 a(href = application.href(GroupsRouter.Group.Calendar.Content(group.id, dates.yearMonth.minusMonths(1))), classes = "btn b-none horizontal algin-center g-sm") {
                     icon(iconName = "arrow_back", classes="yellow")
                     span { +dates.yearMonth.minusMonths(1).month.scrumdappFormat() }
                 }
             }
-            div(classes="flex-1 horizontal align-center justify-center") {
+            div(classes="flex-2 horizontal align-center justify-center") {
                 form {
                     +"${dates.yearMonth.month.scrumdappFormat()} ${dates.yearMonth.year}"
                 }
             }
-            div {
+            div(classes="flex-1 horizontal justify-end") {
                 a(href=application.href(GroupsRouter.Group.Calendar.Content(group.id, dates.yearMonth.plusMonths(1))), classes="btn b-none horizontal algin-center g-sm") {
                     span { +dates.yearMonth.plusMonths(1).month.scrumdappFormat() }
                     icon(iconName="arrow_forward", classes="green")
