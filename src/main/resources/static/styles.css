@@ -566,6 +566,14 @@ hr {
     --opacity: 0.5
 }
 
+.not-in-reach {
+    --opacity: 0.5
+}
+
+.today {
+    color: var(--green)
+}
+
 .frame-scale {
     overflow: auto;
     resize: both;
