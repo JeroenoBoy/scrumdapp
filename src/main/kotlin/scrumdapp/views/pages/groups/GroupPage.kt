@@ -85,8 +85,8 @@ fun FlowContent.checkinDates(application: Application, dates: List<LocalDate>, g
         if (perms.id <= UserPermissions.CheckinManagement.id) {
             div(classes = "horizontal justify-between items-center") {
                 i(classes = "px-lg my-auto") { +"Data" }
-                a(href = "#create-checkin-$rng", classes = "btn btn-red") {
-                    +"+"
+                a(href=application.href(GroupsRouter.Group.Calendar(group.id)), classes="btn") {
+                    icon(iconName="calendar_month", classes="aqua text-lg")
                 }
             }
             hr {}

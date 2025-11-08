@@ -29,6 +29,10 @@ body {
     position: relative;
 }
 
+#group-content {
+    height: 100%;
+}
+
 input, h1, h2, h3, h4, h5, h6, p, a, hr {
     all: unset;
 }
@@ -109,6 +113,18 @@ hr {
 
 .text-i {
     font-style: italic;
+}
+
+.text-sm {
+    font-size: var(--font-size-sm) !important;
+}
+
+.text-md {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-lg {
+    font-size: var(--font-size-lg) !important;
 }
 
 .text-ellpise {
@@ -517,6 +533,48 @@ hr {
     font-size: var(--font-size-md);
     width: var(--font-size-md);
     height: var(--font-size-md);
+}
+
+
+.checkin-day {
+    --opacity: 1;
+    padding: 0 var(--gap-md);
+    color: var(--fg);
+    border-radius: var(--radius);
+    opacity: var(--opacity);
+}
+
+.checkin-day:hover {
+    background: var(--gray-dim);
+}
+
+.weekend-day {
+    color: var(--gray);
+}
+
+.has-checkin {
+    text-decoration: underline;
+    text-decoration-color: var(--aqua);
+    text-decoration-thickness: 2px;
+}
+
+.has-checkin.weekend-day {
+    text-decoration-color: var(--yellow);
+}
+
+.other-month {
+    --opacity: 0.5
+}
+
+.frame-scale {
+    overflow: auto;
+    resize: both;
+    background: transparent;
+    height: 100%;
+}
+
+.content-frame {
+    background: transparent;
 }
 
 /* Navbar */

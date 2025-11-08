@@ -38,4 +38,5 @@ interface CheckinRepository {
     suspend fun deleteCheckin(checkin: Checkin): Boolean
 
     suspend fun getPresenceBetween(groupId: Int, from: LocalDate, to: LocalDate): List<PresenceData>
+    suspend fun getDatesBetween(groupId: Int, from: LocalDate, to: LocalDate): List<LocalDate>
 }

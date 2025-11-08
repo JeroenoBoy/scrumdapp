@@ -162,4 +162,15 @@ class CheckinRepositoryImpl: CheckinRepository {
                 ) }
         }
     }
+
+    override suspend fun getDatesBetween(groupId: Int, from: LocalDate, to: LocalDate): List<LocalDate> {
+        return dbQuery {
+            GroupCheckins
+                .select(GroupCheckins.date)
+                .where { (GroupCheckins.groupId eq groupId) and (GroupCheckins.date greaterEq from) and (GroupCheckins.date lessEq to) }
+                .withDistinctOn(GroupCheckins.date)
+                .orderBy(GroupCheckins.date)
+                .map { it[GroupCheckins.date] }
+        }
+    }
 }
