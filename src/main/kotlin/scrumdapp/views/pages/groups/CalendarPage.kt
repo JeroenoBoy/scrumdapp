@@ -28,8 +28,7 @@ fun FlowContent.calendarContent(application: Application, group: Group, dates: M
     val today = LocalDate.now()
     card {
         div(classes="horizontal w-full justify-between") {
-            div(classes="flex-1") {
-
+            div(classes="flex-1 horizontal") {
                 a(href = application.href(GroupsRouter.Group.Calendar.Content(group.id, dates.yearMonth.minusMonths(1))), classes = "btn b-none horizontal algin-center g-sm") {
                     icon(iconName = "arrow_back", classes="yellow")
                     span { +dates.yearMonth.minusMonths(1).month.scrumdappFormat() }
