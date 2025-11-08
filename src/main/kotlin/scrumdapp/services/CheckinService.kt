@@ -74,7 +74,7 @@ class CheckinService(
         val startDate = yearMonth.atDay(1)
         val endDate = yearMonth.atEndOfMonth()
         val weekStartDate = startDate.minusDays(startDate.dayOfWeek.value - 1L).toKotlinLocalDate()
-        val weekEndDate = endDate.plusDays(7L - startDate.dayOfWeek.value - 1L).toKotlinLocalDate()
+        val weekEndDate = endDate.plusDays(7L - endDate.dayOfWeek.value).toKotlinLocalDate()
 
         val days = mutableListOf<CheckinDay>()
         val checkinData = checkinRepository.getDatesBetween(groupId, weekStartDate, weekEndDate)
@@ -84,10 +84,10 @@ class CheckinService(
         var i = 0
         while (currentDate <= weekEndDate) {
             // ensures always at the same day
-            while (currentDate > checkinData[checkinDataI] && checkinDataI != checkinData.size - 1) {
-                checkinDataI = min(checkinData.size - 1, checkinDataI + 1)
+            while (checkinDataI < checkinData.size && currentDate > checkinData[checkinDataI]) {
+                checkinDataI++
             }
-            days.add(CheckinDay(currentDate, currentDate == checkinData[checkinDataI]))
+            days.add(CheckinDay(currentDate, checkinDataI < checkinData.size && currentDate == checkinData[checkinDataI]))
             i++
             currentDate = currentDate.plus(1, DateTimeUnit.DAY)
         }
