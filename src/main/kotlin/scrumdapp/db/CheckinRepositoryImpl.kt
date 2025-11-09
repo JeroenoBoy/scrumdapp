@@ -179,7 +179,6 @@ class CheckinRepositoryImpl: CheckinRepository {
 
     override suspend fun getDistinctMonths(groupId: Int): List<YearMonth> {
         return dbQuery {
-            addLogger(StdOutSqlLogger)
             GroupCheckins
                 .select(GroupCheckins.date.year(), GroupCheckins.date.month())
                 .where { GroupCheckins.groupId eq groupId }
