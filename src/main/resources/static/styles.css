@@ -46,6 +46,26 @@ li::before { --border-color: var(--color); }
 dialog { display: block; }
 dialog:not(:target):not([open]) { display: none; }
 
+/* Scrollbar, Firefox looks much better than this chromium BS */
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F2F2F220;
+    border-radius: 1000px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6E6E6E50;
+    border-radius: 1000px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #BDBDBD50;
+}
+
 /* Text */
 
 h1 {
@@ -861,6 +881,18 @@ hr {
     padding-left: var(--gap-lg) !important;
 }
 
+.pr-0 {
+    padding-right: 0;
+}
+
+.pr-md {
+    padding-right: var(--gap-md);
+}
+
+.pr-lg {
+    padding-right: var(--gap-lg);
+}
+
 .g-md {
     gap: var(--gap-md);
 }
@@ -1047,4 +1079,13 @@ table.charts-css.big-label th {
 .charts-css.stacked tbody tr td:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+}
+
+@supports not (::-webkit-scrollbar) {
+    .card-sb {
+        padding-right: var(--gap-sm);
+    }
+    .card-sb > * {
+        padding-right: var(--gap-md)
+    }
 }
