@@ -83,11 +83,9 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
 fun FlowContent.checkinDates(application: Application, dates: List<LocalDate>, group: Group, perms: UserPermissions, rng: Int) {
     div(classes = "card vertical g-md") {
         if (perms.id <= UserPermissions.CheckinManagement.id) {
-            div(classes = "horizontal justify-between items-center") {
-                i(classes = "px-lg my-auto") { +"Data" }
-                a(href=application.href(GroupsRouter.Group.Calendar(group.id)), classes="btn") {
-                    icon(iconName="calendar_month", classes="aqua text-lg")
-                }
+            a(href=application.href(GroupsRouter.Group.Calendar(group.id)), classes="btn b-none justify-center") {
+                icon(iconName="calendar_month", classes="aqua text-lg")
+                i(classes="my-auto") { +"Datums" }
             }
             hr {}
         }

@@ -7,6 +7,9 @@ import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.kotlin.datetime.month
+import org.jetbrains.exposed.sql.kotlin.datetime.year
+import java.time.YearMonth
 
 class CheckinRepositoryImpl: CheckinRepository {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
@@ -171,6 +174,17 @@ class CheckinRepositoryImpl: CheckinRepository {
                 .withDistinctOn(GroupCheckins.date)
                 .orderBy(GroupCheckins.date)
                 .map { it[GroupCheckins.date] }
+        }
+    }
+
+    override suspend fun getDistinctMonths(groupId: Int): List<YearMonth> {
+        return dbQuery {
+            addLogger(StdOutSqlLogger)
+            GroupCheckins
+                .select(GroupCheckins.date.year(), GroupCheckins.date.month())
+                .where { GroupCheckins.groupId eq groupId }
+                .withDistinct(true)
+                .map { YearMonth.of(it[GroupCheckins.date.year()], it[GroupCheckins.date.month()]) }
         }
     }
 }

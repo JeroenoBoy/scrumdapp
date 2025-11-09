@@ -7,6 +7,8 @@ import com.jeroenvdg.scrumdapp.utils.now
 import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.card
+import com.jeroenvdg.scrumdapp.views.components.dropdown
+import com.jeroenvdg.scrumdapp.views.components.dropdownItem
 import com.jeroenvdg.scrumdapp.views.components.icon
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
@@ -22,9 +24,10 @@ import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
+import java.time.YearMonth
 import kotlin.collections.iterator
 
-fun FlowContent.calendarContent(application: Application, group: Group, dates: MonthData) {
+fun FlowContent.calendarContent(application: Application, group: Group, possibleMonths: List<YearMonth>, dates: MonthData) {
     val today = LocalDate.now()
     card {
         div(classes="horizontal w-full justify-between") {
@@ -35,8 +38,12 @@ fun FlowContent.calendarContent(application: Application, group: Group, dates: M
                 }
             }
             div(classes="flex-2 horizontal align-center justify-center") {
-                form {
-                    +"${dates.yearMonth.month.scrumdappFormat()} ${dates.yearMonth.year}"
+                dropdown(dates.yearMonth.scrumdappFormat()) {
+                    for (yearMonth in possibleMonths) {
+                        dropdownItem(href=application.href(GroupsRouter.Group.Calendar.Content(group.id, yearMonth))) {
+                            +yearMonth.scrumdappFormat()
+                        }
+                    }
                 }
             }
             div(classes="flex-1 horizontal justify-end") {

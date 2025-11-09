@@ -3,6 +3,7 @@ package com.jeroenvdg.scrumdapp.db
 import com.jeroenvdg.scrumdapp.models.Presence
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import java.time.YearMonth
 
 @Serializable
 data class Checkin(
@@ -39,4 +40,5 @@ interface CheckinRepository {
 
     suspend fun getPresenceBetween(groupId: Int, from: LocalDate, to: LocalDate): List<PresenceData>
     suspend fun getDatesBetween(groupId: Int, from: LocalDate, to: LocalDate): List<LocalDate>
+    suspend fun getDistinctMonths(groupId: Int): List<YearMonth>
 }

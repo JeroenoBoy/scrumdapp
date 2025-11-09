@@ -58,6 +58,8 @@ fun parseMonth(month: String): Month {
     }
 }
 
+fun YearMonth.scrumdappFormat(): String = "${month.scrumdappFormat()} $year"
+
 fun java.time.Month.scrumdappFormat(): String {
     return when (this) {
         Month.JANUARY -> "January"

@@ -454,6 +454,7 @@ hr {
 
 .btn:hover {
     background: var(--bg2);
+    cursor: pointer;
 }
 
 .btn:active {
@@ -542,10 +543,12 @@ hr {
     color: var(--fg);
     border-radius: var(--radius);
     opacity: var(--opacity);
+    transition: 0.25s ease-out;
 }
 
 .checkin-day:hover {
     background: var(--gray-dim);
+    cursor: pointer;
 }
 
 .weekend-day {
@@ -574,6 +577,11 @@ hr {
     --opacity: 0.25;
 }
 
+.not-in-reach:hover {
+    background: unset;
+    cursor: unset;
+}
+
 .today {
     color: var(--green)
 }
@@ -587,6 +595,48 @@ hr {
 
 .content-frame {
     background: transparent;
+}
+
+.dropdown {
+    display: inline-block;
+    position: relative;
+    border-radius: var(--radius);
+    color: var(--fg1);
+}
+
+.dropdown-view {
+    flex: 1;
+    background: var(--bg_h);
+    border: 1px solid var(--fg4);
+    border-radius: var(--radius);
+    padding: var(--gap-md);
+    display: flex;
+    gap: var(--gap-sm);
+    align-items: center;
+}
+
+.dropdown-arrow {
+    transition: 0.25s ease-out;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    background: var(--bg_h);
+    border: 1px solid var(--fg4);
+    border-radius: var(--radius);
+    padding: var(--gap-md);
+    z-index: 1;
+    min-width: calc(100% - var(--gap-md) * 2);
+}
+
+.dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
 /* Navbar */
@@ -644,6 +694,7 @@ hr {
 
 .nav-button:hover {
     background: var(--bg2);
+    cursor: pointer;
 }
 
 .nav-button:active {
@@ -676,7 +727,7 @@ hr {
 
 /* Dropdown */
 
-.dropdown {
+.nav-dropdown {
     position: relative;
     background-color: var(--bg_h);
     border-radius: 1000px;
@@ -686,7 +737,7 @@ hr {
     padding-bottom: 4px;
 }
 
-.dropdown-content {
+.nav-dropdown-content {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -707,13 +758,13 @@ hr {
     border-radius: 16px 0 16px 16px;
 }
 
-.dropdown:hover .dropdown-content, .dropdown-content :focus {
+.nav-dropdown:hover .nav-dropdown-content, .nav-dropdown-content :focus {
     transform: scale(1);
     /*height: calc(100% + var(--gap-sm) * 2);*/
     opacity: 1;
 }
 
-.dropdown .nav-button {
+.nav-dropdown .nav-button {
     padding: 0 var(--gap-sm);
 }
 
