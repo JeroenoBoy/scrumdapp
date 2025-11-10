@@ -11,6 +11,7 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.trends.groupTrendsRoutes
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
+import com.jeroenvdg.scrumdapp.services.ValidationException
 import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.serialization.JsonConvertException

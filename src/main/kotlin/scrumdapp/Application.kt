@@ -9,6 +9,7 @@ import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
 import com.jeroenvdg.scrumdapp.routes.invites.configureInviteRoutes
+import com.jeroenvdg.scrumdapp.services.configureExceptionService
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.DotenvService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
