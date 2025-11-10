@@ -576,13 +576,19 @@ hr {
 }
 
 .has-checkin {
-    text-decoration: underline;
-    text-decoration-color: var(--aqua);
-    text-decoration-thickness: 2px;
+    background-color: color-mix(in srgb, var(--green-dim), transparent 50%);
 }
 
 .has-checkin.weekend-day {
-    text-decoration-color: var(--yellow);
+    background-color: color-mix(in srgb, var(--yellow-dim), transparent 75%);
+}
+
+.has-checkin:hover {
+    background-color: color-mix(in srgb, var(--green), transparent 25%);
+}
+
+.has-checkin.weekend-day:hover {
+    background-color: color-mix(in srgb, var(--yellow), transparent 50%);
 }
 
 .other-month {
@@ -603,7 +609,7 @@ hr {
 }
 
 .today {
-    color: var(--green)
+    border: 1px dotted var(--gray);
 }
 
 .frame-scale {

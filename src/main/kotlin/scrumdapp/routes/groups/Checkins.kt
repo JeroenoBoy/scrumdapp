@@ -31,7 +31,7 @@ fun Route.groupCheckinRoutes() {
         val group = call.group
         val groupUser = call.groupUser
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -53,7 +53,7 @@ fun Route.groupEditCheckinRoutes() {
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val userPerm = groupRepository.getGroupMemberPermissions(group.id, call.userSession.userId)
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {

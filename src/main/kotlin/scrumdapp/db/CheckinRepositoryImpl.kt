@@ -59,7 +59,7 @@ class CheckinRepositoryImpl: CheckinRepository {
         }
     }
 
-    override suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
+    override suspend fun getRecentCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
         return dbQuery {
             GroupCheckins
                 .select(GroupCheckins.date)

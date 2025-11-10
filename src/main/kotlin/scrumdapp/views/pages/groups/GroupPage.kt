@@ -26,7 +26,7 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                     hr {}
                     a(href=application.href(GroupsRouter.Group.Calendar(group.id)), classes="btn b-none px-lg") {
                         icon(iconName="calendar_month", classes="aqua text-lg")
-                        i(classes="my-auto") { +"Check-ins" }
+                        i(classes="my-auto") { +"Kalender" }
                     }
                     a(href = application.href(GroupsRouter.Group.Trends(group.id)), classes = "btn b-none px-lg") {
                         icon(iconName = "bar_chart", classes = "yellow")

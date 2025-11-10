@@ -4,7 +4,6 @@ import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.services.CheckinService
-import com.jeroenvdg.scrumdapp.utils.href
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -28,7 +27,7 @@ fun Route.calendarRoutes() {
     typedGet<GroupsRouter.Group.Calendar> { calendarData ->
         val group = call.group
         val groupUser = call.groupUser
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {

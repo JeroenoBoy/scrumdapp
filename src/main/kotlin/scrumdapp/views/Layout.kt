@@ -8,6 +8,7 @@ import kotlinx.html.BODY
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
@@ -33,6 +34,8 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
     }
     body {
         if(pageData.contentFrame) {
+            classes += "vertical";
+            classes += "g-md";
             style="background: transparent"
         }
         builder()
