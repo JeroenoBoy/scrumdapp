@@ -132,10 +132,10 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
             }
 
 
-            form(action=application.href(GroupsRouter.Id.Users.Delete(group.id)), method= FormMethod.post) {
+            form(action=application.href(GroupsRouter.Group.Users.Delete(group.id, groupUser.user.id)), method= FormMethod.post) {
                 input(type = InputType.hidden) {
                     name = "userId"
-                    value = user.id.toString()
+                    value = groupUser.user.id.toString()
                 }
 
                 div(classes = "horizontal g-md justify-end") {

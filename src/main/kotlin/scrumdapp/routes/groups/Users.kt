@@ -5,9 +5,8 @@ import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.services.ExceptionContent
-import com.jeroenvdg.scrumdapp.services.NotFoundException
-import com.jeroenvdg.scrumdapp.services.UserService
-import com.jeroenvdg.scrumdapp.services.toExceptionContent
+import com.jeroenvdg.scrumdapp.services.GroupService
+import com.jeroenvdg.scrumdapp.services.ServerFaultException
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -16,6 +15,7 @@ import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.userEditContent
+import com.jeroenvdg.scrumdapp.services.ValidationException
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
@@ -63,14 +63,15 @@ fun Route.groupUserRoutes() {
         call.respondRedirect("/groups/${call.group.id}/users#$response")
     }
 
-    route<GroupsRouter.Id.Users.Delete> {
-        typedPost<GroupsRouter.Id.Users.Delete> { deleteGroupParams ->
-            val userId = call.receiveParameters()["userId"]?.toIntOrNull()
+    route<GroupsRouter.Group.Users.Delete> {
+        typedPost<GroupsRouter.Group.Users.Delete> { deleteGroupParams ->
+            val userId = call.receiveParameters()["userId"]?.toIntOrNull() ?: throw ValidationException("user id missing")
+
             val group = call.group
 
             val success = groupService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
             if (!success) {
-                return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))
+                throw ServerFaultException("group user could not be deleted")
             }
 
             call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))

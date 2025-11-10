@@ -14,7 +14,7 @@ import com.jeroenvdg.scrumdapp.services.DotenvService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.InviteService
-import com.jeroenvdg.scrumdapp.services.UserService
+import com.jeroenvdg.scrumdapp.services.GroupService
 import com.jeroenvdg.scrumdapp.services.configureExceptionService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
@@ -52,7 +52,7 @@ suspend fun Application.module() {
         provide { database }
         provide { httpClient }
         provide { encryptionService }
-        provide { UserService(groupRepository) }
+        provide { GroupService(groupRepository) }
         provide { CheckinService(checkinRepository, groupRepository) }
         provide { InviteService(groupRepository, encryptionService) }
         provide<UserRepository> { userRepository }

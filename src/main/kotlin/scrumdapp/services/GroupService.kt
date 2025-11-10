@@ -9,7 +9,7 @@ class GroupService(
 ) {
     suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, user: GroupUser): Boolean {
         for ((userId, permId) in permChanges) {
-            if (userPerm.id < permId) {
+            if (user.permissions.id < permId) {
                 try {
                     groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
                 } catch (e: Exception) {
@@ -24,9 +24,8 @@ class GroupService(
 
     suspend fun deleteUserFromGroup(groupId: Int, targetUserId: Int, userPerm: UserPermissions): Boolean {
         val groupUsers = groupRepository.getGroupUsers(groupId)
-        if (!groupUsers.any { it.id == targetUserId }) { return false }
+        if (!groupUsers.any { it.user.id == targetUserId }) { return false }
         if (userPerm.id >= groupUsers.first { it.id == targetUserId }.permissions.id) { return false }
-
         try {
             groupRepository.deleteGroupMember(groupId, targetUserId)
             return true
