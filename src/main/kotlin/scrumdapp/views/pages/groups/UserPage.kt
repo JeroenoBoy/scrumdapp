@@ -30,9 +30,9 @@ import kotlinx.html.tr
 import kotlinx.html.p
 
 fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
-    h2 { +"Gebruikers aanpassen"}
+    h2(classes="card") { +"Gebruikers aanpassen"}
     div(classes="spacer-lg")
-    form(method=FormMethod.post, classes="vertical g-md flex-1") {
+    form(method=FormMethod.post, classes="vertical g-md flex-1 card") {
         table(classes="checkin-table") {
             thead {
                 tr {
