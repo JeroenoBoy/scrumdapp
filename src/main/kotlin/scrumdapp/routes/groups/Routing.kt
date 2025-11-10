@@ -11,6 +11,7 @@ import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.trends.groupTrendsRoutes
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
+import com.jeroenvdg.scrumdapp.services.ValidationException
 import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.serialization.JsonConvertException
@@ -86,9 +87,9 @@ fun Route.groupsRoutes() {
             groupRepository.addGroupMember(newGroup.id, call.user.id, UserPermissions.LordOfScrum)
             call.respondRedirect("/groups/${newGroup.id}")
         } catch (ex: IllegalStateException) {
-            call.respond(HttpStatusCode.BadRequest)
+            throw ValidationException()
         } catch (ex: JsonConvertException) {
-            call.respond(HttpStatusCode.BadRequest)
+            throw ValidationException()
         }
     }
 }

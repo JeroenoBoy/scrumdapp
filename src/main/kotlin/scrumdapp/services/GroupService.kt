@@ -9,9 +9,12 @@ class GroupService(
 ) {
     suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, user: GroupUser): Boolean {
         for ((userId, permId) in permChanges) {
-            if (user.permissions.id < permId || userId != user.id) {
-                val success = groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
-                if (!success) { return false }
+            if (user.permissions.id < permId) {
+                try {
+                    groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
+                } catch (e: Exception) {
+                    throw ServerFaultException(message = "Er is iets misgegaan bij aan het aanpassen van de permissies.")
+                }
             } else {
                 return false
             }
@@ -21,15 +24,13 @@ class GroupService(
 
     suspend fun deleteUserFromGroup(groupId: Int, targetUserId: Int, userPerm: UserPermissions): Boolean {
         val groupUsers = groupRepository.getGroupUsers(groupId)
-        if (!groupUsers.any { it.id == targetUserId }) { return false }
+        if (!groupUsers.any { it.user.id == targetUserId }) { return false }
         if (userPerm.id >= groupUsers.first { it.id == targetUserId }.permissions.id) { return false }
-
         try {
             groupRepository.deleteGroupMember(groupId, targetUserId)
             return true
         } catch (e: Exception) {
-            // Figure out a way to throw exceptions
-            return false
+            throw ServerFaultException()
         }
     }
 

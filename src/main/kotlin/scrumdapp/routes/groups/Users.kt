@@ -4,7 +4,9 @@ import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
+import com.jeroenvdg.scrumdapp.services.ExceptionContent
 import com.jeroenvdg.scrumdapp.services.GroupService
+import com.jeroenvdg.scrumdapp.services.ServerFaultException
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -13,6 +15,7 @@ import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.userEditContent
+import com.jeroenvdg.scrumdapp.services.ValidationException
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.request.receiveParameters
@@ -61,48 +64,17 @@ fun Route.groupUserRoutes() {
     }
 
     route<GroupsRouter.Group.Users.Delete> {
-        typedPost<GroupsRouter.Group.Users.Delete> { deleteParams ->
-            val userId = deleteParams.userId
+        typedPost<GroupsRouter.Group.Users.Delete> { deleteGroupParams ->
+            val userId = call.receiveParameters()["userId"]?.toIntOrNull() ?: throw ValidationException("user id missing")
+
             val group = call.group
 
             val success = groupService.deleteUserFromGroup(group.id, userId, call.groupUser.permissions)
             if (!success) {
-                return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))
+                throw ServerFaultException("group user could not be deleted")
             }
 
             call.respondRedirect(application.href(GroupsRouter.Group.Users(group.id)))
         }
     }
 }
-
-//                route("/users") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.UserManagement }
-//
-//                    post("/create-invite") {
-//                        val passwordRegex = Regex("^[a-zA-Z0-9_ .,#^!?><]{3,50}")
-//                        val group = call.group
-//                        val token = generateRandomToken(60)
-//                        val password = call.receiveParameters()["create_group_invite"]
-//
-//                        if (password.isNullOrBlank() || !passwordRegex.matches(password)) {
-//                            return@post call.respondRedirect("/groups/${group.id}/users#create-invite")
-//                        } else {
-//                            try {
-//                                groupRepository.createGroupInvite(group.id, token, encryptionService.hashValue(password))
-//                            } catch (e: Exception) {
-//                                print(e.message)
-//                            }
-//                        }
-//
-//                        val origin = call.request.origin.serverHost
-//                        val url = "https://$origin/invitations?token=$token"
-//
-//                        call.respondHtml {
-//                            dashboardLayout(DashboardPageData(group.name, call)) {
-//                                groupPage(emptyList(), group, call.groupUser.permissions) {
-//                                    userInviteContent(group, url)
-//                                }
-//                            }
-//                        }
-//                    }
-//                }

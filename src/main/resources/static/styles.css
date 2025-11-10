@@ -130,6 +130,11 @@ hr {
     font-size: 0.75rem;
 }
 
+.text-4xl {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+}
+
 .material-symbols-outlined {
     font-size: 1rem;
 }
@@ -408,6 +413,10 @@ hr {
     width: 100%;
     height: auto;
     aspect-ratio: 4/3;
+}
+
+.min-w-20 {
+    min-width: 20%;
 }
 
 .btn-gh {
