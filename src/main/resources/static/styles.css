@@ -37,6 +37,8 @@ h1, h2, h3, h4, h5, h6, p {
     display: block;
 }
 
+li::before { --border-color: var(--color); }
+
 dialog { display: block; }
 dialog:not(:target):not([open]) { display: none; }
 
@@ -50,6 +52,12 @@ h1 {
 
 h2 {
     font-size: var(--font-size-lg);
+    margin: var(--gap-sm) 0 var(--gap-md) 0;
+    font-style: italic;
+}
+
+h3 {
+    font-size: var(--font-size-md);
     margin: var(--gap-sm) 0 var(--gap-md) 0;
     font-style: italic;
 }
@@ -109,9 +117,9 @@ hr {
     white-space: nowrap;
 }
 
-.text-4xl {
-    font-size: var(--font-size-4xl);
-    font-weight: 800;
+.no-wrap {
+    white-space: nowrap;
+    text-wrap: nowrap;
 }
 
 .muted {
@@ -695,6 +703,10 @@ hr {
     padding: var(--gap-sm);
 }
 
+.pt-sm {
+    padding-top: var(--gap-sm);
+}
+
 .px-0 {
     padding-left: 0;
     padding-right: 0;
@@ -718,6 +730,10 @@ hr {
 .px-xl {
     padding-left: var(--gap-xl);
     padding-right: var(--gap-xl);
+}
+
+.pl-sm {
+    padding-left: var(--gap-sm) !important;
 }
 
 .pl-md {
@@ -810,6 +826,10 @@ hr {
     justify-content: end;
 }
 
+.flex-0 {
+    flex: 0;
+}
+
 .flex-1 {
     flex: 1;
 }
@@ -830,8 +850,16 @@ hr {
     aspect-ratio: 4/3;
 }
 
+.b-gray {
+    border: 1px solid var(--gray-dim);
+}
+
 .b-none {
     border: none;
+}
+
+.br-gray {
+    border-right: 1px solid var(--gray-dim);
 }
 
 .rounded {
@@ -871,4 +899,31 @@ hr {
 .checkbox-expand.absolute {
     top: 0.4rem;
     overflow: unset;
+}
+
+table.charts-css.big-label {
+    --labels-size: 4em;
+}
+
+table.charts-css.big-label th {
+    padding-top: 1.2em;
+    justify-content: start !important;
+}
+
+.charts-css.legend li::before {
+    border-width: var(--gap-md);
+    border-radius: var(--radius);
+}
+
+.charts-css.legend {
+    --legend-border-color: var(--gray-dim);
+}
+
+.charts-css.stacked tbody tr td:nth-child(3) {
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+}
+.charts-css.stacked tbody tr td:last-child {
+    border-top-right-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
 }

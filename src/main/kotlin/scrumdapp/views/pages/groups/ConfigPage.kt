@@ -4,12 +4,14 @@ import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
+import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
+import kotlinx.html.ImgLoading
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
@@ -25,52 +27,55 @@ import kotlin.random.Random
 fun FlowContent.groupConfigContent(application: Application, group: Group, groupUser: GroupUser, backgrounds: List<String>) {
     val safetyId = Random.nextInt(0, 99999999)
 
-    h2 { +"Instellingen" }
+    card {
 
-    div(classes="spacer-lg")
+        h2 { +"Instellingen" }
 
-    form(action=application.href(GroupsRouter.Group.Settings.ChangeName(group.id)), method=FormMethod.post) {
-        div(classes="input-group") {
-            label(classes="input-label") { htmlFor="group_name"; +"Groep Naam" }
-            input(classes="input", name="group_name") {
-                required=true
-                minLength="3"
-                maxLength="36"
-                value=group.name
+        div(classes = "spacer-lg")
+
+        form(action = application.href(GroupsRouter.Group.Settings.ChangeName(group.id)), method = FormMethod.post) {
+            div(classes = "input-group") {
+                label(classes = "input-label") { htmlFor = "group_name"; +"Groep Naam" }
+                input(classes = "input", name = "group_name") {
+                    required = true
+                    minLength = "3"
+                    maxLength = "36"
+                    value = group.name
+                }
+            }
+            div(classes = "hacky-icon") {
+                icon(iconName = "check", classes = "blue")
+                input(type = InputType.submit, classes = "btn") { value = "Naam Toepassen" }
             }
         }
-        div(classes="hacky-icon") {
-            icon(iconName="check", classes="blue")
-            input(type=InputType.submit, classes="btn") { value="Naam Toepassen" }
-        }
-    }
 
-    div(classes="spacer-lg")
+        div(classes = "spacer-lg")
 
-    div(classes="vertical g-md") {
-        img(src="/static/backgrounds/thumbnails/${group.bannerImage ?: "15"}.webp", classes="rounded cover") {
-            width="420"
-            height="240"
-        }
-        div("horizontal") {
-            a(href="#pick-background", classes="btn") {
-                icon(iconName="texture", classes="green")
-                +"Verander Achtergrond"
+        div(classes = "vertical g-md") {
+            img(src = "/static/backgrounds/thumbnails/${group.bannerImage ?: "15"}.webp", classes = "rounded cover") {
+                width = "420"
+                height = "240"
+            }
+            div("horizontal") {
+                a(href = "#pick-background", classes = "btn") {
+                    icon(iconName = "texture", classes = "green")
+                    +"Verander Achtergrond"
+                }
             }
         }
-    }
 
-    if (groupUser.permissions == UserPermissions.LordOfScrum) {
-        div(classes="spacer-xl")
+        if (groupUser.permissions == UserPermissions.LordOfScrum) {
+            div(classes = "spacer-xl")
 
-        div(classes="danger-zone vertical g-lg") {
-            h2 { +"Gevaarlijke zone" }
-            div(classes="horizontal space-between align-center w-full") {
-                p(classes="red") { +"Verwijder Groep" }
-                div(classes="flex-1")
-                a(href="#delete-group-$safetyId", classes="btn btn-red") {
-                    icon(iconName="delete_forever", classes="bg-hard")
-                    +"Verwijder Groep"
+            div(classes = "danger-zone vertical g-lg") {
+                h2 { +"Gevaarlijke zone" }
+                div(classes = "horizontal space-between align-center w-full") {
+                    p(classes = "red") { +"Verwijder Groep" }
+                    div(classes = "flex-1")
+                    a(href = "#delete-group-$safetyId", classes = "btn btn-red") {
+                        icon(iconName = "delete_forever", classes = "bg-hard")
+                        +"Verwijder Groep"
+                    }
                 }
             }
         }
@@ -82,7 +87,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
             for (background in backgrounds) {
                 if (background == (group.bannerImage ?: "15")) {
                     div(classes="relative ratio-43") {
-                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full", loading=ImgLoading.lazy)
                         a(href="#", classes="btn btn-green pick-bg-btn") {
                             icon(iconName="check", classes="bg-hard")
                             +"Huidige"
@@ -91,7 +96,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
                 } else {
                     form(action=application.href(GroupsRouter.Group.Settings.ChangeBackground(group.id)), method=FormMethod.post, classes="relative ratio-43") {
                         input(type=InputType.hidden, name="img") { value=background }
-                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full")
+                        img(src="/static/backgrounds/thumbnails/$background.webp", classes="rounded cover w-full h-full", loading=ImgLoading.lazy)
                         div(classes="hacky-icon pick-bg-btn") {
                             icon(iconName="check", classes="bg-hard")
                             input(type=InputType.submit, classes="btn btn-gray") { value="Kies" }

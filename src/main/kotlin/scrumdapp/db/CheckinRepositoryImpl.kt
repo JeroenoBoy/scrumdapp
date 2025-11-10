@@ -126,10 +126,10 @@ class CheckinRepositoryImpl: CheckinRepository {
     override suspend fun alterCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.update({ GroupCheckins.userId eq checkin.userId and (GroupCheckins.groupId eq checkin.groupId)}) {
-               it[GroupCheckins.presence] = checkin.presence
-               it[GroupCheckins.date] = checkin.date
-               it[GroupCheckins.checkinStars] = checkin.checkinStars
-               it[GroupCheckins.checkupStars] = checkin.checkupStars
+                it[GroupCheckins.presence] = checkin.presence
+                it[GroupCheckins.date] = checkin.date
+                it[GroupCheckins.checkinStars] = checkin.checkinStars
+                it[GroupCheckins.checkupStars] = checkin.checkupStars
                 it[GroupCheckins.comment] = checkin.comment
             }>0
         }
@@ -138,6 +138,28 @@ class CheckinRepositoryImpl: CheckinRepository {
     override suspend fun deleteCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.deleteWhere { GroupCheckins.groupId eq checkin.groupId and (GroupCheckins.userId eq checkin.userId)}>0
+        }
+    }
+
+    override suspend fun getPresenceBetween(groupId: Int, from: LocalDate, to: LocalDate): List<PresenceData> {
+        return dbQuery {
+            UserGroups
+                .innerJoin(Users, { UserGroups.userId }, { Users.id }) // Get name
+                .leftJoin(GroupCheckins, { UserGroups.userId }, { GroupCheckins.userId }, { (GroupCheckins.date greaterEq from) and (GroupCheckins.date lessEq to) and (GroupCheckins.groupId eq groupId) })
+                .select(
+                    GroupCheckins.id, GroupCheckins.presence, GroupCheckins.date,
+                    UserGroups.groupId,
+                    Users.id, Users.name
+                )
+                .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) }
+                .map { PresenceData(
+                    checkinId = it.getOrNull(GroupCheckins.id) ?: -1,
+                    groupId = it[UserGroups.groupId]!!,
+                    userId = it[Users.id],
+                    userName = it[Users.name],
+                    presence = it.getOrNull(GroupCheckins.presence),
+                    date = it.getOrNull(GroupCheckins.date) ?: LocalDate.fromEpochDays(0),
+                ) }
         }
     }
 }

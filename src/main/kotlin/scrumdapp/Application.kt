@@ -15,7 +15,7 @@ import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.services.GroupService
-import com.jeroenvdg.scrumdapp.services.configureExceptionService
+import com.jeroenvdg.scrumdapp.services.TrendsService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import io.ktor.client.*
@@ -55,6 +55,7 @@ suspend fun Application.module() {
         provide { GroupService(groupRepository) }
         provide { CheckinService(checkinRepository, groupRepository) }
         provide { InviteService(groupRepository, encryptionService) }
+        provide { TrendsService(checkinRepository) }
         provide<UserRepository> { userRepository }
         provide<GroupRepository> { groupRepository }
         provide<CheckinRepository> { checkinRepository }

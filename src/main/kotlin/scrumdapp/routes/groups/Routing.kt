@@ -8,7 +8,7 @@ import com.jeroenvdg.scrumdapp.middleware.IsInGroup
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
-import com.jeroenvdg.scrumdapp.services.ValidationException
+import com.jeroenvdg.scrumdapp.routes.groups.trends.groupTrendsRoutes
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import io.ktor.http.HttpStatusCode
@@ -40,7 +40,7 @@ class GroupsRouter {
         class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
 
         @Resource("trends")
-        class Trends(val parent: Group) { constructor(groupId: Int): this(Group(groupId=groupId))
+        class Trends(val parent: Group, val view: String? = null) { constructor(groupId: Int, view: String? = null): this(Group(groupId=groupId))
             @Resource("{userId}")
             class User(val parent: Trends, val userId: Int) { constructor(groupId: Int, userId: Int): this(Trends(groupId), userId) }
         }
@@ -66,8 +66,7 @@ class GroupsRouter {
         }
 
         fun getIsoDateParam(): LocalDate {
-            return parseIsoDate(getDateParam()) ?:
-                throw Exception("Invalid date param, expected yyyy-mm-dd")
+            return parseIsoDate(getDateParam()) ?: throw Exception("Invalid date param, expected yyyy-mm-dd")
         }
     }
 }
@@ -111,6 +110,10 @@ suspend fun Application.configureGroupRoutes() {
                     groupEditCheckinRoutes()
                 }
 
+                route<GroupsRouter.Group.Trends> {
+                    groupTrendsRoutes()
+                }
+
                 route<GroupsRouter.Group.Users> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupUserRoutes()
@@ -122,39 +125,6 @@ suspend fun Application.configureGroupRoutes() {
                 }
             }
         }
-//        route("/groups") {
-//            install(IsLoggedIn)
-//
-//                TODO: remove this route, seems useless to me now
-//                route("/new-checkin") {
-//                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
-//                    post {
-//                        val body = call.receiveParameters()
-//                        val date = body["date"]
-//                        if (date == null || !dateRegex.matches(date)) {
-//                            call.respondRedirect("/groups/${call.group.id}", false)
-//                        } else {
-//                            call.respondRedirect("/groups/${call.group.id}/edit?date=${date}", false)
-//                        }
-//                    }
-//                }
-//
-//
-//                get("/trends") {
-//                    val group = call.group
-//                    val userPerm = call.groupUser.permissions
-//                    val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
-//
-//                    call.respondHtml {
-//                        dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-//                            groupPage(checkinDates, group, userPerm) {
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
     }
 }
 

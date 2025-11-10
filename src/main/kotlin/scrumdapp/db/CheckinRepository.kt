@@ -17,6 +17,15 @@ data class Checkin(
     var comment: String?
 )
 
+data class PresenceData(
+    val checkinId: Int,
+    val groupId: Int,
+    val userId: Int,
+    val userName: String,
+    var presence: Presence?,
+    var date: LocalDate,
+)
+
 interface CheckinRepository {
     suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin>
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
@@ -27,4 +36,6 @@ interface CheckinRepository {
     suspend fun saveGroupCheckin(checkins: List<Checkin>)
     suspend fun alterCheckin(checkin: Checkin): Boolean
     suspend fun deleteCheckin(checkin: Checkin): Boolean
+
+    suspend fun getPresenceBetween(groupId: Int, from: LocalDate, to: LocalDate): List<PresenceData>
 }

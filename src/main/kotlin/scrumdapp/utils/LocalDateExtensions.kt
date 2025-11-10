@@ -1,6 +1,11 @@
 package com.jeroenvdg.scrumdapp.utils
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toKotlinLocalDate
+
+fun LocalDate.Companion.now(): LocalDate {
+    return java.time.LocalDate.now().toKotlinLocalDate()
+}
 
 fun LocalDate.scrumdappFormat(small: Boolean = false): String {
     val y = year.toString().padStart(4, '0')
