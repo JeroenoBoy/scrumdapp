@@ -14,6 +14,8 @@ import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.pages.loginPage
 import com.jeroenvdg.scrumdapp.views.mainLayout
+import com.jeroenvdg.scrumdapp.services.NotAuthorizedException
+import com.jeroenvdg.scrumdapp.services.ServerFaultException
 import io.ktor.client.*
 import io.ktor.http.*
 import io.ktor.resources.Resource
@@ -83,14 +85,14 @@ suspend fun Application.configureAuthRouting() {
                     get {
                         val principal = call.principal<OAuthAccessTokenResponse.OAuth2>()
                         val state = principal?.state
-                        if (principal == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                        if (principal.refreshToken == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
-                        if (state == null) return@get call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                        if (principal == null) throw NotAuthorizedException("Unauthorized!")
+                        if (principal.refreshToken == null) throw NotAuthorizedException("Unauthorized!")
+                        if (state == null) throw NotAuthorizedException("Unauthorized!")
 
                         val tokenExpiry = GMTDate() + principal.expiresIn * 1000
 
                         val discordUser = discordService.getUser(principal.accessToken).getOrElse {
-                            return@get call.respond(HttpStatusCode.Unauthorized, "Failed to log in")
+                            throw ServerFaultException("Could not fetch Discord User!")
                         }
 
                         // Get user with discordId

@@ -3,8 +3,10 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
+import com.jeroenvdg.scrumdapp.services.ExceptionContent
 import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
+import com.jeroenvdg.scrumdapp.views.components.errorPopup
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
@@ -14,7 +16,7 @@ import kotlinx.html.*
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
-inline fun FlowContent.groupPage(application: Application, checkins: List<LocalDate>, group: Group, perms: UserPermissions, crossinline block: MAIN.() -> Unit = {}) {
+inline fun FlowContent.groupPage(application: Application, checkins: List<LocalDate>, group: Group, perms: UserPermissions, exception: ExceptionContent? = null, crossinline block: MAIN.() -> Unit = {}) {
     val rng = Random.nextInt(9999999)
     h1 { +group.name }
     div(classes = "horizontal g-lg mb-lg") {
@@ -81,6 +83,10 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                 }
             }
         }
+    }
+
+    if (exception != null) {
+        errorPopup(exception)
     }
 }
 

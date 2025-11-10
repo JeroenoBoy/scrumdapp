@@ -50,7 +50,6 @@ fun Route.acceptInvitationsRoute() {
         if (success) {
             call.respondRedirect(application.href(GroupsRouter.Group(groupId = invite.groupId)))
         } else {
-
             call.respondRedirect(application.href(Invitations.AcceptInvitations(token = token), "password-mistake"))
         }
     }

@@ -5,9 +5,9 @@ import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.routes.invites.Invitations
-import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.card
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
@@ -32,21 +32,21 @@ import kotlinx.html.p
 
 fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
     card {
-        h2 { +"Gebruikers aanpassen"}
-        div(classes="spacer-lg")
-        form(method=FormMethod.post, classes="vertical g-md flex-1") {
-            table(classes="checkin-table") {
+        h2 { +"Gebruikers aanpassen" }
+        div(classes = "spacer-lg")
+        form(method = FormMethod.post, classes = "vertical g-md flex-1") {
+            table(classes = "checkin-table") {
                 thead {
                     tr {
-                        th(classes="text-left name-field") {+"Naam"}
-                        th(classes="text-left pl-md") {+"Rol"}
-                        th(classes="text-left pl-md") {+"Danger zone"}
+                        th(classes = "text-left name-field") { +"Naam" }
+                        th(classes = "text-left pl-md") { +"Rol" }
+                        th(classes = "text-left pl-md") { +"Danger zone" }
                     }
                 }
                 tbody {
                     tr {
-                        td(classes="text-ellipse name-field") { +mySelf.user.name}
-                        td(classes="text-ellipse pl-lg") { +mySelf.permissions.displayName}
+                        td(classes = "text-ellipse name-field") { +mySelf.user.name }
+                        td(classes = "text-ellipse pl-lg") { +mySelf.permissions.displayName }
                     }
                     for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
                         val userPermission = groupUser.permissions
@@ -100,24 +100,24 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                             }
                         } else {
                             tr {
-                                td(classes="text-ellipse name-field") { +groupUser.user.name}
-                                td(classes="text-ellipse pl-lg") { +userPermission.displayName}
+                                td(classes = "text-ellipse name-field") { +groupUser.user.name }
+                                td(classes = "text-ellipse pl-lg") { +userPermission.displayName }
                             }
 
                         }
                     }
                 }
             }
-            div(classes="flex-1") {
+            div(classes = "flex-1") {
 
             }
-            div(classes="horizontal g-md justify-end") {
-                div(classes="hacky-icon") {
-                    icon(iconName="check", classes="blue")
-                    input(type=InputType.submit, classes="btn") { value="Toepassen"}
+            div(classes = "horizontal g-md justify-end") {
+                div(classes = "hacky-icon") {
+                    icon(iconName = "check", classes = "blue")
+                    input(type = InputType.submit, classes = "btn") { value = "Toepassen" }
                 }
-                a(classes="btn", href="#create-invite") {
-                    icon(iconName="add", classes="green")
+                a(classes = "btn", href = "#create-invite") {
+                    icon(iconName = "add", classes = "green")
                     +"Maak uitnodiging"
                 }
             }
@@ -125,70 +125,82 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
 
         // This is disgusting and I know it
         for (groupUser in groupUsers) {
-            modal(id="delete-user-${groupUser.user.id}") {
-                h2 { +"Verwijder gebruiker"}
+            modal(id = "delete-user-${groupUser.user.id}") {
+                h2 { +"Verwijder gebruiker" }
                 p {
                     +"Wanneer je een gebruiker verwijderd worden ook"
-                    b(classes="red") {+" alle"}
+                    b(classes = "red") { +" alle" }
                     +" checkins van die gebruiker verwijderd!"
                 }
 
 
-                form(action=application.href(GroupsRouter.Group.Users.Delete(group.id, groupUser.user.id)), method= FormMethod.post) {
-                    div(classes="horizontal g-md justify-end") {
-                        a(classes="btn btn-green", href="#") {
-                            icon(iconName="undo", classes="bg-hard")
+                form(
+                    action = application.href(GroupsRouter.Group.Users.Delete(group.id, groupUser.user.id)),
+                    method = FormMethod.post
+                ) {
+                    input(type = InputType.hidden) {
+                        name = "userId"
+                        value = groupUser.user.id.toString()
+                    }
+
+                    div(classes = "horizontal g-md justify-end") {
+                        a(classes = "btn btn-green", href = "#") {
+                            icon(iconName = "undo", classes = "bg-hard")
                             +"Terug"
                         }
-                        div(classes="hacky-icon") {
-                            icon(iconName="check", classes="bg-hard")
-                            input(type=InputType.submit, classes="btn btn-red") {value="Verwijder"}
+                        div(classes = "hacky-icon") {
+                            icon(iconName = "check", classes = "bg-hard")
+                            input(type = InputType.submit, classes = "btn btn-red") { value = "Verwijder" }
                         }
                     }
                 }
             }
         }
 
-        modal(id="create-invite") {
-            h2{ +"Maak uitnodiging"}
+        modal(id = "create-invite") {
+            h2 { +"Maak uitnodiging" }
 
-            p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken"}
+            p { +"Vul hieronder een wachtwoord in en klik op de knop om een uitnodiging te maken" }
 
-            form(action=application.href(Invitations.CreateInvitation.Id(groupId = group.id)), method=FormMethod.post, classes="vertical g-md") {
-                div(classes="input-group") {
-                    label(classes="input-label") { htmlFor="create_group_invite"; +"Kies een wachtwoord." }
-                    input(classes="input", type=InputType.password, name="create_group_invite")
+            form(
+                action = application.href(Invitations.CreateInvitation.Id(groupId = group.id)),
+                method = FormMethod.post,
+                classes = "vertical g-md"
+            ) {
+                div(classes = "input-group") {
+                    label(classes = "input-label") { htmlFor = "create_group_invite"; +"Kies een wachtwoord." }
+                    input(classes = "input", type = InputType.password, name = "create_group_invite")
                 }
 
-                div(classes="horizontal g-md justify-end") {
-                    a(classes="btn", href="#") {
-                        icon(iconName="undo", classes="gray")
+                div(classes = "horizontal g-md justify-end") {
+                    a(classes = "btn", href = "#") {
+                        icon(iconName = "undo", classes = "gray")
                         +"Terug"
                     }
-                    div(classes="hacky-icon") {
-                        icon(iconName="check", classes="bg-hard")
-                        input(type=InputType.submit, classes="btn btn-green") { value="Maak uitnodiging"}
+                    div(classes = "hacky-icon") {
+                        icon(iconName = "check", classes = "bg-hard")
+                        input(type = InputType.submit, classes = "btn btn-green") { value = "Maak uitnodiging" }
                     }
                 }
             }
         }
 
-        modal(id="alter-success") {
-            h2{ +"Gebruikers zijn met succes bijgewerkt!"}
-            div(classes="horizontal g-md justify-end") {
-                a(classes="btn", href="#") {
-                    icon(iconName="check", classes="grey")
+        modal(id = "alter-success") {
+            h2 { +"Gebruikers zijn met succes bijgewerkt!" }
+            div(classes = "horizontal g-md justify-end") {
+                a(classes = "btn", href = "#") {
+                    icon(iconName = "check", classes = "grey")
                     +"Terug"
                 }
             }
         }
 
-        modal(id="alter-failed") {
-            h2 { +"Gebruikers zijn niet aangepast"}
-            p { +"Je hebt niet de permissie of toegang om deze aanpassingen te maken"}
-            div(classes="horizontal g-md justify-end") {
-                a(classes="btn", href="#") {
-                    icon(iconName="undo", classes="grey")
+        modal(id = "alter-failed") {
+            h2 { +"Gebruikers zijn niet aangepast" }
+            p { +"Je hebt niet de permissie of toegang om deze aanpassingen te maken" }
+            div(classes = "horizontal g-md justify-end") {
+                a(classes = "btn", href = "#") {
+                    icon(iconName = "undo", classes = "grey")
                     +"Terug"
                 }
             }
@@ -196,21 +208,20 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
     }
 }
 
-fun FlowContent.userInviteContent(application: Application, group: Group, url: String) {
-    card {
-        h2 {+"Groepsuitnodiging"}
-        div(classes="spacer-lg")
-        p {+"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!"}
-        div(classes="input-group") {
-            label(classes="input-label") {+"Link"}
-            input(type= InputType.text, classes="input") {value=url}
-        }
 
-        div(classes="horizontal g-md justify-end") {
-            a(classes="btn", href=application.href(GroupsRouter.Group.Users(group.id))) {
-                icon(iconName="check", classes="gray")
-                +"Gelukt?"
-            }
+fun FlowContent.userInviteContent(application: Application, group: Group, url: String) {
+    h2 {+"Groepsuitnodiging"}
+    div(classes="spacer-lg")
+    p {+"Kopieer, en deel de volgende link met je team. Zorg dat je de hele link selecteert!"}
+    div(classes="input-group") {
+        label(classes="input-label") {+"Link"}
+        input(type= InputType.text, classes="input") {value=url}
+    }
+
+    div(classes="horizontal g-md justify-end") {
+        a(classes="btn", href=application.href(GroupsRouter.Group.Users(group.id))) {
+            icon(iconName="check", classes="gray")
+            +"Gelukt?"
         }
     }
 }
