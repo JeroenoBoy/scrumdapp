@@ -21,7 +21,6 @@ body {
 }
 
 :focus {
-    border: 1px solid var(--fg4);
     outline: 1px dashed var(--purple);
 }
 
