@@ -7,6 +7,7 @@ import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.routes.invites.Invitations
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.card
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
@@ -30,7 +31,7 @@ import kotlinx.html.tr
 import kotlinx.html.p
 
 fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
-    div(classes = "card") {
+    card {
         h2 { +"Gebruikers aanpassen" }
         div(classes = "spacer-lg")
         form(method = FormMethod.post, classes = "vertical g-md flex-1") {
