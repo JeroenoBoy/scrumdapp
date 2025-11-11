@@ -26,6 +26,7 @@ import io.ktor.server.routing.application
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.datetime.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
@@ -41,7 +42,7 @@ class GroupsRouter {
         class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
 
         @Resource("trends")
-        class Trends(val parent: Group, val view: String? = null) { constructor(groupId: Int, view: String? = null): this(Group(groupId=groupId))
+        class Trends(val parent: Group, val view: String? = null) { constructor(groupId: Int, view: String? = null): this(Group(groupId=groupId), view)
             @Resource("{userId}")
             class User(val parent: Trends, val userId: Int) { constructor(groupId: Int, userId: Int): this(Trends(groupId), userId) }
         }
@@ -60,6 +61,17 @@ class GroupsRouter {
             class ChangeBackground(val parent: Settings) { constructor(groupId: Int): this(Settings(Group(groupId=groupId))) }
             @Resource("delete")
             class Delete(val parent: Settings) { constructor(groupId: Int): this(Settings(Group(groupId=groupId))) }
+        }
+
+        @Resource("calendar")
+        class Calendar(val parent: Group, val month: String? = null, val year: Int? = null) { constructor(groupId: Int, month: String? = null, year: Int? = null): this(Group(groupId=groupId), month, year)
+            @Resource("content")
+            class Content(val parent: Calendar) {
+                constructor(groupId: Int, month: String? = null, year: Int? = null): this(Calendar(groupId=groupId, month, year))
+                constructor(groupId: Int, yearMonth: YearMonth): this(Calendar(groupId=groupId, yearMonth.month.toString().lowercase(), yearMonth.year))
+                val month get() = parent.month
+                val year get() = parent.year
+            }
         }
 
         fun getDateParam(): String {
@@ -123,6 +135,10 @@ suspend fun Application.configureGroupRoutes() {
                 route<GroupsRouter.Group.Settings> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupSettingsRoutes()
+                }
+
+                route<GroupsRouter.Group.Calendar> {
+                    calendarRoutes()
                 }
             }
         }

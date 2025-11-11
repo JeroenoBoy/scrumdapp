@@ -26,12 +26,12 @@ fun FlowContent.navbar(application: Application, user: User) {
             a(href=application.href(AboutRouter()), classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {
-            div(classes="dropdown horizontal align-center g-md") {
+            div(classes="nav-dropdown horizontal align-center g-md") {
                 +user.name
                 if (!user.profileImage.isEmpty()) {
                     img(alt="User Profile Picture", classes="nav-user-icon", src=user.profileImage)
                 }
-                div(classes="dropdown-content") {
+                div(classes="nav-dropdown-content") {
                     a(href="/settings", classes="nav-button") {
                         icon(iconName="settings", classes="purple")
                         +"Settings"

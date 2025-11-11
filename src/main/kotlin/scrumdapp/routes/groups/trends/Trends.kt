@@ -9,17 +9,13 @@ import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.TrendsData
 import com.jeroenvdg.scrumdapp.services.TrendsService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
-import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.trends.groupTrendsContent
-import com.jeroenvdg.scrumdapp.views.pages.groups.trends.userTrendsContent
 import io.ktor.server.html.*
 import io.ktor.server.plugins.di.*
-import io.ktor.server.resources.href
-import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDate
 
@@ -32,7 +28,7 @@ fun Route.groupTrendsRoutes() {
     typedGet<GroupsRouter.Group.Trends> { trends ->
         val group = call.group
         val groupUser = call.groupUser
-        val checkinDates: List<LocalDate> = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates: List<LocalDate> = checkinRepository.getRecentCheckinDates(group.id)
 
         val view = trends.view ?: "1"
         val trendsData: TrendsData = if (view == "all") {
@@ -44,7 +40,7 @@ fun Route.groupTrendsRoutes() {
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
-                    groupTrendsContent(application, trendsData, view)
+                    groupTrendsContent(application, group, trendsData, view)
                 }
             }
         }

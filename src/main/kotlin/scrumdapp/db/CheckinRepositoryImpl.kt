@@ -7,6 +7,9 @@ import com.jeroenvdg.scrumdapp.models.UserTable.Users
 import kotlinx.datetime.LocalDate
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.kotlin.datetime.month
+import org.jetbrains.exposed.sql.kotlin.datetime.year
+import java.time.YearMonth
 
 class CheckinRepositoryImpl: CheckinRepository {
     private fun resultRowToCheckin(row: ResultRow): Checkin {
@@ -56,7 +59,7 @@ class CheckinRepositoryImpl: CheckinRepository {
         }
     }
 
-    override suspend fun getCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
+    override suspend fun getRecentCheckinDates(groupId: Int, limit: Int): List<LocalDate> {
         return dbQuery {
             GroupCheckins
                 .select(GroupCheckins.date)
@@ -160,6 +163,27 @@ class CheckinRepositoryImpl: CheckinRepository {
                     presence = it.getOrNull(GroupCheckins.presence),
                     date = it.getOrNull(GroupCheckins.date) ?: LocalDate.fromEpochDays(0),
                 ) }
+        }
+    }
+
+    override suspend fun getDatesBetween(groupId: Int, from: LocalDate, to: LocalDate): List<LocalDate> {
+        return dbQuery {
+            GroupCheckins
+                .select(GroupCheckins.date)
+                .where { (GroupCheckins.groupId eq groupId) and (GroupCheckins.date greaterEq from) and (GroupCheckins.date lessEq to) }
+                .withDistinctOn(GroupCheckins.date)
+                .orderBy(GroupCheckins.date)
+                .map { it[GroupCheckins.date] }
+        }
+    }
+
+    override suspend fun getDistinctMonths(groupId: Int): List<YearMonth> {
+        return dbQuery {
+            GroupCheckins
+                .select(GroupCheckins.date.year(), GroupCheckins.date.month())
+                .where { GroupCheckins.groupId eq groupId }
+                .withDistinct(true)
+                .map { YearMonth.of(it[GroupCheckins.date.year()], it[GroupCheckins.date.month()]) }
         }
     }
 }

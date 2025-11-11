@@ -1,15 +1,17 @@
 package com.jeroenvdg.scrumdapp.views.pages.groups.trends
 
+import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
-import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter.Group
 import com.jeroenvdg.scrumdapp.services.TrendsData
 import com.jeroenvdg.scrumdapp.views.components.card
+import com.jeroenvdg.scrumdapp.views.components.dropdown
+import com.jeroenvdg.scrumdapp.views.components.dropdownItem
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.*
 import kotlin.math.max
 
-fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData, view: String) {
+fun FlowContent.groupTrendsContent(application: Application, group: Group, trends: TrendsData, view: String) {
     fun TR.chartWidget(amount: Int, name: String, color: String) {
         if (amount > 0) {
             td(classes=color) {
@@ -31,11 +33,15 @@ fun FlowContent.groupTrendsContent(application: Application, trends: TrendsData,
     card {
         div(classes="horizontal justify-between align-center w-full") {
             h3 { +"Presentie overzicht" }
-            form(classes="horizontal g-md align-center") {
+            div {
                 +"Periode"
-                select(classes="input") { name="view"; onChange="this.form.submit()"
-                    option { value="all"; selected=view == "all"; +"Alles" }
-                    option { value="1"; selected=view=="1"; +"14 dagen" }
+                dropdown(if (view == "all") "Alles" else "14 dagen") {
+                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="all"))) {
+                        +"Alles"
+                    }
+                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="last"))) {
+                        +"14 dagen"
+                    }
                 }
             }
         }

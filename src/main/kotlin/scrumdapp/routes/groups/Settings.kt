@@ -29,7 +29,7 @@ fun Route.groupSettingsRoutes() {
     typedGet<GroupsRouter.Group.Settings> { settingsParams ->
         val group = call.group
         val groupUser = call.groupUser
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {

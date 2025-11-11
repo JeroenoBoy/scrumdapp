@@ -36,7 +36,7 @@ fun Route.groupCheckinRoutes() {
         val groupUser = call.groupUser
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val userPerm = call.groupUser.permissions
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -56,7 +56,7 @@ fun Route.groupEditCheckinRoutes() {
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
@@ -74,7 +74,7 @@ fun Route.groupEditCheckinRoutes() {
         val success = checkinService.handleBatchCheckin(date, checkins, call.receiveParameters())
 
         if (!success) {
-            val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+            val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
             return@typedPost call.respondHtml {
                 dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                     groupPage(application, checkinDates, group, call.groupUser.permissions, ValidationException().toExceptionContent()) {

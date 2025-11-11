@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 inline fun FlowContent.groupPage(application: Application, checkins: List<LocalDate>, group: Group, perms: UserPermissions, exception: ExceptionContent? = null, crossinline block: MAIN.() -> Unit = {}) {
-    var rng = Random.nextInt(9999999)
+    val rng = Random.nextInt(9999999)
     h1 { +group.name }
     div(classes = "horizontal g-lg mb-lg") {
         aside(classes = "vertical relative") {
@@ -26,6 +26,10 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                 div(classes = "card vertical g-md") {
                     i(classes = "px-lg text-center") { +"Pagina's" }
                     hr {}
+                    a(href=application.href(GroupsRouter.Group.Calendar(group.id)), classes="btn b-none px-lg") {
+                        icon(iconName="calendar_month", classes="aqua text-lg")
+                        i(classes="my-auto") { +"Kalender" }
+                    }
                     a(href = application.href(GroupsRouter.Group.Trends(group.id)), classes = "btn b-none px-lg") {
                         icon(iconName = "bar_chart", classes = "yellow")
                         +"Trends"
@@ -86,22 +90,17 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
     }
 }
 
+
 fun FlowContent.checkinDates(application: Application, dates: List<LocalDate>, group: Group, perms: UserPermissions, rng: Int) {
-    div(classes = "card vertical g-md") {
-        if (perms.id <= UserPermissions.CheckinManagement.id) {
-            div(classes = "horizontal justify-between items-center") {
-                i(classes = "px-lg my-auto") { +"Data" }
-                a(href = "#create-checkin-$rng", classes = "btn btn-red") {
-                    +"+"
-                }
+    div(classes = "card vertical g-md pr-0 card-sb") {
+        div(classes = "vertical g-md pr-lg") {
+            a(classes = "btn b-none px-lg text-center", href = application.href(GroupsRouter.Group(groupId = group.id))) {
+                i { +"Vandaag" }
             }
             hr {}
         }
-        div(classes = "vertical g-md") {
-            style = "max-height: 15em;overflow-y: scroll;padding:2px"
-            a(classes = "btn b-none px-lg text-center", href = application.href(GroupsRouter.Group(groupId = group.id))) {
-                span(classes = "gray") { +"Vandaag" }
-            }
+        div(classes = "vertical g-md pr-lg") {
+            style = "max-height: 15em;overflow-y: scroll;"
             for (date in dates) {
                 a(classes = "btn b-none px-lg text-center", href = application.href(GroupsRouter.Group(groupId = group.id, date = date.scrumdappUrlFormat()))) {
                     span(classes = "gray") { +date.scrumdappFormat() }

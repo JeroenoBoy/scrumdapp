@@ -21,12 +21,15 @@ body {
 }
 
 :focus {
-    border: 1px solid var(--fg4);
     outline: 1px dashed var(--purple);
 }
 
 #app {
     position: relative;
+}
+
+#group-content {
+    height: 100%;
 }
 
 input, h1, h2, h3, h4, h5, h6, p, a, hr {
@@ -41,6 +44,26 @@ li::before { --border-color: var(--color); }
 
 dialog { display: block; }
 dialog:not(:target):not([open]) { display: none; }
+
+/* Scrollbar, Firefox looks much better than this chromium BS */
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F2F2F220;
+    border-radius: 1000px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6E6E6E50;
+    border-radius: 1000px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #BDBDBD50;
+}
 
 /* Text */
 
@@ -109,6 +132,18 @@ hr {
 
 .text-i {
     font-style: italic;
+}
+
+.text-sm {
+    font-size: var(--font-size-sm) !important;
+}
+
+.text-md {
+    font-size: var(--font-size-md) !important;
+}
+
+.text-lg {
+    font-size: var(--font-size-lg) !important;
 }
 
 .text-ellpise {
@@ -447,6 +482,7 @@ hr {
 
 .btn:hover {
     background: var(--bg2);
+    cursor: pointer;
 }
 
 .btn:active {
@@ -528,6 +564,115 @@ hr {
     height: var(--font-size-md);
 }
 
+
+.checkin-day {
+    --opacity: 1;
+    padding: 0 var(--gap-md);
+    color: var(--fg);
+    border-radius: var(--radius);
+    opacity: var(--opacity);
+    transition: 0.25s ease-out;
+}
+
+.checkin-day:hover {
+    background: var(--gray-dim);
+    cursor: pointer;
+}
+
+.weekend-day {
+    color: var(--gray);
+}
+
+.has-checkin {
+    background-color: color-mix(in srgb, var(--green-dim), transparent 50%);
+}
+
+.has-checkin.weekend-day {
+    background-color: color-mix(in srgb, var(--yellow-dim), transparent 75%);
+}
+
+.has-checkin:hover {
+    background-color: color-mix(in srgb, var(--green), transparent 25%);
+}
+
+.has-checkin.weekend-day:hover {
+    background-color: color-mix(in srgb, var(--yellow), transparent 50%);
+}
+
+.other-month {
+    --opacity: 0.4;
+}
+
+.not-in-reach {
+    --opacity: 0.6;
+}
+
+.not-in-reach.other-month {
+    --opacity: 0.25;
+}
+
+.not-in-reach:hover {
+    background: unset;
+    cursor: unset;
+}
+
+.today {
+    border: 1px dotted var(--gray);
+}
+
+.frame-scale {
+    overflow: auto;
+    resize: both;
+    background: transparent;
+    height: 100%;
+}
+
+.content-frame {
+    background: transparent;
+}
+
+.dropdown {
+    display: inline-block;
+    position: relative;
+    border-radius: var(--radius);
+    color: var(--fg1);
+}
+
+.dropdown-view {
+    flex: 1;
+    background: var(--bg_h);
+    border: 1px solid var(--fg4);
+    border-radius: var(--radius);
+    padding: var(--gap-md);
+    display: flex;
+    gap: var(--gap-sm);
+    align-items: center;
+}
+
+.dropdown-arrow {
+    transition: 0.25s ease-out;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    background: var(--bg_h);
+    border: 1px solid var(--fg4);
+    border-radius: var(--radius);
+    padding: var(--gap-md);
+    z-index: 1;
+    min-width: calc(100% - var(--gap-md) * 2);
+}
+
+.dropdown:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
 /* Navbar */
 
 .nav-height {
@@ -583,6 +728,7 @@ hr {
 
 .nav-button:hover {
     background: var(--bg2);
+    cursor: pointer;
 }
 
 .nav-button:active {
@@ -615,7 +761,7 @@ hr {
 
 /* Dropdown */
 
-.dropdown {
+.nav-dropdown {
     position: relative;
     background-color: var(--bg_h);
     border-radius: 1000px;
@@ -625,7 +771,7 @@ hr {
     padding-bottom: 4px;
 }
 
-.dropdown-content {
+.nav-dropdown-content {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -646,13 +792,13 @@ hr {
     border-radius: 16px 0 16px 16px;
 }
 
-.dropdown:hover .dropdown-content, .dropdown-content :focus {
+.nav-dropdown:hover .nav-dropdown-content, .nav-dropdown-content :focus {
     transform: scale(1);
     /*height: calc(100% + var(--gap-sm) * 2);*/
     opacity: 1;
 }
 
-.dropdown .nav-button {
+.nav-dropdown .nav-button {
     padding: 0 var(--gap-sm);
 }
 
@@ -749,6 +895,18 @@ hr {
     padding-left: var(--gap-lg) !important;
 }
 
+.pr-0 {
+    padding-right: 0;
+}
+
+.pr-md {
+    padding-right: var(--gap-md);
+}
+
+.pr-lg {
+    padding-right: var(--gap-lg);
+}
+
 .g-md {
     gap: var(--gap-md);
 }
@@ -837,6 +995,10 @@ hr {
 
 .flex-1 {
     flex: 1;
+}
+
+.flex-2 {
+    flex: 2;
 }
 
 .grid {
@@ -931,4 +1093,13 @@ table.charts-css.big-label th {
 .charts-css.stacked tbody tr td:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+}
+
+@supports not (::-webkit-scrollbar) {
+    .card-sb {
+        padding-right: var(--gap-sm);
+    }
+    .card-sb > * {
+        padding-right: var(--gap-md)
+    }
 }

@@ -8,15 +8,17 @@ import kotlinx.html.BODY
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.body
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.link
+import kotlinx.html.style
 import kotlinx.html.styleLink
 import kotlinx.html.title
 
-data class PageData(val title: String)
+data class PageData(val title: String, val contentFrame: Boolean = false)
 data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "15")
 
 fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
@@ -31,6 +33,11 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
         styleLink("https://fonts.googleapis.com/css2?family=Libertinus+Mono&family=Libertinus+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap")
     }
     body {
+        if(pageData.contentFrame) {
+            classes += "vertical";
+            classes += "g-md";
+            style="background: transparent"
+        }
         builder()
     }
 }

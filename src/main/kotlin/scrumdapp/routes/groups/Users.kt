@@ -32,7 +32,7 @@ fun Route.groupUserRoutes() {
     typedGet<GroupsRouter.Group.Users> { groupUserParams ->
         val group = call.group
         val groupUser = call.groupUser
-        val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
+        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
         val groupUsers = groupRepository.getGroupUsers(group.id)
 
         call.respondHtml {
