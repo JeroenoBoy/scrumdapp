@@ -41,7 +41,7 @@ fun FlowContent.calendarContent(application: Application, group: Group, possible
             div(classes="flex-2 horizontal align-center justify-center") {
                 dropdown(dates.yearMonth.scrumdappFormat()) {
                     for (yearMonth in possibleMonths) {
-                        dropdownItem(href=application.href(GroupsRouter.Group.Calendar.Content(group.id, yearMonth))) {
+                        dropdownItem(href=application.href(GroupsRouter.Group.Calendar.Content(group.id, yearMonth)), selected=yearMonth==dates.yearMonth) {
                             +yearMonth.scrumdappFormat()
                         }
                     }
