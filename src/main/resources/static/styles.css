@@ -626,7 +626,6 @@ hr {
 
 .frame-scale {
     overflow: auto;
-    resize: both;
     background: transparent;
     height: 100%;
 }
