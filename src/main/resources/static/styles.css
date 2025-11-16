@@ -481,6 +481,10 @@ hr {
     transition: background-color 0.2s ease-out;
 }
 
+.btn.selected {
+    background-color: var(--bg);
+}
+
 .btn:hover {
     background: var(--bg2);
     cursor: pointer;
@@ -623,7 +627,6 @@ hr {
 
 .frame-scale {
     overflow: auto;
-    resize: both;
     background: transparent;
     height: 100%;
 }

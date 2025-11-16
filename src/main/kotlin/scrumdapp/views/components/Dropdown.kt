@@ -20,8 +20,8 @@ fun FlowContent.dropdown(text: String, body: FlowContent.() -> Unit = {}) {
     }
 }
 
-fun FlowContent.dropdownItem(href: String, body: FlowContent.() -> Unit = {}) {
-    a(href=href, classes="btn b-none no-wrap") {
+fun FlowContent.dropdownItem(href: String, selected: Boolean = false, body: FlowContent.() -> Unit = {}) {
+    a(href=href, classes="btn b-none no-wrap" + if (selected) " selected" else "") {
         body()
     }
 }
