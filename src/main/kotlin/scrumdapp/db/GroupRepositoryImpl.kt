@@ -9,6 +9,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 
 class GroupRepositoryImpl: GroupRepository {
     private fun resultRowToGroup(row: ResultRow): Group {
@@ -58,8 +59,23 @@ class GroupRepositoryImpl: GroupRepository {
 
     override suspend fun getGroup(id: Int): Group? {
         return dbQuery {
-            Groups.select(Groups.fields).where { Groups.id eq id }
+            Groups.select(Groups.all).where { Groups.id eq id }
             .map { resultRowToGroup(it)}.singleOrNull()}
+    }
+
+    override suspend fun getGroupNotes(id: Int): String? {
+        return dbQuery {
+            Groups.select(Groups.notes).where { Groups.id eq id }
+                .firstOrNull()?.get(Groups.notes)
+        }
+    }
+
+    override suspend fun saveGroupNotes(id: Int, notes: String?) {
+        return dbQuery {
+            Groups.update({ Groups.id eq id }) {
+                it[Groups.notes] = notes
+            }
+        }
     }
 
     override suspend fun createGroup(group: Group): Group? {
@@ -99,7 +115,7 @@ class GroupRepositoryImpl: GroupRepository {
     override suspend fun getUserGroups(id: Int): List<Group> {
         return dbQuery {
             (UserGroups innerJoin Groups)
-                .select(Groups.fields)
+                .select(Groups.all)
                 .where { UserGroups.userId eq id }
                 .map { resultRowToGroup(it)}
         }

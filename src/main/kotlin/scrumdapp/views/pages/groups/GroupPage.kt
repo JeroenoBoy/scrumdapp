@@ -30,9 +30,13 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                         icon(iconName="calendar_month", classes="aqua text-lg")
                         i(classes="my-auto") { +"Kalender" }
                     }
-                    a(href = application.href(GroupsRouter.Group.Trends(group.id)), classes = "btn b-none px-lg") {
+                    a(href=application.href(GroupsRouter.Group.Trends(group.id)), classes = "btn b-none px-lg") {
                         icon(iconName = "bar_chart", classes = "yellow")
                         +"Trends"
+                    }
+                    a(href=application.href(GroupsRouter.Group.Notes(group.id)), classes="btn b-none px-lg") {
+                        icon(iconName="notes", classes="red")
+                        +"Notities"
                     }
                     if (perms.id <= UserPermissions.UserManagement.id) {
                         a(href = application.href(GroupsRouter.Group.Users(group.id)), classes = "btn b-none px-lg") {

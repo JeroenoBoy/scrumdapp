@@ -25,6 +25,8 @@ class GroupsTable {
         val id = integer("id").autoIncrement()
         val name = varchar("name", 50)
         val bannerPicture = varchar("bannerPicture", 50).nullable()
+        val notes = text("notes").nullable()
+        val all = listOf(id, name, bannerPicture)
         override val primaryKey = PrimaryKey(id)
     }
 
