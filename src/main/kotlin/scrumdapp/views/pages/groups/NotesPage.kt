@@ -5,6 +5,7 @@ import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.renderMarkdown
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
@@ -25,9 +26,10 @@ fun FlowContent.notesGroupPageContent(application: Application, groupId: Int, no
     card {
         h2 { +"Groep Notities" }
         if (notes != null) {
-            for (string in notes.split("\n")) {
-                p {style="white-space:pre"; +string }
-            }
+            renderMarkdown(notes)
+//            for (string in notes.split("\n")) {
+//                p {style="white-space:pre"; +string }
+//            }
         } else {
             +"Geen notities gemaakt"
         }
