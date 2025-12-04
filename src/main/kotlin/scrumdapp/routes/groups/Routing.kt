@@ -133,7 +133,7 @@ suspend fun Application.configureGroupRoutes() {
                 }
 
                 route<GroupsRouter.Group.Settings> {
-                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
+                    install(HasCorrectPerms) { permissions = UserPermissions.ScrumDad }
                     groupSettingsRoutes()
                 }
 
