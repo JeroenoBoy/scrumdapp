@@ -36,10 +36,10 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
             div {
                 +"Periode"
                 dropdown(if (view == "all") "Alles" else "14 dagen") {
-                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="all"))) {
+                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="all")), selected=view=="all") {
                         +"Alles"
                     }
-                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="last"))) {
+                    dropdownItem(href=application.href(GroupsRouter.Group.Trends(group.id, view="last")), selected=view!="all") {
                         +"14 dagen"
                     }
                 }

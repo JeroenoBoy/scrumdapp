@@ -26,6 +26,7 @@ import io.ktor.server.routing.application
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.datetime.LocalDate
+import scrumdapp.routes.groups.groupNoteRoutes
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -72,6 +73,12 @@ class GroupsRouter {
                 val month get() = parent.month
                 val year get() = parent.year
             }
+        }
+
+        @Resource("notes")
+        class Notes(val parent: Group) { constructor(groupId: Int): this(Group(groupId=groupId))
+            @Resource("edit")
+            class Edit(val parent: Notes) { constructor(groupId: Int): this(Notes(groupId=groupId)); }
         }
 
         fun getDateParam(): String {
@@ -139,6 +146,10 @@ suspend fun Application.configureGroupRoutes() {
 
                 route<GroupsRouter.Group.Calendar> {
                     calendarRoutes()
+                }
+
+                route<GroupsRouter.Group.Notes> {
+                    groupNoteRoutes()
                 }
             }
         }

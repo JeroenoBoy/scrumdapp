@@ -184,6 +184,7 @@ class CheckinRepositoryImpl: CheckinRepository {
                 .where { GroupCheckins.groupId eq groupId }
                 .withDistinct(true)
                 .map { YearMonth.of(it[GroupCheckins.date.year()], it[GroupCheckins.date.month()]) }
+                .sortedBy { it }
         }
     }
 }

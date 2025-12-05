@@ -434,6 +434,7 @@ hr {
 }
 
 .btn-card:hover {
+    cursor: pointer;
     background: var(--bg1);
 }
 
@@ -478,6 +479,10 @@ hr {
     color: var(--fg);
     background: var(--bg_h);
     transition: background-color 0.2s ease-out;
+}
+
+.btn.selected {
+    background-color: var(--bg);
 }
 
 .btn:hover {
@@ -622,7 +627,6 @@ hr {
 
 .frame-scale {
     overflow: auto;
-    resize: both;
     background: transparent;
     height: 100%;
 }
@@ -671,6 +675,31 @@ hr {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+/* Markdown */
+
+.md-line {
+    min-height: 0.75rem;
+}
+
+.md-bp::before {
+    content: '•';
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
+}
+
+.md-hr {
+    min-height: 1px;
+    display: flex;
+}
+
+.md-text-block {
+    background: var(--bg_s);
+    border: 1px solid var(--bg3);
+    border-radius: var(--radius);
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
 }
 
 /* Navbar */
@@ -1090,6 +1119,7 @@ table.charts-css.big-label th {
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);
 }
+
 .charts-css.stacked tbody tr td:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);

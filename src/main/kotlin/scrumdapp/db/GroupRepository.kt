@@ -27,6 +27,8 @@ data class Groupinvite(
 interface GroupRepository {
     suspend fun allGroup(): List<Group>
     suspend fun getGroup(id: Int): Group?
+    suspend fun getGroupNotes(id: Int): String?
+    suspend fun saveGroupNotes(id: Int, notes: String?)
     suspend fun getGroupMembers(id: Int): List<User>
     suspend fun getUserGroups(id: Int): List<Group>
     suspend fun getGroupUser(groupId: Int, userId: Int): GroupUser?

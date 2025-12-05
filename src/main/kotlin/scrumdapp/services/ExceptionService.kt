@@ -77,6 +77,7 @@ fun exceptionFromThrowable(throwable: Throwable): ExceptionContent {
 fun Application.configureExceptionService() {
     install(StatusPages) {
         exception<Throwable> { call, throwable ->
+            this@configureExceptionService.log.error("Error found in request", throwable)
             val content = exceptionFromThrowable(throwable)
             call.respondHtml {
                 mainLayout(PageData(content.title ?: "Fout")) {
