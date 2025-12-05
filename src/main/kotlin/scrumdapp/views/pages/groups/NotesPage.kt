@@ -27,9 +27,6 @@ fun FlowContent.notesGroupPageContent(application: Application, groupId: Int, no
         h2 { +"Groep Notities" }
         if (notes != null) {
             renderMarkdown(notes)
-//            for (string in notes.split("\n")) {
-//                p {style="white-space:pre"; +string }
-//            }
         } else {
             +"Geen notities gemaakt"
         }
