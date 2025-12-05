@@ -1,6 +1,7 @@
 package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.ExceptionContent
@@ -38,13 +39,13 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
                         icon(iconName="notes", classes="red")
                         +"Notities"
                     }
-                    if (perms.id <= UserPermissions.UserManagement.id) {
+                    if (ComparePermissions(perms, UserPermissions.UserManagement)) {
                         a(href = application.href(GroupsRouter.Group.Users(group.id)), classes = "btn b-none px-lg") {
                             icon(iconName = "groups", classes = "blue")
                             +"Gebruikers"
                         }
                     }
-                    if (perms.id <= UserPermissions.ScrumDad.id) {
+                    if (ComparePermissions(perms, UserPermissions.ScrumDad)) {
                         a(href = application.href(GroupsRouter.Group.Settings(group.id)), classes = "btn b-none px-lg") {
                             icon(iconName = "settings", classes = "purple")
                             +"Instellingen"
@@ -60,7 +61,7 @@ inline fun FlowContent.groupPage(application: Application, checkins: List<LocalD
             }
         }
     }
-    if (perms.id <= UserPermissions.CheckinManagement.id) {
+    if (ComparePermissions(perms, UserPermissions.CheckinManagement)) {
         modal("create-checkin-$rng") {
             form(action = application.href(GroupsRouter.Group.Edit(group.id)), method = FormMethod.get, classes = "vertical g-md") {
                 h2 { +"Nieuwe Check-in" }

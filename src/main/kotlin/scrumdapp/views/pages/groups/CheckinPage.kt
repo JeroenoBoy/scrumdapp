@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
@@ -86,7 +87,7 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
         }
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
-            if (perms.id <= UserPermissions.CheckinManagement.id) {
+            if (ComparePermissions(perms, UserPermissions.CheckinManagement)) {
                 a(href = application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
                     icon(iconName = "edit", classes="blue")
                     +"Pas aan"

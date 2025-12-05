@@ -50,8 +50,13 @@ val HasCorrectPerms = createRouteScopedPlugin("HasCorrect Perms", ::PermProvider
     val perm = pluginConfig.permissions
     onCall { call ->
         val groupUser = call.attributes.getOrNull(groupUserAttributeKey) ?: return@onCall call.respondRedirect("/home")
-        if (perm.id < groupUser.permissions.id) {
+        if (!ComparePermissions(groupUser.permissions, perm)) {
             throw NoAccessException("Onvoldoende permissie om deze pagina te bekijken")
         }
     }
+}
+
+fun ComparePermissions(ownPermission: UserPermissions, targetPermission: UserPermissions): Boolean {
+    if (targetPermission.id < ownPermission.id) return false
+    return true
 }
