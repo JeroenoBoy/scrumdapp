@@ -9,10 +9,11 @@ import kotlinx.html.h4
 import kotlinx.html.h5
 import kotlinx.html.hr
 import kotlinx.html.i
+import kotlinx.html.s
 import kotlinx.html.span
 import kotlinx.html.u
 
-val lineRegex = Regex.fromLiteral("(\\*{1,2})|(`)|([[\\]()])|(\\_{2})|([^*_~[\\]()]+)")
+val lineRegex = Regex("""(?:\*{1,2})|(?:`{1,2})|(?:~{1,2})|(?:[\[\]()])|(?:__)|(?:[^`*_~\[\]()]+)""")
 
 fun FlowContent.renderMarkdown(markdown: String) {
     div(classes="md-content") {
@@ -24,23 +25,24 @@ fun FlowContent.renderMarkdown(markdown: String) {
 
 fun FlowContent.renderMarkdownLine(line: String) {
     when {
-        line.startsWith("---") -> hr(classes="md-line")
-        line.startsWith("- ") -> div(classes="md-bp") { renderMarkdownLine(line.substring(2)) }
+        line.startsWith("---") -> hr(classes="md-line md-hr")
+        line.startsWith("- ") -> div(classes="md-line md-bp") { renderMarkdownText(line.substring(2)) }
         line.startsWith("#") -> markdownRenderHeading(line)
+        else -> div(classes="md-line") { renderMarkdownText(line) }
     }
 }
 
 fun FlowContent.markdownRenderHeading(line: String) {
     when {
-        line.startsWith("# ") -> h2(classes="md-h1") { renderMarkdownLine(line.substring(2)) }
-        line.startsWith("## ") -> h3(classes="md-h2") { renderMarkdownLine(line.substring(3)) }
-        line.startsWith("### ") -> h4(classes="md-h3") { renderMarkdownLine(line.substring(4)) }
-        line.startsWith("#### ") -> h5(classes="md-h4") { renderMarkdownLine(line.substring(5)) }
+        line.startsWith("# ") -> h2(classes="md-line md-h1") { renderMarkdownText(line.substring(2)) }
+        line.startsWith("## ") -> h3(classes="md-line md-h2") { renderMarkdownText(line.substring(3)) }
+        line.startsWith("### ") -> h4(classes="md-line md-h3") { renderMarkdownText(line.substring(4)) }
+        line.startsWith("#### ") -> h5(classes="md-line md-h4") { renderMarkdownText(line.substring(5)) }
     }
 }
 
 fun FlowContent.renderMarkdownText(text: String) {
-    val tokens = lineRegex.findAll(text).map { it.groupValues[1] }.toList()
+    val tokens = lineRegex.findAll(text).map { it.groupValues[0] }.toList()
     val ctx = TokenContext(tokens)
     span(classes="md-text") {
         while (ctx.hasNext()) {
@@ -53,10 +55,12 @@ fun FlowContent.markdownRenderText(ctx: TokenContext, textStyling: Boolean, bloc
     when (ctx.peek()) {
         "**" if textStyling -> makdownRenderBold(ctx, hyperlink)
         "*" if textStyling -> markdownRenderItalic(ctx, hyperlink)
-        "_" if textStyling -> markdownRenderUnderline(ctx, hyperlink)
+        "__" if textStyling -> markdownRenderUnderline(ctx, hyperlink)
         "~~" if textStyling -> markdownRenderStrike(ctx, hyperlink)
         "`" if block -> markdownRenderBlock(ctx)
-        else -> +ctx.next()
+        else -> {
+            +ctx.next()
+        }
     }
 }
 
@@ -73,13 +77,13 @@ fun FlowContent.markdownRenderItalic(ctx: TokenContext, hyperlink: Boolean) {
 }
 
 fun FlowContent.markdownRenderUnderline(ctx: TokenContext, hyperlink: Boolean) {
-    u(classes="md-text-bold") {
+    u(classes="md-text-underline") {
         renderUntil(ctx, "__", true, true, hyperlink)
     }
 }
 
 fun FlowContent.markdownRenderStrike(ctx: TokenContext, hyperlink: Boolean) {
-    u(classes="md-text-bold") {
+    s(classes="md-text-strike") {
         renderUntil(ctx, "~~", true, true, hyperlink)
     }
 }
@@ -103,7 +107,7 @@ fun FlowContent.renderUntil(ctx: TokenContext, token: String, textStyling: Boole
 
 data class TokenContext(val tokens: List<String>, var current: Int = 0) {
     fun peek() = tokens[current]
-    fun hasNext() = tokens.size < current
+    fun hasNext() = tokens.size > current
     fun incr() { current += 1 }
     fun next(): String {
         current += 1

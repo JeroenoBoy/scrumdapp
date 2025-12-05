@@ -677,6 +677,31 @@ hr {
     display: block;
 }
 
+/* Markdown */
+
+.md-line {
+    min-height: 0.75rem;
+}
+
+.md-bp::before {
+    content: '•';
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
+}
+
+.md-hr {
+    min-height: 1px;
+    display: flex;
+}
+
+.md-text-block {
+    background: var(--bg_s);
+    border: 1px solid var(--bg3);
+    border-radius: var(--radius);
+    padding-left: var(--gap-sm);
+    padding-right: var(--gap-sm);
+}
+
 /* Navbar */
 
 .nav-height {
@@ -1094,6 +1119,7 @@ table.charts-css.big-label th {
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);
 }
+
 .charts-css.stacked tbody tr td:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
