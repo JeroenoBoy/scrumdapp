@@ -27,7 +27,6 @@ class GroupService(
         val groupUsers = groupRepository.getGroupUsers(groupId)
         if (!groupUsers.any { it.user.id == targetUserId }) { return false }
         if (!ComparePermissions(userPerm, groupUsers.first { it.user.id == targetUserId}.permissions)) { return false }
-        //if (userPerm.id >= groupUsers.first { it.id == targetUserId }.permissions.id) { return false }
         try {
             groupRepository.deleteGroupMember(groupId, targetUserId)
             return true
