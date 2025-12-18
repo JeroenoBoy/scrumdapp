@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.services
 
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.GroupUser
+import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 
 class GroupService(
@@ -25,7 +26,7 @@ class GroupService(
     suspend fun deleteUserFromGroup(groupId: Int, targetUserId: Int, userPerm: UserPermissions): Boolean {
         val groupUsers = groupRepository.getGroupUsers(groupId)
         if (!groupUsers.any { it.user.id == targetUserId }) { return false }
-        if (userPerm.id >= groupUsers.first { it.id == targetUserId }.permissions.id) { return false }
+        if (!ComparePermissions(userPerm, groupUsers.first { it.user.id == targetUserId}.permissions)) { return false }
         try {
             groupRepository.deleteGroupMember(groupId, targetUserId)
             return true
