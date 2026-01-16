@@ -43,7 +43,7 @@ class GroupsRouter {
 
         @Resource("export")
         class Export(val parent: GroupsRouter.Group) { constructor(groupId: Int): this(Group(groupId=groupId),)
-            @Resource("scrumdapp-user-export.csv")
+            @Resource("scrumdapp-user-export.xlsx")
             class User(val parent: Export, val userId: Int) { constructor(groupId: Int, userId: Int): this(Export(groupId), userId)
                 val groupId get() = parent.parent.groupId
             }
