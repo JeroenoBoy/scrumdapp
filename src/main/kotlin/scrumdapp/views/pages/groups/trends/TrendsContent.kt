@@ -1,6 +1,9 @@
 package com.jeroenvdg.scrumdapp.views.pages.groups.trends
 
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.db.GroupUser
+import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
+import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.TrendsData
 import com.jeroenvdg.scrumdapp.views.components.card
@@ -84,4 +87,40 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
 //            }
 //        }
 //    }
+}
+
+fun FlowContent.groupExportContent(application: Application, currentUser: GroupUser, users: List<GroupUser>) {
+
+    fun TABLE.userRow(groupUser: GroupUser) {
+        tr {
+            td(classes="name-field") { +groupUser.user.name }
+            td(classes="horizontal justify-end") {
+                    if (groupUser == currentUser || ComparePermissions(UserPermissions.Coach, currentUser.permissions)) {
+                        a(href=application.href(GroupsRouter.Group.Export.User(groupUser.groupId, groupUser.user.id)), classes="btn") {
+                            +"Export"
+                        }
+                    } else {
+                        span(classes="btn") { style="opacity: 0.5"; +"Export" }
+                    }
+            }
+        }
+    }
+
+    card {
+        h3 { +"Export" }
+        table(classes="checkin-table") {
+            thead {
+                tr {
+                    th(classes="text-left name-field") { +"Gebruiker" }
+                    th { +"Acties" }
+                }
+            }
+            tbody {
+                this@table.userRow(currentUser)
+                for (user in users.filter { it != currentUser }) {
+                    this@table.userRow(user)
+                }
+            }
+        }
+    }
 }
