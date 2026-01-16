@@ -3,6 +3,7 @@ package scrumdapp.services
 import com.jeroenvdg.scrumdapp.db.CheckinRepositoryImpl
 import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.db.GroupUser
+import com.jeroenvdg.scrumdapp.services.AppException
 import com.jeroenvdg.scrumdapp.utils.weekOfYear
 import io.ktor.http.ContentType
 import io.ktor.server.response.respondTextWriter
@@ -16,6 +17,10 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
 
     suspend fun writeUserExport(groupUser: GroupUser, call: RoutingCall) {
         val checkins = checkinRepository.getUserCheckins(groupUser.user.id, groupUser.groupId)
+
+        if (checkins.size < 2) {
+            throw AppException(400, "De gebruiker moet 2 of meer checkins hebben", "Onvoldoende checkins")
+        }
 
         val startDate = checkins.first().date
         val endDate = checkins.last().date

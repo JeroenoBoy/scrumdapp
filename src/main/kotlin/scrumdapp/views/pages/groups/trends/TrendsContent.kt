@@ -95,13 +95,13 @@ fun FlowContent.groupExportContent(application: Application, currentUser: GroupU
         tr {
             td(classes="name-field") { +groupUser.user.name }
             td(classes="horizontal justify-end") {
-                    if (groupUser == currentUser || ComparePermissions(UserPermissions.Coach, currentUser.permissions)) {
-                        a(href=application.href(GroupsRouter.Group.Export.User(groupUser.groupId, groupUser.user.id)), classes="btn") {
-                            +"Export"
-                        }
-                    } else {
-                        span(classes="btn") { style="opacity: 0.5"; +"Export" }
+                if (groupUser == currentUser || ComparePermissions(currentUser.permissions, UserPermissions.Coach)) {
+                    a(href=application.href(GroupsRouter.Group.Export.User(groupUser.groupId, groupUser.user.id)), classes="btn") {
+                        +"Export"
                     }
+                } else {
+                    span(classes="btn") { style="opacity: 0.5"; +"Export" }
+                }
             }
         }
     }
