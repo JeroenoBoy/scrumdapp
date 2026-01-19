@@ -94,7 +94,7 @@ fun FlowContent.groupExportContent(application: Application, currentUser: GroupU
     fun TABLE.userRow(groupUser: GroupUser) {
         tr {
             td(classes="name-field") { +groupUser.user.name }
-            td(classes="horizontal justify-end") {
+            td(classes="horizontal justify-start") {
                 if (groupUser == currentUser || ComparePermissions(currentUser.permissions, UserPermissions.Coach)) {
                     a(href=application.href(GroupsRouter.Group.Export.User(groupUser.groupId, groupUser.user.id)), classes="btn") {
                         +"Export"
