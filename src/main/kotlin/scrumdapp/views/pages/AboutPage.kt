@@ -1,10 +1,8 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
-import com.jeroenvdg.scrumdapp.views.components.icon
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.b
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
@@ -46,7 +44,7 @@ fun FlowContent.aboutPage() {
     ul {
         li { a(href="https://www.jeroenvdg.com", classes="a") { target="_blank"; +"Jeroen van de Geest"} }
         li { a(href="https://daan.meijneken.nl/", classes="a") { target="_blank"; +"Daan Meijneken" } }
-        li { { target="_blank"; +"Luc van Ogtrop"} }
+        li { +"Luc van Ogtrop" }
     }
 
     div(classes="spacer-lg")
