@@ -49,6 +49,8 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
             sheet.setColumnWidth(3, 15*256)
             sheet.setColumnWidth(4, 15*256)
             sheet.setColumnWidth(5, 15*256)
+            sheet.setColumnWidth(6, 15*256)
+            sheet.setColumnWidth(7, 15*256)
 
             val presenceStyles: MutableMap<Presence, CellStyle> = mutableMapOf()
             val defaultCellStyle = createDefaultCellStyle(workbook)
@@ -69,7 +71,7 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
 
             val secondRow = sheet.createRow(rowNum++)
             var colNum = 0
-            for (txt in listOf("Week", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag")) {
+            for (txt in listOf("Week", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag")) {
                 val col = secondRow.createCell(colNum++)
                 col.setCellValue(txt)
                 col.setCellStyle(headerStyle)
@@ -84,8 +86,8 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
                 weekCol.setCellStyle(weekStyle)
 
                 var colNum = 1
-                for (i in 0 until 5) {
-                    val date = weekStartDay.plus(i, DateTimeUnit.DAY);
+                for (i in 0 until 7) {
+                    val date = weekStartDay.plus(i, DateTimeUnit.DAY)
                     val col = row.createCell(colNum++)
 
                     val checkin = checkins.find { it.date == date }
