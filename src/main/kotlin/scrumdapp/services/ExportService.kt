@@ -118,7 +118,7 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
 
     private fun createDefaultCellStyle(book: XSSFWorkbook): CellStyle {
         val style = book.createCellStyle()
-        style.fillForegroundColor = IndexedColors.GREY_80_PERCENT.index
+        style.fillForegroundColor = IndexedColors.GREY_25_PERCENT.index
         style.fillPattern = FillPatternType.SOLID_FOREGROUND
         return style;
     }
