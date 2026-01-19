@@ -49,7 +49,7 @@ suspend fun Application.configureRouting() {
             install(IsLoggedIn)
             get {
                 call.respondHtml {
-                    dashboardLayout(DashboardPageData("About", call)) {
+                    dashboardLayout(DashboardPageData("Over", call)) {
                         aboutPage()
                     }
                 }
