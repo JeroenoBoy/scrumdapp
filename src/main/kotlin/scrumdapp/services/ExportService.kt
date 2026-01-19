@@ -36,70 +36,70 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
             throw AppException(400, "De gebruiker moet 2 of meer checkins hebben", "Onvoldoende checkins")
         }
 
-        val startDate = checkins.first().date
+        var startDate = checkins.first().date
         val endDate = checkins.last().date
 
-        startDate.minus(startDate.dayOfWeek.ordinal, DateTimeUnit.DAY);
+        startDate = startDate.minus(startDate.dayOfWeek.ordinal, DateTimeUnit.DAY);
 
-            val workbook = XSSFWorkbook()
-            val sheet = workbook.createSheet()
+        val workbook = XSSFWorkbook()
+        val sheet = workbook.createSheet()
 
-            sheet.setColumnWidth(1, 15*256)
-            sheet.setColumnWidth(2, 15*256)
-            sheet.setColumnWidth(3, 15*256)
-            sheet.setColumnWidth(4, 15*256)
-            sheet.setColumnWidth(5, 15*256)
-            sheet.setColumnWidth(6, 15*256)
-            sheet.setColumnWidth(7, 15*256)
+        sheet.setColumnWidth(1, 15 * 256)
+        sheet.setColumnWidth(2, 15 * 256)
+        sheet.setColumnWidth(3, 15 * 256)
+        sheet.setColumnWidth(4, 15 * 256)
+        sheet.setColumnWidth(5, 15 * 256)
+        sheet.setColumnWidth(6, 15 * 256)
+        sheet.setColumnWidth(7, 15 * 256)
 
-            val presenceStyles: MutableMap<Presence, CellStyle> = mutableMapOf()
-            val defaultCellStyle = createDefaultCellStyle(workbook)
-            val weekStyle = createWeekStyle(workbook)
-            val headerStyle = createHeaderStyle(workbook)
+        val presenceStyles: MutableMap<Presence, CellStyle> = mutableMapOf()
+        val defaultCellStyle = createDefaultCellStyle(workbook)
+        val weekStyle = createWeekStyle(workbook)
+        val headerStyle = createHeaderStyle(workbook)
 
-            presenceStyles[Presence.OnTime] = createPresenceCellStyle(workbook, Presence.OnTime)
-            presenceStyles[Presence.VerifiedAbsent] = createPresenceCellStyle(workbook, Presence.VerifiedAbsent)
-            presenceStyles[Presence.Late] = createPresenceCellStyle(workbook, Presence.Late)
-            presenceStyles[Presence.Sick] = createPresenceCellStyle(workbook, Presence.Sick)
-            presenceStyles[Presence.Absent] = createPresenceCellStyle(workbook, Presence.Absent)
+        presenceStyles[Presence.OnTime] = createPresenceCellStyle(workbook, Presence.OnTime)
+        presenceStyles[Presence.VerifiedAbsent] = createPresenceCellStyle(workbook, Presence.VerifiedAbsent)
+        presenceStyles[Presence.Late] = createPresenceCellStyle(workbook, Presence.Late)
+        presenceStyles[Presence.Sick] = createPresenceCellStyle(workbook, Presence.Sick)
+        presenceStyles[Presence.Absent] = createPresenceCellStyle(workbook, Presence.Absent)
 
-            var rowNum = 0;
-            val firstRow = sheet.createRow(rowNum++)
-            
-            firstRow.createCell(0).setCellValue("Presentie")
-            firstRow.createCell(1).setCellValue(groupUser.user.name)
+        var rowNum = 0;
+        val firstRow = sheet.createRow(rowNum++)
 
-            val secondRow = sheet.createRow(rowNum++)
-            var colNum = 0
-            for (txt in listOf("Week", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag")) {
-                val col = secondRow.createCell(colNum++)
-                col.setCellValue(txt)
-                col.setCellStyle(headerStyle)
-            }
+        firstRow.createCell(0).setCellValue("Presentie")
+        firstRow.createCell(1).setCellValue(groupUser.user.name)
 
-            for (dateIndex in 0 .. startDate.until(endDate, DateTimeUnit.WEEK)) {
-                val weekStartDay = startDate.plus(dateIndex, DateTimeUnit.WEEK)
+        val secondRow = sheet.createRow(rowNum++)
+        var colNum = 0
+        for (txt in listOf("Week", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag")) {
+            val col = secondRow.createCell(colNum++)
+            col.setCellValue(txt)
+            col.setCellStyle(headerStyle)
+        }
 
-                val row = sheet.createRow(rowNum++)
-                val weekCol = row.createCell(0)
-                weekCol.setCellValue("W${weekStartDay.weekOfYear} ${weekStartDay.year}")
-                weekCol.setCellStyle(weekStyle)
+        for (dateIndex in 0..startDate.until(endDate, DateTimeUnit.WEEK)) {
+            val weekStartDay = startDate.plus(dateIndex, DateTimeUnit.WEEK)
 
-                var colNum = 1
-                for (i in 0 until 7) {
-                    val date = weekStartDay.plus(i, DateTimeUnit.DAY)
-                    val col = row.createCell(colNum++)
+            val row = sheet.createRow(rowNum++)
+            val weekCol = row.createCell(0)
+            weekCol.setCellValue("W${weekStartDay.weekOfYear} ${weekStartDay.year}")
+            weekCol.setCellStyle(weekStyle)
 
-                    val checkin = checkins.find { it.date == date }
-                    if (checkin?.date == date && checkin.presence?.key != null) {
-                        col.setCellValue(checkin.presence!!.key)
-                        col.setCellStyle(presenceStyles[checkin.presence])
-                    } else {
-                        col.setCellValue("--")
-                        col.setCellStyle(defaultCellStyle)
-                    }
+            var colNum = 1
+            for (i in 0 until 7) {
+                val date = weekStartDay.plus(i, DateTimeUnit.DAY)
+                val col = row.createCell(colNum++)
+
+                val checkin = checkins.find { it.date == date }
+                if (checkin?.date == date && checkin.presence?.key != null) {
+                    col.setCellValue(checkin.presence!!.key)
+                    col.setCellStyle(presenceStyles[checkin.presence])
+                } else {
+                    col.setCellValue("--")
+                    col.setCellStyle(defaultCellStyle)
                 }
             }
+        }
         call.respondBytesWriter(ContentType.Application.Xlsx) {
             workbook.write(toOutputStream())
         }
