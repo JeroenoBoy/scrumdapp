@@ -20,11 +20,11 @@ fun Route.groupExportUserRoutes() {
 
     route<GroupsRouter.Group.Export.User> {
         typedGet<GroupsRouter.Group.Export.User> { exportData ->
-            val groupUser = call.groupUser;
+            val groupUser = call.groupUser
             val requestedUser = groupRepository.getGroupUser(exportData.groupId, exportData.userId)
 
-            if (groupUser != requestedUser && !ComparePermissions(groupUser.permissions, UserPermissions.Coach)) {
-                throw NotAuthorizedException("Je moet een coach of hoger zijn.");
+            if (!UserPermissions.canExportPresence(groupUser.permissions, groupUser == requestedUser)) {
+                throw NotAuthorizedException("Alleen coaches mogen dit doen")
             }
 
             if (requestedUser == null) {

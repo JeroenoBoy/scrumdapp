@@ -41,8 +41,8 @@ class ExportService(val checkinRepository: CheckinRepositoryImpl, val groupRepos
     suspend fun writeUserExport(groupUser: GroupUser, call: RoutingCall) {
         val checkins = checkinRepository.getUserCheckins(groupUser.user.id, groupUser.groupId)
 
-        if (checkins.size < 2) {
-            throw AppException(400, "De gebruiker moet 2 of meer checkins hebben", "Onvoldoende checkins")
+        if (checkins.isEmpty()) {
+            throw AppException(400, "De gebruiker moet 1 of meer checkins hebben", "Onvoldoende checkins")
         }
 
         var startDate = checkins.first().date

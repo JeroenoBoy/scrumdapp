@@ -2,7 +2,6 @@ package com.jeroenvdg.scrumdapp.views.pages.groups.trends
 
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupUser
-import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.TrendsData
@@ -95,7 +94,7 @@ fun FlowContent.groupExportContent(application: Application, currentUser: GroupU
         tr {
             td(classes="name-field") { +groupUser.user.name }
             td(classes="horizontal justify-start") {
-                if (groupUser == currentUser || ComparePermissions(currentUser.permissions, UserPermissions.Coach)) {
+                if (UserPermissions.canExportPresence(currentUser.permissions, groupUser == currentUser)) {
                     a(href=application.href(GroupsRouter.Group.Export.User(groupUser.groupId, groupUser.user.id)), classes="btn") {
                         +"Export"
                     }
@@ -116,8 +115,10 @@ fun FlowContent.groupExportContent(application: Application, currentUser: GroupU
                 }
             }
             tbody {
-                this@table.userRow(currentUser)
-                for (user in users.filter { it != currentUser }) {
+                if (currentUser.permissions != UserPermissions.Coach) {
+                    this@table.userRow(currentUser)
+                }
+                for (user in users.filter { it != currentUser && it.permissions != UserPermissions.Coach }) {
                     this@table.userRow(user)
                 }
             }
