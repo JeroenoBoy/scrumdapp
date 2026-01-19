@@ -7,7 +7,6 @@ import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.li
 import kotlinx.html.p
-import kotlinx.html.style
 import kotlinx.html.ul
 
 fun FlowContent.privacyPage() {
@@ -63,7 +62,7 @@ fun FlowContent.privacyPage() {
 
     div(classes="spacer-lg")
     h2 { +"Hoe kunt je ons bereiken?"}
-    p { +"""Voor vragen, problemen of suggesties is de makkelijkste manier een discussion of issue aan te maken op onze""".trimIndent()
+    p { +"""Voor vragen, problemen of suggesties is de makkelijkste manier een discussion of issue aan te maken op onze """.trimIndent()
         a {
             href = "https://github.com/JeroenoBoy/scrumdapp"
             attributes["style"] = "cursor: pointer;"
