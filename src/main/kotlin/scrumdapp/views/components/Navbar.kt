@@ -4,6 +4,7 @@ import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.routes.AboutRouter
 import com.jeroenvdg.scrumdapp.routes.HomeRouter
 import com.jeroenvdg.scrumdapp.routes.LogoutRouter
+import com.jeroenvdg.scrumdapp.routes.PrivacyRouter
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
@@ -22,7 +23,7 @@ fun FlowContent.navbar(application: Application, user: User) {
         }
         div(classes="nav-group justify-center") {
             a(href=application.href(HomeRouter()), classes="nav-button") { +"Home" }
-            a(href="/", classes="nav-button") { +"Dagboek" }
+            a(href=application.href(PrivacyRouter()), classes="nav-button text-center") { +"Privacy statement" }
             a(href=application.href(AboutRouter()), classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {
