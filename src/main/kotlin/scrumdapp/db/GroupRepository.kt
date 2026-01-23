@@ -30,6 +30,7 @@ interface GroupRepository {
     suspend fun getGroupNotes(id: Int): String?
     suspend fun saveGroupNotes(id: Int, notes: String?)
     suspend fun getGroupMembers(id: Int): List<User>
+    suspend fun getGroupsUsersContainingUser(userId: Int): List<GroupUser>
     suspend fun getUserGroups(id: Int): List<Group>
     suspend fun getGroupUser(groupId: Int, userId: Int): GroupUser?
     suspend fun getGroupUsers(groupId: Int): List<GroupUser>

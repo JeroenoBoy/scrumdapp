@@ -1,17 +1,22 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.db.User
+import com.jeroenvdg.scrumdapp.routes.UserSettingsRouter
 import com.jeroenvdg.scrumdapp.services.EncryptionService
 import com.jeroenvdg.scrumdapp.services.EncryptionServiceImpl
+import com.jeroenvdg.scrumdapp.utils.href
 import com.jeroenvdg.scrumdapp.views.components.icon
 import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
+import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
+import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.classes
 import kotlinx.html.div
+import kotlinx.html.form
 import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.input
@@ -70,25 +75,26 @@ fun FlowContent.appSettingsPage(application: Application, user: User) {
             +"Dit is het "
             b(classes="red") { +"laatste "}
             +"moment voordat je Scrumdapp account permanent wordt verwijderd. "
-            +"Vul hieronder je achternaam in en klik op 'verwijder account' om je afmelding te bevestigen. "
+            +"Vul hieronder je hele naam in en klik op 'verwijder account' om je afmelding te bevestigen. "
             +"Hou er rekening mee dat de aanwezigheid geregistreerd in Scrumdapp "
             b(classes="red") { +"noodzakelijk " }
             +"kan zijn voor jouw assessment. Als je dit nog nodig hebt gebruik de exporteer functie in de 'trends' pagina."
         }
-
-        div(classes="input-group") {
-            label(classes="input-label") { htmlFor="user_name"; +"Jouw achternaam"}
-            input(classes="input", name="delete_user_name") { value=""}
-        }
-        div(classes="spacer-lg")
-        div(classes="horizontal justify-end g-md") {
-            a(classes = "btn btn-green", href="#") {
-                icon(iconName = "undo", classes = "bg-hard")
-                +"Stop"
+        form(action=application.href(UserSettingsRouter.Delete()), method= FormMethod.post, classes="vertical g-md") {
+            div(classes="input-group") {
+                label(classes="input-label") { htmlFor="user_name"; +"Jouw achternaam"}
+                input(classes="input", name="delete_user_name") { value=""}
             }
-            div(classes="hacky-icon") {
-                icon(iconName="check", classes="bg-hard")
-                input(type= InputType.submit, classes="btn btn-red") { value="Verwijder account"}
+            div(classes="spacer-lg")
+            div(classes="horizontal justify-end g-md") {
+                a(classes = "btn btn-green", href="#") {
+                    icon(iconName = "undo", classes = "bg-hard")
+                    +"Stop"
+                }
+                div(classes="hacky-icon") {
+                    icon(iconName="check", classes="bg-hard")
+                    input(type= InputType.submit, classes="btn btn-red") { value="Verwijder account"}
+                }
             }
         }
     }
