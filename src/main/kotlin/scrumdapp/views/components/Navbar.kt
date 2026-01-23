@@ -5,8 +5,10 @@ import com.jeroenvdg.scrumdapp.routes.AboutRouter
 import com.jeroenvdg.scrumdapp.routes.HomeRouter
 import com.jeroenvdg.scrumdapp.routes.LogoutRouter
 import com.jeroenvdg.scrumdapp.routes.PrivacyRouter
+import com.jeroenvdg.scrumdapp.routes.UserSettingsRouter
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
+import io.ktor.server.routing.Routing
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
@@ -33,7 +35,7 @@ fun FlowContent.navbar(application: Application, user: User) {
                     img(alt="User Profile Picture", classes="nav-user-icon", src=user.profileImage)
                 }
                 div(classes="nav-dropdown-content") {
-                    a(href="/settings", classes="nav-button") {
+                    a(href=application.href(UserSettingsRouter()), classes="nav-button") {
                         icon(iconName="settings", classes="purple")
                         +"Settings"
                     }

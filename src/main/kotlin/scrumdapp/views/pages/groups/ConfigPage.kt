@@ -156,7 +156,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
                 input(classes="input", name="delete_group_name") { value="" }
             }
 
-            div(classes="horizontal g-md justify-end") {
+            div(classes="horizontal g-md justify-end pt-sm") {
                 a(classes = "btn btn-green", href="#") {
                     icon(iconName = "undo", classes = "bg-hard")
                     +"Stop"

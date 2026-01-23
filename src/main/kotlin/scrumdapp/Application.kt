@@ -5,6 +5,7 @@ import com.jeroenvdg.scrumdapp.db.*
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.UserProvider
 import com.jeroenvdg.scrumdapp.routes.SessionToken
+import com.jeroenvdg.scrumdapp.routes.configureAppSettingsRoutes
 import com.jeroenvdg.scrumdapp.routes.configureAuthRouting
 import com.jeroenvdg.scrumdapp.routes.configureRouting
 import com.jeroenvdg.scrumdapp.routes.groups.configureGroupRoutes
@@ -92,6 +93,7 @@ suspend fun Application.module() {
     configureExceptionService()
     configureGroupRoutes()
     configureInviteRoutes()
+    configureAppSettingsRoutes()
     configureRouting()
     configureAuthRouting()
 }
