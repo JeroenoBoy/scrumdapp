@@ -25,7 +25,7 @@ fun FlowContent.navbar(application: Application, user: User) {
         }
         div(classes="nav-group justify-center") {
             a(href=application.href(HomeRouter()), classes="nav-button") { +"Home" }
-            a(href=application.href(PrivacyRouter()), classes="nav-button text-center") { +"Privacy statement" }
+            a(href=application.href(PrivacyRouter()), classes="nav-button text-center") { +"Privacy" }
             a(href=application.href(AboutRouter()), classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {

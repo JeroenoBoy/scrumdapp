@@ -27,6 +27,7 @@ import kotlin.random.Random
 
 fun FlowContent.appSettingsPage(application: Application, user: User) {
     val safetyId = Random.nextInt(0, 99999999)
+    val safetyId2 = Random.nextInt(0, 99999999)
 
     h1 { +"App Instellingen" }
     div(classes="mb-lg") {
@@ -62,14 +63,35 @@ fun FlowContent.appSettingsPage(application: Application, user: User) {
                 icon(iconName="undo", classes="bg-hard")
                 +"Terug"
             }
-            a(classes="btn btn-red", href="#confirm-delete-user-${safetyId}") {
+            a(classes="btn btn-red", href="#reminder-delete-user-${safetyId}") {
                 icon(iconName="delete_forever", classes="bg-hard")
                 +"Volgende Stap"
             }
         }
     }
 
-    modal(id="confirm-delete-user-${safetyId}") {
+    modal(id="reminder-delete-user-${safetyId}") {
+        h2 { +"Verwijder Scrumdapp account"}
+        p {
+            +"Ben u heel zeker dat echt wilt doorgaan met deze actie? "
+            +"De resultaten van deze verandering kunnnen "
+            b(classes="red") {+"niet "}
+            +"ongedaan worden gemaakt worden of worden teruggebracht!"
+        }
+
+        div(classes="horizontal g-md justify-end") {
+            a(classes="btn btn-red", href="#confirm-delete-user-${safetyId2}") {
+                icon(iconName="delete_forever", classes="bg-hard")
+                +"Volgende (laatste) Stap"
+            }
+            a(classes="btn btn-green", href="#") {
+                icon(iconName="undo", classes="bg-hard")
+                +"Terug"
+            }
+        }
+    }
+
+    modal(id="confirm-delete-user-${safetyId2}") {
         h2 { +"Verwijder Scrumdapp account"}
         p {
             +"Dit is het "
@@ -82,7 +104,7 @@ fun FlowContent.appSettingsPage(application: Application, user: User) {
         }
         form(action=application.href(UserSettingsRouter.Delete()), method= FormMethod.post, classes="vertical g-md") {
             div(classes="input-group") {
-                label(classes="input-label") { htmlFor="user_name"; +"Jouw achternaam"}
+                label(classes="input-label") { htmlFor="user_name"; +"Jouw gehele naam"}
                 input(classes="input", name="delete_user_name") { value=""}
             }
             div(classes="spacer-lg")
