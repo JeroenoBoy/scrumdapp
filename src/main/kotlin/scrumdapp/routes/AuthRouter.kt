@@ -7,6 +7,7 @@ import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.IsLoggedOut
 import com.jeroenvdg.scrumdapp.middleware.RedirectCookie
 import com.jeroenvdg.scrumdapp.middleware.userSession
+import com.jeroenvdg.scrumdapp.services.AppException
 import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordUser
@@ -95,6 +96,10 @@ suspend fun Application.configureAuthRouting() {
                             throw ServerFaultException("Could not fetch Discord User!")
                         }
 
+                        if (!isInServer(principal, discordService, authorizationServerId)) {
+                            throw AppException(403, "Je zit niet in de Open-ICT discord server, probeer een ander account", "Authorizatie error")
+                        }
+
                         // Get user with discordId
                         val user = userRepository.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
                         val session = sessionRepository.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
@@ -133,6 +138,20 @@ suspend fun Application.configureAuthRouting() {
             }
         }
     }
+}
+
+suspend fun isInServer(principal: OAuthAccessTokenResponse.OAuth2, discordService: DiscordService, authorityGuild: String): Boolean {
+    val guilds = discordService.getGuilds(principal.accessToken)
+    if (guilds.isFailure) {
+        throw AppException(401, "We kunnen je guilds niet zien, probeer opnieuw in te loggen", "Scope Error")
+    }
+
+    for (guild in guilds.getOrThrow()) {
+        if (guild.id == authorityGuild) {
+            return true
+        }
+    }
+    return false
 }
 
 suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
