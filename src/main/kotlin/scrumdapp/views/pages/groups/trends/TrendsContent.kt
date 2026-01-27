@@ -70,18 +70,18 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
         }
     }
 
-//    card {
-//        h3 { +"In Detail" }
-//
-//        for (trend in trends) {
-//            div(classes="horizontal px-md align-center") {
-//                span(classes="name-field b-none") {
-//                    +trend.userName
-//                }
-//                a(href=application.href(Group.Trends.User(trend.groupId, trend.userId)), classes="btn btn-blue") {
-//                    +"Meer"
-//                }
-//            }
-//        }
-//    }
+    card {
+        h3 { +"In Detail" }
+
+        for (trend in trends) {
+            div(classes="horizontal px-md align-center") {
+                span(classes="name-field b-none") {
+                    +trend.userName
+                }
+                a(href=application.href(GroupsRouter.Group.Trends.User(trend.groupId, trend.userId)), classes="btn btn-blue") {
+                    +"Meer"
+                }
+            }
+        }
+    }
 }

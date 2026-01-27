@@ -9,13 +9,16 @@ import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.TrendsData
 import com.jeroenvdg.scrumdapp.services.TrendsService
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
+import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.trends.groupTrendsContent
+import com.jeroenvdg.scrumdapp.views.pages.groups.trends.userTrendsContent
 import io.ktor.server.html.*
 import io.ktor.server.plugins.di.*
+import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDate
 
@@ -46,22 +49,21 @@ fun Route.groupTrendsRoutes() {
         }
     }
 
-//    route<GroupsRouter.Group.Trends.User> {
-//        typedGet<GroupsRouter.Group.Trends.User> { userTrends ->
-//            val group = call.group
-//            val groupUser = call.groupUser
-//            val checkinDates = checkinRepository.getCheckinDates(group.id, 10)
-//            val targetUser = groupRepository.getGroupUser(userTrends.parent.parent.groupId, userTrends.userId)
-//                ?: return@typedGet call.respondRedirect(application.href(GroupsRouter.Group.Trends(group.id)))
-//
-//            val view = userTrends.parent.view ?: "all"
-//            call.respondHtml {
-//                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
-//                    groupPage(application, checkinDates, group, groupUser.permissions) {
-//                        userTrendsContent(application, targetUser, view)
-//                    }
-//                }
-//            }
-//        }
-//    }
+    route<GroupsRouter.Group.Trends.User> {
+        typedGet<GroupsRouter.Group.Trends.User> { userTrends ->
+            val group = call.group
+            val groupUser = call.groupUser
+            val checkinDates: List<LocalDate> = checkinRepository.getRecentCheckinDates(group.id)
+            val checkins = trendsService.getUserCheckins(userTrends.userId, userTrends.parent.parent.groupId)
+            val starData = trendsService.getWeeklyStarsData(checkins)
+
+            call.respondHtml {
+                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+                    groupPage(application, checkinDates, group, groupUser.permissions) {
+                        userTrendsContent(application, groupUser)
+                    }
+                }
+            }
+        }
+    }
 }

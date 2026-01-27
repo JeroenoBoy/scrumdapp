@@ -1106,13 +1106,25 @@ table.charts-css.big-label th {
     justify-content: start !important;
 }
 
+.charts-color-check-ins {
+    --color-1: var(--yellow);
+    --color-2: var(--green);
+}
+
 .charts-css.legend li::before {
-    border-width: var(--gap-md);
     border-radius: var(--radius);
+    border: none;
+    width: 0.8em;
+    height: 0.8em;
 }
 
 .charts-css.legend {
-    --legend-border-color: var(--gray-dim);
+    --legend-border-color: var(--bg3);
+    border-radius: var(--radius);
+}
+
+.charts-css {
+    --secondary-axes-color: var(--bg1);
 }
 
 .charts-css.stacked tbody tr td:nth-child(3) {

@@ -43,6 +43,7 @@ fun Route.calendarRoutes() {
             val group = call.group
             val dates = checkinService.getMonthlyDates(group.id, calendarContentData.month, calendarContentData.year)
             val possibleMonths = checkinRepository.getDistinctMonths(group.id)
+
             call.respondHtml {
                 mainLayout(PageData("Calendar frame", contentFrame=true)) {
                     calendarContent(application, group, possibleMonths, dates)

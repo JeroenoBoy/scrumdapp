@@ -28,7 +28,8 @@ data class PresenceData(
 )
 
 interface CheckinRepository {
-    suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin>
+    suspend fun getUserCheckins(userId: Int, groupId: Int): List<Checkin>
+    suspend fun getUserCheckins(userId: Int, groupId: Int, from: LocalDate, to: LocalDate): List<Checkin>
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
     suspend fun getRecentCheckinDates(groupId: Int, limit: Int = 5): List<LocalDate>
     suspend fun getCheckin(id: Int): Checkin?
