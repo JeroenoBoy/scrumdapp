@@ -37,11 +37,11 @@ fun FlowContent.navbar(application: Application, user: User) {
                 div(classes="nav-dropdown-content") {
                     a(href=application.href(UserSettingsRouter()), classes="nav-button") {
                         icon(iconName="settings", classes="purple")
-                        +"Settings"
+                        +"Instellingen"
                     }
                     a(href=application.href(LogoutRouter()), classes="nav-button") {
                         icon(iconName="logout", classes="red")
-                        +"Logout"
+                        +"Uitloggen"
                     }
                 }
             }

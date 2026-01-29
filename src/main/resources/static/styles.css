@@ -861,6 +861,10 @@ hr {
     margin: var(--gap-md);
 }
 
+.mt-b {
+    margin-top: 10vh;
+}
+
 .mt-c {
     margin-top: 20vh;
 }
@@ -951,6 +955,11 @@ hr {
 .max-w-om {
     width: 200px;
     max-width: 200px;
+}
+
+.max-w-xl {
+    width: 800px;
+    max-width: 800px;
 }
 
 .h-full {

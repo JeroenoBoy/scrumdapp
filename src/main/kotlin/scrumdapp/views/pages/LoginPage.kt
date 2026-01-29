@@ -1,10 +1,12 @@
 package com.jeroenvdg.scrumdapp.views.pages
 
 import com.jeroenvdg.scrumdapp.routes.AuthRouter
+import com.jeroenvdg.scrumdapp.routes.PrivacyRouter
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.FlowContent
 import kotlinx.html.a
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.img
