@@ -11,6 +11,7 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.strong
 
 
@@ -24,6 +25,9 @@ fun FlowContent.loginPage(application: Application) {
             a(href=application.href(AuthRouter.Login()), classes="btn btn-blue horizontal g-lg align-center justify-center") {
                 img(src="/static/icons/discord.svg", alt="Discord Logo", classes="icon")
                 +"Log-in met Discord"
+            }
+            a(href=application.href(PrivacyRouter()), classes="text-sm c-xy p-sm pointer text-i") {
+                +"Service level agreement"
             }
         }
     }

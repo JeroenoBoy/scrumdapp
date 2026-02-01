@@ -861,6 +861,10 @@ hr {
     margin: var(--gap-md);
 }
 
+.mt-a {
+    margin-top: 5vh;
+}
+
 .mt-b {
     margin-top: 10vh;
 }

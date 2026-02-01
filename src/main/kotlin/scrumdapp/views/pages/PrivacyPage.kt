@@ -3,6 +3,7 @@ package com.jeroenvdg.scrumdapp.views.pages
 import com.jeroenvdg.scrumdapp.routes.HomeRouter
 import com.jeroenvdg.scrumdapp.routes.UserSettingsRouter
 import com.jeroenvdg.scrumdapp.utils.href
+import com.jeroenvdg.scrumdapp.views.components.icon
 import io.ktor.resources.href
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
@@ -15,6 +16,7 @@ import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.ul
 
 fun FlowContent.privacyPage(application: Application) {
@@ -136,6 +138,12 @@ fun FlowContent.privacyPage(application: Application) {
                 }
                 +"."
             }
+        }
+    }
+    div(classes="horizontal c-xy p-sm") {
+        a(classes="btn", href=application.href(HomeRouter())) {
+            icon(iconName="undo", classes="green")
+                +"Terug"
         }
     }
 }
