@@ -1,6 +1,5 @@
 package com.jeroenvdg.scrumdapp.models
 
-import org.h2.api.H2Type.row
 import org.jetbrains.exposed.sql.ResultRow
 
 sealed class UserPermissions(val displayName: String, val id: Int) {
@@ -34,6 +33,10 @@ sealed class UserPermissions(val displayName: String, val id: Int) {
                 69 -> User
                 else -> User
             }
+        }
+
+        fun canExportPresence(userPermissions: UserPermissions, isSelf: Boolean): Boolean {
+            return userPermissions == Coach || isSelf
         }
     }
 }

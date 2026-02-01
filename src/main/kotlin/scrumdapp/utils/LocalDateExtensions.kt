@@ -15,6 +15,17 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
     return java.time.LocalDateTime.now().toKotlinLocalDateTime()
 }
 
+val LocalDate.weekOfYear: Int get() {
+    val firstDayOfYear = LocalDate(year, 1, 1)
+    val daysFromFirstDay = dayOfYear - firstDayOfYear.dayOfYear
+    val firstDayOfYearDayOfWeek = firstDayOfYear.dayOfWeek.value
+    val adjustment = when {
+        firstDayOfYearDayOfWeek <= 4 -> firstDayOfYearDayOfWeek - 1
+        else -> 8 - firstDayOfYearDayOfWeek
+    }
+    return (daysFromFirstDay + adjustment) / 7 + 1
+}
+
 fun LocalDate.scrumdappFormat(small: Boolean = false): String {
     val y = year.toString().padStart(4, '0')
     val m = monthNumber.toString().padStart(2, '0')

@@ -26,12 +26,13 @@ class CheckinRepositoryImpl: CheckinRepository {
         )
     }
 
-    override suspend fun getUserCheckins(user: User, groupId: Int): List<Checkin> {
+    override suspend fun getUserCheckins(userId: Int, groupId: Int): List<Checkin> {
         return dbQuery {
             GroupCheckins
-                .innerJoin(Users, { GroupCheckins.id eq user.id}, { Users.id})
+                .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
                 .select(GroupCheckins.fields + Users.name)
-                .where {GroupCheckins.groupId eq groupId and(GroupCheckins.userId eq user.id)}
+                .where {GroupCheckins.groupId eq groupId and(GroupCheckins.userId eq userId)}
+                .orderBy(GroupCheckins.date to SortOrder.ASC)
                 .map { resultRowToCheckin(it) }
         }
     }

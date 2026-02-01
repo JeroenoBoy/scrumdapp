@@ -33,6 +33,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.resources.Resources
 import io.ktor.server.sessions.*
+import scrumdapp.services.ExportService
 
 fun main(args: Array<String>) {
     println("Starting Scrumdapp")
@@ -58,6 +59,7 @@ suspend fun Application.module() {
         provide { CheckinService(checkinRepository, groupRepository) }
         provide { InviteService(groupRepository, encryptionService) }
         provide { TrendsService(checkinRepository) }
+        provide { ExportService(checkinRepository, groupRepository) }
         provide<UserRepository> { userRepository }
         provide<GroupRepository> { groupRepository }
         provide<CheckinRepository> { checkinRepository }
