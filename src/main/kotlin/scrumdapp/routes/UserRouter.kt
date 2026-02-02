@@ -39,14 +39,15 @@ fun Application.configureAppSettingsRoutes() {
         route<UserSettingsRouter> {
             install(IsLoggedIn)
             userSettingsRouter()
+
+            route<UserSettingsRouter.Delete> {
+                userDeletionRouter()
+            }
         }
     }
 }
 
 fun Route.userSettingsRouter() {
-    val userRepository = application.dependencies.resolveBlocking<UserRepository>()
-    val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
-    val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
     typedGet<UserSettingsRouter> {
         val user = call.user
 
@@ -56,41 +57,43 @@ fun Route.userSettingsRouter() {
             }
         }
     }
+}
 
-    route<UserSettingsRouter.Delete> {
-        typedPost<UserSettingsRouter.Delete> {
-            val name = call.receiveParameters()["delete_user_name"]
+fun Route.userDeletionRouter() {
+    val userRepository = application.dependencies.resolveBlocking<UserRepository>()
+    val groupRepository = application.dependencies.resolveBlocking<GroupRepository>()
+    typedPost<UserSettingsRouter.Delete> {
+        val name = call.receiveParameters()["delete_user_name"]
 
-            if (name.isNullOrEmpty()) return@typedPost call.respondRedirect(application.href(UserSettingsRouter(), "delete-user-failed"))
+        if (name.isNullOrEmpty()) return@typedPost call.respondRedirect(application.href(UserSettingsRouter(), "delete-user-failed"))
 
-            val user = call.user
-            if (!name.equals(user.name, true)) return@typedPost call.respondRedirect(application.href(UserSettingsRouter(), "delete-user-failed"))
+        val user = call.user
+        if (!name.equals(user.name, true)) return@typedPost call.respondRedirect(application.href(UserSettingsRouter(), "delete-user-failed"))
 
-            try {
-                val groups = groupRepository.getUserGroups(user.id)
+        try {
+            val groups = groupRepository.getUserGroups(user.id)
 
-                for (group in groups) {
-                    val userGroup = groupRepository.getGroupUser(group.id, user.id) ?: continue
-                    if (userGroup.permissions == UserPermissions.LordOfScrum ) {
-                        val groupUsers = groupRepository.getGroupUsers(group.id)
+            for (group in groups) {
+                val userGroup = groupRepository.getGroupUser(group.id, user.id) ?: continue
+                if (userGroup.permissions == UserPermissions.LordOfScrum ) {
+                    val groupUsers = groupRepository.getGroupUsers(group.id)
 
-                        if (groupUsers.size <= 1) {
-                            groupRepository.deleteGroup(userGroup.groupId)
-                            continue
-                        }
-                        val newOwner = groupUsers.filter { it.user != user }.minByOrNull { it.permissions.id }!!
-                        groupRepository.alterGroupMemberPerms(userGroup.groupId, newOwner.user.id, UserPermissions.LordOfScrum)
+                    if (groupUsers.size <= 1) {
+                        groupRepository.deleteGroup(userGroup.groupId)
+                        continue
                     }
-
-                    groupRepository.deleteGroupMember(userGroup.groupId, user.id)
+                    val newOwner = groupUsers.filter { it.user != user }.minByOrNull { it.permissions.id }!!
+                    groupRepository.alterGroupMemberPerms(userGroup.groupId, newOwner.user.id, UserPermissions.LordOfScrum)
                 }
-            } catch (ex: Exception) {
-                throw ServerFaultException("Er is iets misgegaan met het verwijderen van de gebruiker")
+
+                groupRepository.deleteGroupMember(userGroup.groupId, user.id)
             }
-
-            userRepository.deleteUser(user)
-
-            return@typedPost call.respondRedirect(application.href(UserSettingsRouter()))
+        } catch (ex: Exception) {
+            throw ServerFaultException("Er is iets misgegaan met het verwijderen van de gebruiker")
         }
+
+        userRepository.deleteUser(user)
+
+        return@typedPost call.respondRedirect(application.href(UserSettingsRouter()))
     }
 }
