@@ -73,7 +73,6 @@ fun Route.groupSettingsRoutes() {
             if (name != call.group.name) {
                 return@typedPost call.respondRedirect(application.href(GroupsRouter.Group.Settings(group.id), "delete-failed"))
             }
-
             groupRepository.deleteGroup(group.id)
             call.respondRedirect("/home")
         }

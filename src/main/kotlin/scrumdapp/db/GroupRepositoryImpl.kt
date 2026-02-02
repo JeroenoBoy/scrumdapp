@@ -112,6 +112,14 @@ class GroupRepositoryImpl: GroupRepository {
         }
     }
 
+    override suspend fun getGroupsUsersContainingUser(userId: Int): List<GroupUser> {
+        return dbQuery {
+            UserGroups
+                .select(UserGroups.userId eq userId)
+                .map { groupUser(it)}
+        }
+    }
+
     override suspend fun getUserGroups(id: Int): List<Group> {
         return dbQuery {
             (UserGroups innerJoin Groups)
