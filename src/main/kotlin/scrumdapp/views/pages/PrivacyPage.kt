@@ -85,8 +85,7 @@ fun FlowContent.privacyPage(application: Application) {
                             attributes["style"] = "color: var(--red); cursor: pointer;"
                             +"Github repository"
                         }
-                        +"."
-                        +"We geven geen garanties op de reactietijd op email’s, issues of pull request, maar we proberen binnen een werkdag te reageren."
+                        +". We geven geen garanties op de reactietijd op email’s, issues of pull request, maar we proberen binnen een werkdag te reageren."
                     }
                     div(classes = "spacer-lg")
                     h2 { +"5) Gegevens" }
