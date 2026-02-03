@@ -161,7 +161,7 @@ suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
                        userRepository: UserRepository): User {
 
     val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
-    val name = guildMember.nick ?: discordUser.global_name
+    val name = guildMember.nick ?: discordUser.global_name ?: discordUser.username
     var avatar = guildMember.avatar ?: discordUser.avatar
     if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
 
