@@ -1,4 +1,4 @@
-package scrumdapp.routes.groups
+package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.GroupRepository

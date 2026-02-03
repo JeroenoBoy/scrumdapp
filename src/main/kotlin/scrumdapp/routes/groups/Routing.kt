@@ -26,7 +26,6 @@ import io.ktor.server.routing.application
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.datetime.LocalDate
-import scrumdapp.routes.groups.groupNoteRoutes
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -41,6 +40,14 @@ class GroupsRouter {
 
         @Resource("edit")
         class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
+
+        @Resource("export")
+        class Export(val parent: GroupsRouter.Group) { constructor(groupId: Int): this(Group(groupId=groupId),)
+            @Resource("scrumdapp-user-export.xlsx")
+            class User(val parent: Export, val userId: Int) { constructor(groupId: Int, userId: Int): this(Export(groupId), userId)
+                val groupId get() = parent.parent.groupId
+            }
+        }
 
         @Resource("trends")
         class Trends(val parent: Group, val view: String? = null) { constructor(groupId: Int, view: String? = null): this(Group(groupId=groupId), view)
@@ -128,6 +135,10 @@ suspend fun Application.configureGroupRoutes() {
                 route<GroupsRouter.Group.Edit> {
                     install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
+                }
+
+                route<GroupsRouter.Group.Export> {
+                    groupExportUserRoutes()
                 }
 
                 route<GroupsRouter.Group.Trends> {

@@ -953,6 +953,11 @@ hr {
     max-width: 200px;
 }
 
+.max-w-lg {
+    width: 400px;
+    max-width: 400px;
+}
+
 .h-full {
     height: 100%;
 }
