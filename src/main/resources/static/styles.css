@@ -1116,6 +1116,12 @@ table.charts-css.big-label th {
     --color-2: var(--green);
 }
 
+.charts-color-stars-table {
+    --color-1: var(--red);
+    --color-2: var(--yellow);
+    --color-3: var(--green);
+}
+
 .charts-css.legend li::before {
     border-radius: var(--radius);
     border: none;

@@ -111,12 +111,12 @@ class TrendsService(
             }
             currDate = date
             totalCount = 0
-            checkinMin = 0
-            checkinMax = 0
+            checkinMin = null
+            checkinMax = null
             checkinTotal = 0
             checkinCount = 0
-            checkupMin = 0
-            checkupMax = 0
+            checkupMin = null
+            checkupMax = null
             checkupTotal = 0
             checkupCount = 0
         }
@@ -129,16 +129,16 @@ class TrendsService(
 
             totalCount++
             if (checkin.checkinStars != null) {
-                val stars = checkin.checkupStars!!
-                checkinMin = if (checkinMin == null) stars else min(stars, checkinMin)
-                checkinMax = if (checkinMax == null) stars else max(stars, checkinMax)
+                val stars = checkin.checkinStars!!
+                checkinMin = if (checkinMin == null) stars else min(stars, checkinMin!!)
+                checkinMax = if (checkinMax == null) stars else max(stars, checkinMax!!)
                 checkinTotal += stars
                 checkinCount++
             }
             if (checkin.checkupStars != null) {
                 val stars = checkin.checkupStars!!
-                checkupMin = if (checkupMin == null) stars else min(stars, checkupMin)
-                checkupMax = if (checkupMax == null) stars else max(stars, checkupMax)
+                checkupMin = if (checkupMin == null) stars else min(stars, checkupMin!!)
+                checkupMax = if (checkupMax == null) stars else max(stars, checkupMax!!)
                 checkupTotal += stars
                 checkupCount++
             }

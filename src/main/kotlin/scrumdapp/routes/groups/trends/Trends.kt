@@ -9,6 +9,7 @@ import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.TrendsData
 import com.jeroenvdg.scrumdapp.services.TrendsService
+import com.jeroenvdg.scrumdapp.utils.now
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -20,9 +21,16 @@ import com.jeroenvdg.scrumdapp.views.pages.groups.trends.groupTrendsContent
 import com.jeroenvdg.scrumdapp.views.pages.groups.trends.userTrendsContent
 import io.ktor.server.html.*
 import io.ktor.server.plugins.di.*
-import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
+import java.time.temporal.ChronoUnit
 
 fun Route.groupTrendsRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
@@ -58,13 +66,15 @@ fun Route.groupTrendsRoutes() {
             val group = call.group
             val groupUser = call.groupUser
             val checkinDates: List<LocalDate> = checkinRepository.getRecentCheckinDates(group.id)
-            val checkins = trendsService.getUserCheckins(userTrends.userId, userTrends.parent.parent.groupId)
-            val starData = trendsService.getWeeklyStarsData(checkins)
+            val to = LocalDate.now()
+            val from = Clock.System.now().minus(52 / 2 * 7 * 24, DateTimeUnit.HOUR).toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val checkins = trendsService.getUserCheckins(userTrends.userId, userTrends.parent.parent.groupId, from, to)
+            val weeklyStars = trendsService.getWeeklyStarsData(checkins)
 
             call.respondHtml {
                 dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
                     groupPage(application, checkinDates, group, groupUser.permissions) {
-                        userTrendsContent(application, groupUser)
+                        userTrendsContent(application, groupUser, weeklyStars)
                     }
                 }
             }
