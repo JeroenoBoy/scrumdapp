@@ -197,7 +197,7 @@ private suspend fun getUsernameAndAvatar(
     } else if (discordUser.avatar != null) {
         "https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png"
     } else {
-        "/static/Scrumdaddy.png"
+        "/static/icons/Scrumdaddy.png"
     }
     return Pair(name, avatar)
 }
