@@ -19,9 +19,9 @@ import kotlinx.html.img
 fun FlowContent.navbar(application: Application, user: User) {
     header(classes="nav") {
         div(classes="nav-group") {
-//            a(href="/home", classes="nav-button r-full px-sm") { icon("arrow_back") }
+            a(href="/home", classes="nav-button r-full px-lg") { +"Scrumdapp" }
 //            span(classes="breadcrumbs-separator") {+"/"}
-            i(classes="px-lg") { +"Scrumdapp" }
+//            i(classes="px-lg") { +"Scrumdapp" }
         }
         div(classes="nav-group justify-center") {
             a(href=application.href(HomeRouter()), classes="nav-button") { +"Home" }
