@@ -168,25 +168,36 @@ suspend fun updateUser(
     userRepository: UserRepository,
     user: User
 ) {
-    val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
-    val name = guildMember.nick ?: discordUser.global_name ?: discordUser.username
-    var avatar = guildMember.avatar ?: discordUser.avatar
-    if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
-
+    val (name, avatar) = getUsernameAndAvatar(discordService, principal, authorityGuild, discordUser)
     userRepository.updateNameAndAvatar(user, name, avatar ?: "")
 }
 
-suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
-                       discordUser: DiscordUser,
-                       authorityGuild: String,
-                       discordService: DiscordService,
-                       userRepository: UserRepository): User {
+suspend fun createUser(
+    principal: OAuthAccessTokenResponse.OAuth2,
+    discordUser: DiscordUser,
+    authorityGuild: String,
+    discordService: DiscordService,
+    userRepository: UserRepository
+): User {
+    val (name, avatar) = getUsernameAndAvatar(discordService, principal, authorityGuild, discordUser)
+    val user = userRepository.addUser(User(-1, name, discordUser.id.toLong(), avatar))
+    return user!!
+}
 
+private suspend fun getUsernameAndAvatar(
+    discordService: DiscordService,
+    principal: OAuthAccessTokenResponse.OAuth2,
+    authorityGuild: String,
+    discordUser: DiscordUser
+): Pair<String, String> {
     val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
     val name = guildMember.nick ?: discordUser.global_name ?: discordUser.username
-    var avatar = guildMember.avatar ?: discordUser.avatar
-    if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
-
-    val user = userRepository.addUser(User(-1, name, discordUser.id.toLong(), avatar ?: ""))
-    return user!!
+    val avatar = if (guildMember.avatar != null) {
+        "https://cdn.discordapp.com/guilds/$authorityGuild/users/${discordUser.id}/avatars/${guildMember.avatar}.png"
+    } else if (discordUser.avatar != null) {
+        "https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png"
+    } else {
+        "/static/Scrumdaddy.png"
+    }
+    return Pair(name, avatar)
 }
