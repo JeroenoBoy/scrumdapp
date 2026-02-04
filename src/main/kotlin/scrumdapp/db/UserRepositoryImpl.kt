@@ -67,4 +67,13 @@ class UserRepositoryImpl: UserRepository {
             Users.deleteWhere { Users.id eq user.id }
         }>0
     }
+
+    override suspend fun updateNameAndAvatar(user: User, name: String, avatar: String) {
+        return dbQuery {
+            Users.update({ Users.id eq user.id }) {
+                it[Users.name] = name
+                it[Users.profileImage] = avatar
+            }
+        }
+    }
 }
