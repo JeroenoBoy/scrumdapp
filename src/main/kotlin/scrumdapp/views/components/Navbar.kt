@@ -4,8 +4,11 @@ import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.routes.AboutRouter
 import com.jeroenvdg.scrumdapp.routes.HomeRouter
 import com.jeroenvdg.scrumdapp.routes.LogoutRouter
+import com.jeroenvdg.scrumdapp.routes.PrivacyRouter
+import com.jeroenvdg.scrumdapp.routes.UserSettingsRouter
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
+import io.ktor.server.routing.Routing
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
@@ -22,7 +25,7 @@ fun FlowContent.navbar(application: Application, user: User) {
         }
         div(classes="nav-group justify-center") {
             a(href=application.href(HomeRouter()), classes="nav-button") { +"Home" }
-            a(href="/", classes="nav-button") { +"Dagboek" }
+            a(href=application.href(PrivacyRouter()), classes="nav-button text-center") { +"Privacy" }
             a(href=application.href(AboutRouter()), classes="nav-button") { +"Over" }
         }
         div(classes="nav-group justify-end") {
@@ -32,13 +35,13 @@ fun FlowContent.navbar(application: Application, user: User) {
                     img(alt="User Profile Picture", classes="nav-user-icon", src=user.profileImage)
                 }
                 div(classes="nav-dropdown-content") {
-                    a(href="/settings", classes="nav-button") {
+                    a(href=application.href(UserSettingsRouter()), classes="nav-button") {
                         icon(iconName="settings", classes="purple")
-                        +"Settings"
+                        +"Instellingen"
                     }
                     a(href=application.href(LogoutRouter()), classes="nav-button") {
                         icon(iconName="logout", classes="red")
-                        +"Logout"
+                        +"Uitloggen"
                     }
                 }
             }

@@ -6,9 +6,12 @@ import com.jeroenvdg.scrumdapp.middleware.IsLoggedIn
 import com.jeroenvdg.scrumdapp.middleware.userSession
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
+import com.jeroenvdg.scrumdapp.views.PageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
+import com.jeroenvdg.scrumdapp.views.mainLayout
 import com.jeroenvdg.scrumdapp.views.pages.aboutPage
 import com.jeroenvdg.scrumdapp.views.pages.homePage
+import com.jeroenvdg.scrumdapp.views.pages.privacyPage
 import io.ktor.resources.Resource
 import io.ktor.server.application.*
 import io.ktor.server.html.*
@@ -24,6 +27,8 @@ class HomeRouter()
 @Resource("about")
 class AboutRouter()
 
+@Resource("privacy")
+class PrivacyRouter()
 suspend fun Application.configureRouting() {
     val users = dependencies.resolve<UserRepository>()
     val groups = dependencies.resolve<GroupRepository>()
@@ -51,6 +56,16 @@ suspend fun Application.configureRouting() {
                 call.respondHtml {
                     dashboardLayout(DashboardPageData("Over", call)) {
                         aboutPage()
+                    }
+                }
+            }
+        }
+
+        route<PrivacyRouter> {
+            get {
+                call.respondHtml {
+                    mainLayout(PageData("Service Level Agreement")) {
+                        privacyPage(application)
                     }
                 }
             }
