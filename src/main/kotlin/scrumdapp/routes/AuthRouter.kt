@@ -101,7 +101,13 @@ suspend fun Application.configureAuthRouting() {
                         }
 
                         // Get user with discordId
-                        val user = userRepository.getUserFromDiscordId(discordUser.id) ?: createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
+                        var user = userRepository.getUserFromDiscordId(discordUser.id)
+                        if (user == null) {
+                            user = createUser(principal, discordUser, authorizationServerId, discordService, userRepository)
+                        } else {
+                            updateUser(principal, discordUser, authorizationServerId, discordService, userRepository, user)
+                        }
+
                         val session = sessionRepository.createSession(user.id, principal.refreshToken!!, principal.accessToken, tokenExpiry)
 
                         call.sessions.set(SessionToken(session.token))
@@ -154,6 +160,22 @@ suspend fun isInServer(principal: OAuthAccessTokenResponse.OAuth2, discordServic
     return false
 }
 
+suspend fun updateUser(
+    principal: OAuthAccessTokenResponse.OAuth2,
+    discordUser: DiscordUser,
+    authorityGuild: String,
+    discordService: DiscordService,
+    userRepository: UserRepository,
+    user: User
+) {
+    val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
+    val name = guildMember.nick ?: discordUser.global_name ?: discordUser.username
+    var avatar = guildMember.avatar ?: discordUser.avatar
+    if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
+
+    userRepository.updateNameAndAvatar(user, name, avatar ?: "")
+}
+
 suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
                        discordUser: DiscordUser,
                        authorityGuild: String,
@@ -161,7 +183,7 @@ suspend fun createUser(principal: OAuthAccessTokenResponse.OAuth2,
                        userRepository: UserRepository): User {
 
     val guildMember = discordService.getGuildMember(principal.accessToken, authorityGuild).getOrThrow()
-    val name = guildMember.nick ?: discordUser.global_name
+    val name = guildMember.nick ?: discordUser.global_name ?: discordUser.username
     var avatar = guildMember.avatar ?: discordUser.avatar
     if (avatar != null) { avatar = "https://cdn.discordapp.com/avatars/${discordUser.id}/${avatar}.png" }
 
