@@ -13,6 +13,7 @@ import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.style
 import kotlinx.html.styleLink
@@ -22,6 +23,7 @@ data class PageData(val title: String, val contentFrame: Boolean = false)
 data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "15")
 
 fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
+    lang="nl-NL"
     head {
         title("${pageData.title} | Scrumdapp")
         styleLink("/static/theme.css")
