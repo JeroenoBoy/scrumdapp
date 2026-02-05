@@ -44,7 +44,7 @@ fun FlowContent.aboutPage() {
     ul {
         li { a(href="https://www.jeroenvdg.com", classes="a") { target="_blank"; +"Jeroen van de Geest"} }
         li { a(href="https://daan.meijneken.nl/", classes="a") { target="_blank"; +"Daan Meijneken" } }
-        li { +"Luc van Ogtrop" }
+        li { a(href="https://www.linkedin.com/in/luc-van-ogtrop/", classes="a") { target="_blank"; +"Luc van Ogtrop" } }
     }
 
     div(classes="spacer-lg")
