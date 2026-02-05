@@ -84,8 +84,14 @@ suspend fun Application.module() {
     }
 
     install(Sessions) {
-        cookie<SessionToken>("SCRUM_DADDY_SESSIE")
-        cookie<RedirectCookie>("SCRUM_DADDY_REDDI")
+        cookie<SessionToken>("SCRUM_DADDY_SESSIE") {
+            cookie.secure = true;
+            cookie.extensions["SameSite"] = "lax";
+        }
+        cookie<RedirectCookie>("SCRUM_DADDY_REDDI") {
+            cookie.secure = true;
+            cookie.extensions["SameSite"] = "lax";
+        }
     }
 
     install(UserProvider)
