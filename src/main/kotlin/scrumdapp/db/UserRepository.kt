@@ -17,4 +17,5 @@ interface UserRepository {
     suspend fun addUser(user: User): User?
     suspend fun alterUser(user: User): Boolean
     suspend fun deleteUser(user: User): Boolean
+    suspend fun updateNameAndAvatar(user: User, name: String, avatar: String)
 }

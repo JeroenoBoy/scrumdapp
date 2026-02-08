@@ -18,7 +18,7 @@ data class DiscordUserResponse(val expires: String, val scopes: List<String>, va
 
 @Serializable
 @JsonIgnoreUnknownKeys
-data class DiscordUser(val id: String, val username: String, val avatar: String?, val global_name: String)
+data class DiscordUser(val id: String, val username: String, val avatar: String?, val global_name: String?)
 
 @Serializable
 @JsonIgnoreUnknownKeys
