@@ -42,8 +42,15 @@ fun FlowContent.homePage(application: Application, groups: List<Group>) {
 fun FlowContent.groupWidget(application: Application, group: Group) {
     a(href=application.href(GroupsRouter.Group(groupId=group.id)), classes="card btn-card") {
         h2(classes="card-title") {+group.name}
-//        p(classes="muted") {+group.owner.name}
-        img(alt="card image", src="/static/backgrounds/thumbnails/${group.bannerImage ?: "15"}.webp", classes="card-img") {}
+
+        var bannerImage = group.bannerImage
+        div(classes="overlap-img-wrap") {
+            img(alt="card image", src="/static/backgrounds/thumbnails/${bannerImage ?: "15"}.webp", classes="card-img") {
+            }
+            if (!bannerImage.isNullOrEmpty() && bannerImage.startsWith("color")) {
+                img(alt="overlap image", src="/static/backgrounds/overlay_logo.webp", classes="card-img overlap-img")
+            }
+        }
     }
 }
 
