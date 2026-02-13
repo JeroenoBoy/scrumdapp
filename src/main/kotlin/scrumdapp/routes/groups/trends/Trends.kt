@@ -41,7 +41,7 @@ fun Route.groupTrendsRoutes() {
         }
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
                     groupTrendsContent(application, group, trendsData, view)
                     groupExportContent(application, groupUser, users)

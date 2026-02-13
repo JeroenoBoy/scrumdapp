@@ -36,7 +36,7 @@ fun Route.groupUserRoutes() {
         val groupUsers = groupRepository.getGroupUsers(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
                     userEditContent(application, groupUser, group, groupUsers)
                 }

@@ -43,7 +43,7 @@ suspend fun Application.configureRouting() {
             get {
                 val groups = groups.getUserGroups(call.userSession.userId)
                 call.respondHtml {
-                    dashboardLayout(DashboardPageData("Home", call)) {
+                    dashboardLayout(application, DashboardPageData("Home", call)) {
                         homePage(application, groups)
                     }
                 }
@@ -54,7 +54,7 @@ suspend fun Application.configureRouting() {
             install(IsLoggedIn)
             get {
                 call.respondHtml {
-                    dashboardLayout(DashboardPageData("Over", call)) {
+                    dashboardLayout(application, DashboardPageData("Over", call)) {
                         aboutPage()
                     }
                 }
@@ -64,7 +64,7 @@ suspend fun Application.configureRouting() {
         route<PrivacyRouter> {
             get {
                 call.respondHtml {
-                    mainLayout(PageData("Service Level Agreement")) {
+                    mainLayout(application, PageData("Service Level Agreement")) {
                         privacyPage(application)
                     }
                 }
