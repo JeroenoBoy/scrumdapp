@@ -34,59 +34,6 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
     card {
         div(classes="horizontal") {
             h2 { +"Trends" }
-            a(href=application.href(GroupsRouter.Group.Trends(groupId = group.id), "trends-info"), classes="btn b-none block") {
-                icon(iconName="info")
-            }
-        }
-
-        modal(id = "trends-info") {
-            h2 { +"Overzicht Trends" }
-            h3 { +"Presentie: "}
-            table(classes="checkin-table") {
-                thead {
-                    tr {
-                        th(classes="text-left name-field") { +"Afkorting" }
-                        th(classes="text-left pl-md") { +"Beschrijving" }
-                    }
-                }
-                tbody {
-                    tr {
-                        td(classes="text-ellipse name-field") { +"O.T" }
-                        td(classes="text-ellipse pl-md") { +"Op tijd" }
-                    }
-                    tr {
-                        td(classes="text-ellipse name-field") { +"T.L" }
-                        td(classes="text-ellipse pl-md") { +"Te laat" }
-                    }
-                    tr {
-                        td(classes="text-ellipse name-field") { +"G.A" }
-                        td(classes="text-ellipse pl-md") { +"Geoorloofd Afwezig" }
-                    }
-                    tr {
-                        td(classes="text-ellipse name-field") { +"O.A" }
-                        td(classes="text-ellipse pl-md") { +"Ongeoorloofd Afwezig" }
-                    }
-                    tr {
-                        td(classes="text-ellipse name-field") { +"Ziek" }
-                        td(classes="text-ellipse pl-md") { +"Ziek ):" }
-                    }
-                }
-            }
-            div(classes="spacer-lg")
-            h3 { +"Export: "}
-            p{
-                +"Je kan je eigen aanwezigheid als een "
-                a(href="https://learn.microsoft.com/en-us/openspecs/office_standards/ms-xlsx/2c5dee00-eff2-4b22-92b6-0738acd4475e") { +".xlsx bestand "}
-                +"exporteren. Leden met de "
-                b(classes="orange") { +"coach "}
-                +"rol kunnen de aanwezigheid van alle leden exporteren."
-            }
-            div(classes = "horizontal g-md pt-lg justify-end") {
-                a(classes = "btn", href = "#") {
-                    icon(iconName = "undo", classes = "grey")
-                    +"Terug"
-                }
-            }
         }
     }
 
@@ -127,6 +74,15 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
                     }
                 }
             }
+        }
+
+
+        ul(classes="charts-css legend legend-square legend-inline") {
+            li(classes="green") { +"O.T. Op Tijd"}
+            li(classes="yellow") { +"T.L. Te Laat"}
+            li(classes="green-dim") { +"G.A. Geoorloofd Afwezig"}
+            li(classes="red-dim") { +"O.A. Ongeoorloofd Afwezig"}
+            li(classes="blue-dim") { +"Ziek"}
         }
     }
 
