@@ -72,7 +72,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                                             .filter { it.id > mySelf.permissions.id }
 
                                         for (option in options) {
-                                            option(classes = option.colour.toString().lowercase()) {
+                                            option(classes = option.colour) {
                                                 value = option.id.toString()
 
                                                 if (option.id == userPermission.id) {
@@ -217,7 +217,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                 tbody {
                     for (role in UserPermissions.getAll()) {
                         tr {
-                            td(classes="text-ellipse name-field ${role.colour.toString().lowercase()}") { +role.displayName }
+                            td(classes="text-ellipse name-field ${role.colour}") { +role.displayName }
                             td(classes="pl-md") { +role.description }
                         }
                     }
