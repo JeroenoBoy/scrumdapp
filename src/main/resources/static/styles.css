@@ -255,6 +255,11 @@ hr {
     max-width: 10em;
 }
 
+.dotted-row tbody tr:not(:last-child) td {
+    border-bottom: 1px dashed var(--bg1);
+    padding-bottom: var(--gap-md);
+}
+
 .input-group {
     display: flex;
     flex-direction: row;

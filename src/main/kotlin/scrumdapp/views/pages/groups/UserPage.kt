@@ -218,7 +218,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
 
         modal(id = "role-info") {
             h2 { +"Overzicht rollen" }
-            table(classes="checkin-table") {
+            table(classes="checkin-table dotted-row") {
                 thead {
                     tr {
                         th(classes="text-left name-field") { +"Rol" }
@@ -229,7 +229,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                     for (role in UserPermissions.getAll()) {
                         tr {
                             td(classes="text-ellipse name-field") { +role.displayName }
-                            td(classes="text-ellipse pl-md") { +role.description }
+                            td(classes="pl-md") { +role.description }
                         }
                     }
                 }
