@@ -956,6 +956,10 @@ hr {
     padding-right: var(--gap-lg);
 }
 
+.g-sm {
+    gap: var(--gap-sm);
+}
+
 .g-md {
     gap: var(--gap-md);
 }

@@ -23,6 +23,7 @@ import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
+import kotlinx.html.br
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
@@ -108,18 +109,44 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
     modal(id="own-check-in") {
         val checkin = checkins.first { it.userId == groupUser.user.id }
         h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
+        br()
         form(classes="vertical g-md flex-1") {
-            label {
-                htmlFor="checkin"
-                +"Check-in"
-            }
-            checkinSelect("checkin", checkin.checkinStars)
 
-            label {
-                htmlFor="checkup"
-                +"Check-up"
+            input(type=InputType.hidden) {
+                value=date.toString()
             }
-            checkinSelect("checkup", checkin.checkupStars)
+
+            div(classes="input-group") {
+                label(classes="input-label horizontal align-center g-sm") {
+                    htmlFor="checkin"
+                    icon(iconName="arrow_circle_down", classes="green")
+                    span { +"Check-in" }
+                }
+                checkinSelect("checkin", checkin.checkinStars)
+            }
+
+            div(classes="input-group") {
+                label(classes="input-label horizontal align-center g-sm") {
+                    htmlFor="checkup"
+                    icon(iconName="arrow_circle_up", classes="blue")
+                    span { +"Check-up" }
+                }
+                checkinSelect("checkup", checkin.checkupStars)
+            }
+
+            br()
+
+            label(classes="input-label horizontal align-center g-sm") {
+                htmlFor="comment"
+                icon(iconName="note", classes="red")
+                span { +"Opmerkingen" }
+            }
+
+            textArea(classes="input no-resize", rows="8") {
+                +(checkin.comment ?: "")
+            }
+
+            br()
 
             div(classes="horizontal g-md justify-end") {
                 a(href="#", classes="btn") {
