@@ -51,7 +51,7 @@ fun FlowContent.aboutPage() {
 
     h2 { +"Credits" }
     ul {
-        li { +"Wallpapers: "; a(href="https://github.com/AngelJumbo/gruvbox-wallpapers", classes="a") { target="_blank"; +"gruvbox-wallpapers" } }
+        li { +"Wallpapers: "; a(href="https://gruvbox-wallpapers.pages.dev/", classes="a") { target="_blank"; +"gruvbox-wallpapers" } }
         li { +"Ktor: "; a(href="https://www.jetbrains.com/", classes="a") { target="_blank"; +"Jetbrains 🥰" } }
     }
 }
