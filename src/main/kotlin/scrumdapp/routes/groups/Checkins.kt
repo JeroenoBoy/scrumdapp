@@ -35,13 +35,12 @@ fun Route.groupCheckinRoutes() {
         val group = call.group
         val groupUser = call.groupUser
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val userPerm = call.groupUser.permissions
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
             dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(application, checkinDates, group, userPerm) {
-                    checkinWidget(application, checkins, group, date, userPerm)
+                groupPage(application, checkinDates, group, groupUser.permissions) {
+                    checkinWidget(application, groupUser, checkins, group, date)
                 }
             }
         }

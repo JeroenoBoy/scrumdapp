@@ -2,6 +2,8 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.db.GroupUser
+import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
@@ -21,11 +23,13 @@ import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
 import kotlinx.html.h3
 import kotlinx.html.input
+import kotlinx.html.label
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
@@ -42,7 +46,7 @@ import kotlin.random.Random
 
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate, perms: UserPermissions) {
+fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, checkins: List<Checkin>, group: Group, date: LocalDate) {
     card {
         h2 { +"Check-in voor "; b { +(date.scrumdappFormat()) } }
 
@@ -87,8 +91,43 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
         }
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
-            if (ComparePermissions(perms, UserPermissions.CheckinManagement)) {
-                a(href = application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
+            if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
+                    icon(iconName = "edit", classes="blue")
+                    +"Pas aan"
+                }
+            }
+
+            a(href="#own-check-in", classes="btn") {
+                icon(iconName="assignment", classes="green")
+                +"Eigen Check-in"
+            }
+        }
+    }
+
+    modal(id="own-check-in") {
+        val checkin = checkins.first { it.userId == groupUser.user.id }
+        h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
+        form(classes="vertical g-md flex-1") {
+            label {
+                htmlFor="checkin"
+                +"Check-in"
+            }
+            checkinSelect("checkin", checkin.checkinStars)
+
+            label {
+                htmlFor="checkup"
+                +"Check-up"
+            }
+            checkinSelect("checkup", checkin.checkupStars)
+
+            div(classes="horizontal g-md justify-end") {
+                a(href="#", classes="btn") {
+                    icon(iconName="cancel", classes="gray")
+                    +"Annuleren"
+                }
+
+                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
                     icon(iconName = "edit", classes="blue")
                     +"Pas aan"
                 }
@@ -98,22 +137,6 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
 }
 
 fun FlowContent.editableCheckinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate) {
-    fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
-        select(classes="input select-checkin w-full text-ellipse") { this.name=name
-            option(classes="gray") {value=""; if (selectedValue == null) { selected=true }; +"---" }
-            option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected=true }; +"0"}
-            option(classes="red") {value="1"; if (selectedValue == 1) { selected=true }; +"0.5"}
-            option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected=true }; +"1"}
-            option(classes="orange") {value="3"; if (selectedValue == 3) { selected=true }; +"1.5"}
-            option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected=true }; +"2"}
-            option(classes="yellow") {value="5"; if (selectedValue == 5) { selected=true }; +"2.5"}
-            option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected=true }; +"3"}
-            option(classes="green") {value="7"; if (selectedValue == 7) { selected=true }; +"3.5"}
-            option(classes="aqua") {value="8"; if (selectedValue == 8) { selected=true }; +"4"}
-            option(classes="blue") {value="9"; if (selectedValue == 9) { selected=true }; +"4.5"}
-            option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected=true }; +"5"}
-        }
-    }
 
     val isNewCheckin=checkins.isNewCheckin()
     val id=Random.nextInt(999999)
@@ -255,5 +278,22 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                 }
             }
         }
+    }
+}
+
+fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
+    select(classes="input select-checkin w-full text-ellipse") { this.name=name
+        option(classes="gray") {value=""; if (selectedValue == null) { selected=true }; +"---" }
+        option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected=true }; +"0"}
+        option(classes="red") {value="1"; if (selectedValue == 1) { selected=true }; +"0.5"}
+        option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected=true }; +"1"}
+        option(classes="orange") {value="3"; if (selectedValue == 3) { selected=true }; +"1.5"}
+        option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected=true }; +"2"}
+        option(classes="yellow") {value="5"; if (selectedValue == 5) { selected=true }; +"2.5"}
+        option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected=true }; +"3"}
+        option(classes="green") {value="7"; if (selectedValue == 7) { selected=true }; +"3.5"}
+        option(classes="aqua") {value="8"; if (selectedValue == 8) { selected=true }; +"4"}
+        option(classes="blue") {value="9"; if (selectedValue == 9) { selected=true }; +"4.5"}
+        option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected=true }; +"5"}
     }
 }

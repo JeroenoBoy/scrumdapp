@@ -80,7 +80,7 @@ h2 {
 }
 
 h3 {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-2md);
     margin: var(--gap-sm) 0 var(--gap-md) 0;
     font-style: italic;
 }
