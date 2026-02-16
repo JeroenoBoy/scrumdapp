@@ -58,6 +58,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                         td(classes = "text-ellipse name-field") { +mySelf.user.name }
                         td(classes = "text-ellipse pl-lg") { +mySelf.permissions.displayName }
                     }
+                    val allPermissions = UserPermissions.getAll();
                     for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
                         val userPermission = groupUser.permissions
                         if (userPermission.id > mySelf.permissions.id) {
@@ -66,32 +67,20 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                                 td(classes = "pl-md") {
                                     select(classes = "input select-role w-full text-ellipse") {
                                         name = "role-${groupUser.user.id}"
-                                        option(classes = "yellow") {
-                                            value = "-1";
-                                            if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
-                                            if (userPermission.id == -1) attributes["selected"] = ""
-                                            +UserPermissions.ScrumDad.displayName
-                                        }
-                                        option(classes = "blue") {
-                                            value = "0";
-                                            if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
-                                            if (userPermission.id == 0) attributes["selected"] = ""
-                                            +UserPermissions.UserManagement.displayName
-                                        }
-                                        option(classes = "purple") {
-                                            value = "1"
-                                            if (userPermission.id == 1) attributes["selected"] = ""
-                                            +UserPermissions.CheckinManagement.displayName
-                                        }
-                                        option(classes = "orange") {
-                                            value = "68"
-                                            if (userPermission.id == 68) attributes["selected"] = ""
-                                            +UserPermissions.Coach.displayName
-                                        }
-                                        option(classes = "aqua") {
-                                            value = "69";
-                                            if (userPermission.id == 69) attributes["selected"] = ""
-                                            +UserPermissions.User.displayName
+
+                                        val options = allPermissions
+                                            .filter { it.id > mySelf.permissions.id }
+
+                                        for (option in options) {
+                                            option(classes = option.colour.toString().lowercase()) {
+                                                value = option.id.toString()
+
+                                                if (option.id == userPermission.id) {
+                                                    attributes["selected"] = ""
+                                                }
+
+                                                +option.displayName
+                                            }
                                         }
                                     }
 
@@ -228,7 +217,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                 tbody {
                     for (role in UserPermissions.getAll()) {
                         tr {
-                            td(classes="text-ellipse name-field") { +role.displayName }
+                            td(classes="text-ellipse name-field ${role.colour.toString().lowercase()}") { +role.displayName }
                             td(classes="pl-md") { +role.description }
                         }
                     }
