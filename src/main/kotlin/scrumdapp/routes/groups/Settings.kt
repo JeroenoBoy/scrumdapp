@@ -32,7 +32,7 @@ fun Route.groupSettingsRoutes() {
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData("Settings", call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData("Settings", call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
                     groupConfigContent(application, group, groupUser, backgrounds)
                 }

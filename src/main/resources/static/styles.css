@@ -531,6 +531,18 @@ hr {
     height: 24px;
 }
 
+.overlap-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.overlap-img-wrap {
+    position: relative;
+    display: inline-block;
+}
+
 .container-parent {
     max-width: 1000px;
     width: 100%;
@@ -1106,6 +1118,10 @@ hr {
 
 .pointer {
     cursor: pointer;
+}
+
+.block {
+    display: block;
 }
 
 /* overrides */

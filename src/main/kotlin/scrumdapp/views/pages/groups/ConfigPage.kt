@@ -83,7 +83,7 @@ fun FlowContent.groupConfigContent(application: Application, group: Group, group
 
     modal(id="pick-background") {
         h2 { +"Kies Achtergrond" }
-        div(classes="background-container grid row-2 g-lg rounded w-full") {
+        div(classes="background-container grid row-3 g-lg rounded w-full") {
             for (background in backgrounds) {
                 if (background == (group.bannerImage ?: "15")) {
                     div(classes="relative ratio-43") {

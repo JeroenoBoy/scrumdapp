@@ -32,7 +32,7 @@ fun Route.acceptInvitationsRoute() {
         val group = groupRepository.getGroup(invite.groupId) ?: return@typedGet call.respondRedirect("/home")
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 invitationpage(application, group, token)
             }
         }

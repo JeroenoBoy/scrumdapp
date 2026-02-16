@@ -37,7 +37,7 @@ fun Route.groupNoteRoutes() {
         val notes = groupRepository.getGroupNotes(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, call.groupUser.permissions) {
                     notesGroupPageContent(application, group.id, notes, user.permissions)
                 }
@@ -54,7 +54,7 @@ fun Route.groupNoteRoutes() {
             val notes = groupRepository.getGroupNotes(group.id)
 
             call.respondHtml {
-                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                     groupPage(application, checkinDates, group, call.groupUser.permissions) {
                         notesGroupPageEditContent(application, group.id, notes, user.permissions)
                     }

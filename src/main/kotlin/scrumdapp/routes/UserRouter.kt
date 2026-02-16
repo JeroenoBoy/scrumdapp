@@ -52,7 +52,7 @@ fun Route.userSettingsRouter() {
         val user = call.user
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData("Gebruikers instellingen", call)) {
+            dashboardLayout(application, DashboardPageData("Gebruikers instellingen", call)) {
                 appSettingsPage(application, user)
             }
         }

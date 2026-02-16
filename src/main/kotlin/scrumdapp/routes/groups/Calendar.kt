@@ -30,7 +30,7 @@ fun Route.calendarRoutes() {
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
                     contentFrame(application.href(GroupsRouter.Group.Calendar.Content(calendarData)))
                 }
@@ -44,7 +44,7 @@ fun Route.calendarRoutes() {
             val dates = checkinService.getMonthlyDates(group.id, calendarContentData.month, calendarContentData.year)
             val possibleMonths = checkinRepository.getDistinctMonths(group.id)
             call.respondHtml {
-                mainLayout(PageData("Calendar frame", contentFrame=true)) {
+                mainLayout(application, PageData("Calendar frame", contentFrame=true)) {
                     calendarContent(application, group, possibleMonths, dates)
                 }
             }

@@ -39,7 +39,7 @@ fun Route.groupCheckinRoutes() {
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, userPerm) {
                     checkinWidget(application, checkins, group, date, userPerm)
                 }
@@ -59,7 +59,7 @@ fun Route.groupEditCheckinRoutes() {
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, call.groupUser.permissions) {
                     editableCheckinWidget(application, checkins, group, date)
                 }
@@ -76,7 +76,7 @@ fun Route.groupEditCheckinRoutes() {
         if (!success) {
             val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
             return@typedPost call.respondHtml {
-                dashboardLayout(DashboardPageData(group.name, call, group.bannerImage)) {
+                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                     groupPage(application, checkinDates, group, call.groupUser.permissions, ValidationException().toExceptionContent()) {
                         editableCheckinWidget(application, checkins, group, date)
                     }
