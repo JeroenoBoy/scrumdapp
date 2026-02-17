@@ -255,6 +255,11 @@ hr {
     max-width: 10em;
 }
 
+.dotted-row tbody tr:not(:last-child) td {
+    border-bottom: 1px dashed var(--bg1);
+    padding-bottom: var(--gap-md);
+}
+
 .input-group {
     display: flex;
     flex-direction: row;
@@ -873,6 +878,10 @@ hr {
     margin: var(--gap-md);
 }
 
+.mt-md {
+    margin-top: var(--gap-md);
+}
+
 .mt-a {
     margin-top: 5vh;
 }
@@ -905,6 +914,10 @@ hr {
 
 .pt-sm {
     padding-top: var(--gap-sm);
+}
+
+.pt-lg {
+    padding-top: var(--gap-lg);
 }
 
 .px-0 {
@@ -1157,6 +1170,26 @@ table.charts-css.big-label th {
 .charts-css.stacked tbody tr td:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+}
+
+.charts-css.legend li::before {
+    border-radius: var(--radius);
+    border: none;
+    width: 0.8em;
+    height: 0.8em;
+}
+
+.charts-css.legend {
+    --legend-border-color: var(--bg3);
+    border-radius: var(--radius);
+}
+
+.colors-presence {
+    --color-1: var(--blue-dim);
+    --color-2: var(--red-dim);
+    --color-3: var(--green-dim);
+    --color-4: var(--yellow);
+    --color-5: var(--green);
 }
 
 @supports not (::-webkit-scrollbar) {

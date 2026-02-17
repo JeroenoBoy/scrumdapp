@@ -10,11 +10,13 @@ import com.jeroenvdg.scrumdapp.views.components.modal
 import com.jeroenvdg.scrumdapp.views.components.card
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
+import com.jeroenvdg.scrumdapp.utils.href
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -29,10 +31,18 @@ import kotlinx.html.th
 import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.html.p
+import kotlin.reflect.full.memberProperties
 
 fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, group: Group, groupUsers: List<GroupUser>) {
     card {
-        h2 { +"Gebruikers aanpassen" }
+        div(classes="horizontal") {
+            h2 { +"Gebruikers aanpassen" }
+            a(href=application.href(GroupsRouter.Group.Users(groupId = group.id), "role-info"), classes="btn b-none block") {
+                icon(iconName="info")
+            }
+        }
+
+
         div(classes = "spacer-lg")
         form(method = FormMethod.post, classes = "vertical g-md flex-1") {
             table(classes = "checkin-table") {
@@ -48,6 +58,7 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                         td(classes = "text-ellipse name-field") { +mySelf.user.name }
                         td(classes = "text-ellipse pl-lg") { +mySelf.permissions.displayName }
                     }
+                    val allPermissions = UserPermissions.getAll();
                     for (groupUser in groupUsers.filter { it.id != mySelf.id }.sortedBy { it.user.name }) {
                         val userPermission = groupUser.permissions
                         if (userPermission.id > mySelf.permissions.id) {
@@ -56,32 +67,20 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
                                 td(classes = "pl-md") {
                                     select(classes = "input select-role w-full text-ellipse") {
                                         name = "role-${groupUser.user.id}"
-                                        option(classes = "yellow") {
-                                            value = "-1";
-                                            if (mySelf.permissions.id >= -1) attributes["disabled"] = ""
-                                            if (userPermission.id == -1) attributes["selected"] = ""
-                                            +UserPermissions.ScrumDad.displayName
-                                        }
-                                        option(classes = "blue") {
-                                            value = "0";
-                                            if (mySelf.permissions.id >= 0) attributes["disabled"] = ""
-                                            if (userPermission.id == 0) attributes["selected"] = ""
-                                            +UserPermissions.UserManagement.displayName
-                                        }
-                                        option(classes = "purple") {
-                                            value = "1"
-                                            if (userPermission.id == 1) attributes["selected"] = ""
-                                            +UserPermissions.CheckinManagement.displayName
-                                        }
-                                        option(classes = "orange") {
-                                            value = "68"
-                                            if (userPermission.id == 68) attributes["selected"] = ""
-                                            +UserPermissions.Coach.displayName
-                                        }
-                                        option(classes = "aqua") {
-                                            value = "69";
-                                            if (userPermission.id == 69) attributes["selected"] = ""
-                                            +UserPermissions.User.displayName
+
+                                        val options = allPermissions
+                                            .filter { it.id > mySelf.permissions.id }
+
+                                        for (option in options) {
+                                            option(classes = option.colour) {
+                                                value = option.id.toString()
+
+                                                if (option.id == userPermission.id) {
+                                                    attributes["selected"] = ""
+                                                }
+
+                                                +option.displayName
+                                            }
                                         }
                                     }
 
@@ -199,6 +198,32 @@ fun FlowContent.userEditContent(application: Application, mySelf: GroupUser, gro
             h2 { +"Gebruikers zijn niet aangepast" }
             p { +"Je hebt niet de permissie of toegang om deze aanpassingen te maken" }
             div(classes = "horizontal g-md justify-end") {
+                a(classes = "btn", href = "#") {
+                    icon(iconName = "undo", classes = "grey")
+                    +"Terug"
+                }
+            }
+        }
+
+        modal(id = "role-info") {
+            h2 { +"Overzicht rollen" }
+            table(classes="checkin-table dotted-row") {
+                thead {
+                    tr {
+                        th(classes="text-left name-field") { +"Rol" }
+                        th(classes="text-left pl-md") { +"Beschrijving" }
+                    }
+                }
+                tbody {
+                    for (role in UserPermissions.getAll()) {
+                        tr {
+                            td(classes="text-ellipse name-field ${role.colour}") { +role.displayName }
+                            td(classes="pl-md") { +role.description }
+                        }
+                    }
+                }
+            }
+            div(classes = "horizontal g-md pt-lg justify-end") {
                 a(classes = "btn", href = "#") {
                     icon(iconName = "undo", classes = "grey")
                     +"Terug"
