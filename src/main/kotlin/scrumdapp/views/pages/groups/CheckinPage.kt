@@ -110,11 +110,11 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
         val checkin = checkins.first { it.userId == groupUser.user.id }
         h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
         br()
-        form(classes="vertical g-md flex-1") {
-
-            input(type=InputType.hidden) {
-                value=date.toString()
-            }
+        form(
+            classes="vertical g-md flex-1",
+            action=application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
+            method=FormMethod.post
+        ) {
 
             div(classes="input-group") {
                 label(classes="input-label horizontal align-center g-sm") {
@@ -143,6 +143,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
             }
 
             textArea(classes="input no-resize", rows="8") {
+                name="comment"
                 +(checkin.comment ?: "")
             }
 
@@ -154,9 +155,9 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     +"Annuleren"
                 }
 
-                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
-                    icon(iconName = "edit", classes="blue")
-                    +"Pas aan"
+                div(classes="hacky-icon") {
+                    icon(iconName="edit", classes="blue")
+                    input(type=InputType.submit, classes="btn") { value = "Pas aan" }
                 }
             }
         }

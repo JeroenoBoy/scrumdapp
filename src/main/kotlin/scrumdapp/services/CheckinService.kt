@@ -63,7 +63,27 @@ class CheckinService(
         } catch(e: Exception) {
             return false
         }
+    }
 
+    suspend fun handleUserCheckin(checkin: Checkin, body: Parameters) {
+        if (body.contains("checkin")) {
+            checkin.checkinStars = body["checkin"]?.toIntOrNull()
+            if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!, 0, 10)
+        }
+        if (body.contains("checkup")) {
+            checkin.checkupStars = body["checkup"]?.toIntOrNull()
+            if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!, 0, 10)
+        }
+        if (body.contains("presence")) {
+            val presenceVal = body["presence"]?.toIntOrNull()
+            checkin.presence = if (presenceVal == null) null else enumValues<Presence>()[presenceVal]
+        }
+        if (body.contains("comment")) {
+            checkin.comment = body["comment"]
+            if (checkin.comment.isNullOrBlank()) checkin.comment = null
+        }
+
+        checkinRepository.saveGroupCheckin(listOf(checkin))
     }
 
     suspend fun getMonthlyDates(groupId: Int, month: String? = null, year: Int? = null): MonthData {

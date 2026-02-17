@@ -1,17 +1,16 @@
 package com.jeroenvdg.scrumdapp.routes.groups
 
+import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
-import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
-import com.jeroenvdg.scrumdapp.middleware.userSession
-import com.jeroenvdg.scrumdapp.models.Presence
-import com.jeroenvdg.scrumdapp.services.AppException
+import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.NoAccessException
 import com.jeroenvdg.scrumdapp.services.ValidationException
 import com.jeroenvdg.scrumdapp.services.toExceptionContent
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
+import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.utils.typedPost
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
@@ -84,5 +83,21 @@ fun Route.groupEditCheckinRoutes() {
         }
 
         call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
+    }
+
+    route<GroupsRouter.Group.Edit.User> {
+        typedPost<GroupsRouter.Group.Edit.User> { checkinEditData ->
+            val date = checkinEditData.parent.parent.getIsoDateParam()
+            val user = call.user
+            val group = call.group
+
+            if (checkinEditData.userId != user.id) {
+                throw NoAccessException("Je kan alleen je eigen check-ins editen")
+            }
+
+            val checkin = checkinRepository.getUserCheckin(user.id, group.id, date) ?: Checkin(group.id, user.id, date)
+            checkinService.handleUserCheckin(checkin, call.receiveParameters())
+            call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=checkinEditData.parent.parent.date)))
+        }
     }
 }
