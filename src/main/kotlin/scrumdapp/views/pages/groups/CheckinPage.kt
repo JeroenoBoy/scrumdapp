@@ -156,8 +156,8 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 }
 
                 div(classes="hacky-icon") {
-                    icon(iconName="edit", classes="blue")
-                    input(type=InputType.submit, classes="btn") { value = "Pas aan" }
+                    icon(iconName="check", classes="blue")
+                    input(type=InputType.submit, classes="btn") { value = "Toepassen" }
                 }
             }
         }
