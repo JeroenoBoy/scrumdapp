@@ -39,6 +39,7 @@ interface CheckinRepository {
     suspend fun createCheckin(checkin: Checkin): Checkin? // Check if this is enough info for post
     suspend fun createGroupCheckin(groupId: Int, checkins: List<Checkin>): List<Checkin>?
     suspend fun saveGroupCheckin(checkins: List<Checkin>)
+    suspend fun saveUserCheckin(userId: Int, groupId: Int, date: LocalDate, checkin: Int?, checkup: Int?, comment: String?)
     suspend fun alterCheckin(checkin: Checkin): Boolean
     suspend fun deleteCheckin(checkin: Checkin): Boolean
 

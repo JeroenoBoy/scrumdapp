@@ -137,7 +137,6 @@ suspend fun Application.configureGroupRoutes() {
                 groupCheckinRoutes()
 
                 route<GroupsRouter.Group.Edit> {
-                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
                 }
 

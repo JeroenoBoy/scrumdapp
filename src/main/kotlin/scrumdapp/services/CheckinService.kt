@@ -2,7 +2,9 @@ package com.jeroenvdg.scrumdapp.services
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
+import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.routes.groups.clamp
 import com.jeroenvdg.scrumdapp.utils.now
@@ -65,6 +67,24 @@ class CheckinService(
         }
     }
 
+    suspend fun handleUserCheckin(user: User, group: Group, date: LocalDate, body: Parameters) {
+        val checkin: Int? = if (body.contains("checkin")) {
+            val v = body["checkin"]?.toIntOrNull()
+            if (v != null) { clamp(v, 0, 10) } else null
+        } else null
+
+        val checkup: Int? = if (body.contains("checkup")) {
+            val v = body["checkup"]?.toIntOrNull()
+            if (v != null) { clamp(v, 0, 10) } else null
+        } else null
+
+        val comment: String? = if (body.contains("comment")) {
+            body["comment"]
+        } else null
+
+        checkinRepository.saveUserCheckin(user.id, group.id, date, checkin, checkup, comment)
+    }
+
     suspend fun handleUserCheckin(checkin: Checkin, body: Parameters) {
         if (body.contains("checkin")) {
             checkin.checkinStars = body["checkin"]?.toIntOrNull()
@@ -114,4 +134,5 @@ class CheckinService(
 
         return MonthData(weekStartDate, weekEndDate, yearMonth, days)
     }
+
 }

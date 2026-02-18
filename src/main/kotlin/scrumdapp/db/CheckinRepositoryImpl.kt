@@ -139,6 +139,28 @@ class CheckinRepositoryImpl: CheckinRepository {
         }
     }
 
+    override suspend fun saveUserCheckin(
+        userId: Int,
+        groupId: Int,
+        date: LocalDate,
+        checkin: Int?,
+        checkup: Int?,
+        comment: String?
+    ) {
+        return dbQuery {
+            GroupCheckins.upsert(
+                where = { (GroupCheckins.groupId eq groupId) and (GroupCheckins.userId eq userId) and (GroupCheckins.date eq date) },
+            ) {
+                it[GroupCheckins.groupId] = groupId
+                it[GroupCheckins.userId] = userId
+                it[GroupCheckins.date] = date
+                it[GroupCheckins.checkinStars] = checkin
+                it[GroupCheckins.checkupStars] = checkup
+                it[GroupCheckins.comment] = comment
+            }
+        }
+    }
+
     override suspend fun alterCheckin(checkin: Checkin): Boolean {
         return dbQuery {
             GroupCheckins.update({ GroupCheckins.userId eq checkin.userId and (GroupCheckins.groupId eq checkin.groupId)}) {

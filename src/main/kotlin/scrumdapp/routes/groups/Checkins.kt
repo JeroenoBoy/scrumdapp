@@ -2,9 +2,11 @@ package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
+import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.middleware.user
+import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.services.CheckinService
 import com.jeroenvdg.scrumdapp.services.NoAccessException
 import com.jeroenvdg.scrumdapp.services.ValidationException
@@ -18,6 +20,7 @@ import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
+import io.ktor.server.auth.ForbiddenResponse
 import io.ktor.server.resources.href
 import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.di.dependencies
@@ -51,6 +54,10 @@ fun Route.groupEditCheckinRoutes() {
     val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
     typedGet<GroupsRouter.Group.Edit> { groupEditData ->
+        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
+            throw NoAccessException("Jij hebt niet de rechten om check-ins te managen")
+        }
+
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -66,6 +73,10 @@ fun Route.groupEditCheckinRoutes() {
     }
 
     typedPost<GroupsRouter.Group.Edit> { groupEditData ->
+        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
+            throw NoAccessException("Jij hebt niet de rechten om check-ins te managen")
+        }
+
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
@@ -95,8 +106,7 @@ fun Route.groupEditCheckinRoutes() {
                 throw NoAccessException("Je kan alleen je eigen check-ins editen")
             }
 
-            val checkin = checkinRepository.getUserCheckin(user.id, group.id, date) ?: Checkin(group.id, user.id, date)
-            checkinService.handleUserCheckin(checkin, call.receiveParameters())
+            checkinService.handleUserCheckin(user, group, date, call.receiveParameters())
             call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=checkinEditData.parent.parent.date)))
         }
     }
