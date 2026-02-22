@@ -199,7 +199,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
             br()
 
             div(classes="horizontal g-md justify-end") {
-                a(href="#", classes="btn") {
+                a(href="#own-check-in-warning", classes="btn") {
                     icon(iconName="cancel", classes="gray")
                     +"Annuleren"
                 }
@@ -208,6 +208,25 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     icon(iconName="check", classes="blue")
                     input(type=InputType.submit, classes="btn") { value = "Toepassen" }
                 }
+            }
+        }
+    }
+
+    modal(id="own-check-in-warning") {
+        h2 { +"Let op!"}
+        p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+            b(classes="green") { +"ga terug "}
+            +"om je check-in alsnog op te slaan."
+        }
+        div(classes="horizontal g-md justify-end") {
+            a(href="#", classes="btn") {
+                icon(iconName="cancel", classes="red")
+                +"Ik weet wat ik doe"
+            }
+
+            a(href="#own-check-in", classes="btn") {
+                icon(iconName="undo", classes="green")
+                +"Ga terug"
             }
         }
     }
