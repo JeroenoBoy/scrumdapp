@@ -93,15 +93,64 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
             if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
-                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
-                    icon(iconName = "edit", classes="blue")
-                    +"Pas aan"
+                if (checkins.all { it.presence == null}) {
+                    a(href="#edit-presence", classes="btn") {
+                        icon(iconName="timer", classes="red")
+                        +"Registreer aanwezigheid"
+                    }
+                } else {
+                    a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
+                        icon(iconName = "edit", classes="blue")
+                        +"Pas aan"
+                    }
                 }
             }
 
             a(href="#own-check-in", classes="btn") {
                 icon(iconName="assignment", classes="green")
                 +"Eigen Check-in"
+            }
+        }
+    }
+
+    if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+        modal(id="edit-presence") {
+            h2 { +"Registreer aanwezigheid voor "; b { +(date.scrumdappFormat()) } }
+            br()
+            form(
+                classes="vertical g-md flex-1",
+                action=application.href(GroupsRouter.Group.Edit.Presence(group.id, date.scrumdappUrlFormat())),
+                method=FormMethod.post
+            ) {
+                table(classes="checkin-table") {
+                    thead {
+                        tr {
+                            th(classes="text-left name-field") { +"Naam" }
+                            th(classes="text-left pl-md") { +"Presentie" }
+                        }
+                    }
+                    tbody {
+                        tr {
+                            for (checkin in checkins) {
+                                td(classes="text-ellpise name-field") { +checkin.name }
+                                td(classes="pl-md ") {
+                                    presenceSelect(checkin.userId, checkin.presence)
+                                }
+                            }
+                        }
+                    }
+                }
+                div(classes="horizontal g-md justify-end") {
+                    a(href="#", classes="btn") {
+                        icon(iconName="cancel", classes="gray")
+                        +"Annuleren"
+                    }
+
+                    div(classes="hacky-icon") {
+                        icon(iconName="timer", classes="blue")
+                        input(type=InputType.submit, classes="btn") { value = "Versturen" }
+                    }
+                }
             }
         }
     }
@@ -189,39 +238,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                         tr {
                             td(classes="text-ellpise name-field") { +checkin.name }
                             td(classes="pl-md ") {
-                                select(classes="input select-presence w-full text-ellipse") {
-                                    name = "presence-${checkin.userId}"
-                                    option(classes="gray") {
-                                        value = ""; if (checkin.presence == null) {
-                                        selected = true
-                                    }; +"---"
-                                    }
-                                    option(classes="green") {
-                                        value = "0"; if (checkin.presence == Presence.OnTime) {
-                                        selected = true
-                                    }; +"Op Tijd"
-                                    }
-                                    option(classes="yellow") {
-                                        value = "1"; if (checkin.presence == Presence.Late) {
-                                        selected = true
-                                    }; +"Te Laat"
-                                    }
-                                    option(classes="green-dim") {
-                                        value = "2"; if (checkin.presence == Presence.VerifiedAbsent) {
-                                        selected = true
-                                    }; +"Goorloofd Afwezig"
-                                    }
-                                    option(classes="red") {
-                                        value = "3"; if (checkin.presence == Presence.Absent) {
-                                        selected = true
-                                    }; +"Ongeoorloofd Afwezig"
-                                    }
-                                    option(classes="blue") {
-                                        value = "4"; if (checkin.presence == Presence.Sick) {
-                                        selected = true
-                                    }; +"Ziek"
-                                    }
-                                }
+                                presenceSelect(checkin.userId, checkin.presence)
                             }
                             td {
                                 checkinSelect("checkin-" + checkin.userId, checkin.checkinStars)
@@ -230,15 +247,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                                 checkinSelect("checkup-" + checkin.userId, checkin.checkupStars)
                             }
                             td(classes="horizontal justify-between align-center max-w-om relative") {
-                                div(classes="checkbox-expand px-sm absolute") {
-                                    textArea(rows = "5", classes="input checkbox-expand-content no-resize") {
-                                        name = "comment-" + checkin.userId
-                                        placeholder = "Opmerking..."
-                                        if (checkin.comment != null) {
-                                            +checkin.comment!!
-                                        }
-                                    }
-                                }
+                                commentField(checkin.userId, checkin.comment)
                             }
                         }
                     }
@@ -305,6 +314,54 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                     }
                 }
             }
+        }
+    }
+}
+
+fun FlowContent.commentField(userid: Int?, comment: String?) {
+    div(classes="checkbox-expand px-sm absolute") {
+        textArea(rows = "5", classes="input checkbox-expand-content no-resize") {
+            name = "comment-$userid"
+            placeholder = "Opmerking..."
+            if (comment != null) {
+                +comment
+            }
+        }
+    }
+}
+
+fun FlowContent.presenceSelect(userId: Int?, presence: Presence?) {
+    select(classes="input select-presence w-full text-ellipse") {
+        name = "presence-${userId}"
+        option(classes="gray") {
+            value = ""; if (presence == null) {
+            selected = true
+        }; +"---"
+        }
+        option(classes="green") {
+            value = "0"; if (presence == Presence.OnTime) {
+            selected = true
+        }; +"Op Tijd"
+        }
+        option(classes="yellow") {
+            value = "1"; if (presence == Presence.Late) {
+            selected = true
+        }; +"Te Laat"
+        }
+        option(classes="green-dim") {
+            value = "2"; if (presence == Presence.VerifiedAbsent) {
+            selected = true
+        }; +"Goorloofd Afwezig"
+        }
+        option(classes="red") {
+            value = "3"; if (presence == Presence.Absent) {
+            selected = true
+        }; +"Ongeoorloofd Afwezig"
+        }
+        option(classes="blue") {
+            value = "4"; if (presence == Presence.Sick) {
+            selected = true
+        }; +"Ziek"
         }
     }
 }

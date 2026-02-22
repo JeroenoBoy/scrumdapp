@@ -4,6 +4,7 @@ import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupRepository
+import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.routes.groups.clamp
@@ -15,7 +16,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.YearMonth
-import kotlin.math.min
 import kotlin.text.toIntOrNull
 
 data class CheckinDashboardData(
@@ -64,6 +64,22 @@ class CheckinService(
             return true
         } catch(e: Exception) {
             return false
+        }
+    }
+
+    suspend fun handleGroupPresence(date: LocalDate, checkins: List<Checkin>, body: Parameters) {
+        for (checkin in checkins) {
+            checkin.date = date
+            if (body.contains("presence-${checkin.userId}")) {
+                val presenceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
+                checkin.presence = if (presenceVal == null) null else enumValues<Presence>()[presenceVal]
+            }
+        }
+
+        try {
+           checkinRepository.saveGroupCheckin(checkins)
+        } catch(e: Exception) {
+            throw ServerFaultException()
         }
     }
 

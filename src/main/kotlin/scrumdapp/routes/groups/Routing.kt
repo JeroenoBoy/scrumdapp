@@ -43,6 +43,9 @@ class GroupsRouter {
         class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))
             @Resource("{userId}")
             class User(val parent: Edit, val userId: Int) { constructor(groupId: Int, userId: Int, date: String? = null): this(Edit(groupId, date), userId) }
+
+            @Resource("presence")
+            class Presence(val parent: Edit) { constructor(groupId: Int, date: String? = null): this(Edit(groupId, date))}
         }
 
         @Resource("export")

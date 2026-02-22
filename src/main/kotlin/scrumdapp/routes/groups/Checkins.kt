@@ -2,6 +2,7 @@ package com.jeroenvdg.scrumdapp.routes.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.CheckinRepository
+import com.jeroenvdg.scrumdapp.db.GroupRepository
 import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
@@ -74,7 +75,7 @@ fun Route.groupEditCheckinRoutes() {
 
     typedPost<GroupsRouter.Group.Edit> { groupEditData ->
         if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
-            throw NoAccessException("Jij hebt niet de rechten om check-ins te managen")
+            throw NoAccessException("Jij hebt niet de rechten om check-ins te beheren")
         }
 
         val date = groupEditData.parent.getIsoDateParam()
@@ -96,12 +97,26 @@ fun Route.groupEditCheckinRoutes() {
         call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
     }
 
+    route<GroupsRouter.Group.Edit.Presence> {
+        typedPost<GroupsRouter.Group.Edit.Presence> { presenceEditData ->
+            if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
+                throw NoAccessException("Jij hebt niet de rechten om aanwezigheid te beheren")
+            }
+
+            val date = presenceEditData.parent.parent.getIsoDateParam()
+            val group = call.group
+            val checkins = checkinRepository.getGroupCheckins(group.id, date)
+            checkinService.handleGroupPresence(date, checkins, call.receiveParameters())
+
+            call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=presenceEditData.parent.parent.date)))
+        }
+    }
+
     route<GroupsRouter.Group.Edit.User> {
         typedPost<GroupsRouter.Group.Edit.User> { checkinEditData ->
             val date = checkinEditData.parent.parent.getIsoDateParam()
             val user = call.user
             val group = call.group
-
             if (checkinEditData.userId != user.id) {
                 throw NoAccessException("Je kan alleen je eigen check-ins editen")
             }
