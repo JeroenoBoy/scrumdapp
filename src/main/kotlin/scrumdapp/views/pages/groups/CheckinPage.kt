@@ -159,7 +159,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 +"om je check-in alsnog op te slaan."
             }
             div(classes="horizontal g-md justify-end") {
-                a(href=application.href(GroupsRouter.Group(GroupsRouter(), group.id, date.scrumdappUrlFormat())), classes="btn") {
+                a(href="", classes="btn") {
                     icon(iconName="cancel", classes="red")
                     +"Ik weet wat ik doe"
                 }
@@ -238,7 +238,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 +"om je check-in alsnog op te slaan."
             }
             div(classes="horizontal g-md justify-end") {
-                a(href=application.href(GroupsRouter.Group(GroupsRouter(), group.id, date.scrumdappUrlFormat())), classes="btn") {
+                a(href="", classes="btn") {
                     icon(iconName="cancel", classes="red")
                     +"Ik weet wat ik doe"
                 }
