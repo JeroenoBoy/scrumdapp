@@ -13,7 +13,9 @@ import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
+import com.jeroenvdg.scrumdapp.views.components.markdownRenderBlock
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.renderMarkdown
 import com.jeroenvdg.scrumdapp.views.components.stars
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
@@ -60,7 +62,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     th(classes="text-left pl-md") { +"Presentie" }
                     th { +"Check-in" }
                     th { +"Check-up" }
-                    th(classes="text-right") { +"Opmerkingen" }
+                    th(classes="text-right") { +"Acties" }
                 }
             }
             tbody {
@@ -78,14 +80,9 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                         td(classes="text-center " + checkinColorMap[checkin.checkupStars ?: 11]) {
                             stars(checkin.checkupStars)
                         }
-                        td(classes="horizontal justify-between align-center max-w-om") {
-                            if (checkin.comment != null) {
-                                div(classes="checkbox-expand px-sm") {
-                                    input(type = InputType.checkBox, classes="noshow")
-                                    span(classes="text-ellipse checkbox-expand-content") {
-                                        +checkin.comment!!
-                                    }
-                                }
+                        td(classes="horizontal justify-end align-center") {
+                            a(href="#user-overview-${checkin.userId}", classes="btn btn-blue") {
+                                +"Meer"
                             }
                         }
                     }
@@ -246,6 +243,63 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 a(href="#own-check-in", classes="btn") {
                     icon(iconName="undo", classes="green")
                     +"Ga terug"
+                }
+            }
+        }
+    }
+
+    for (checkin in checkins) {
+        modal(id="user-overview-${checkin.userId}") {
+            h2 { +"Check-in van ${checkin.name} op ${checkin.date.scrumdappFormat()}" }
+            br()
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="alarm_on", classes="yellow")
+                    span { +"Presentie" }
+                }
+                span(classes=checkin.presence!!.color) { +checkin.presence!!.key }
+            }
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="arrow_circle_down", classes="green")
+                    span { +"Check-in" }
+                }
+
+                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
+                    stars(checkin.checkinStars)
+                }
+            }
+
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="arrow_circle_up", classes="blue")
+                    span { +"Check-up" }
+                }
+
+                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
+                    stars(checkin.checkinStars)
+                }
+            }
+
+            br()
+
+            span(classes="input-label horizontal align-center g-sm") {
+                icon(iconName="note", classes="red")
+                span { +"Opmerkingen" }
+            }
+
+            renderMarkdown(checkin.comment ?: "")
+
+            div(classes="horizontal g-md justify-end") {
+                if (checkin.userId == groupUser.user.id) {
+                        a(href="#own-check-in", classes="btn") {
+                            icon(iconName="assignment", classes="green")
+                            +"Pas eigen check-in aan"
+                        }
+                }
+                a(href="", classes="btn") {
+                    icon(iconName="undo", classes="gray")
+                    +"Terug"
                 }
             }
         }
