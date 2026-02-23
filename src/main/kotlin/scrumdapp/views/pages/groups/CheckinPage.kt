@@ -48,6 +48,8 @@ import kotlin.random.Random
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
 fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, checkins: List<Checkin>, group: Group, date: LocalDate) {
+    val id=Random.nextInt(999999)
+
     card {
         h2 { +"Check-in voor "; b { +(date.scrumdappFormat()) } }
 
@@ -90,6 +92,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 }
             }
         }
+
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
             if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
@@ -203,7 +206,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 br()
 
                 div(classes="horizontal g-md justify-end") {
-                    a(href="#own-check-in-warning", classes="btn") {
+                    a(href="#own-check-in-warning-$id", classes="btn") {
                         icon(iconName="cancel", classes="gray")
                         +"Annuleren"
                     }
@@ -216,14 +219,14 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
             }
         }
 
-        modal(id="own-check-in-warning") {
+        modal(id="own-check-in-warning-$id") {
             h2 { +"Let op!"}
             p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
                 b(classes="green") { +"ga terug "}
                 +"om je check-in alsnog op te slaan."
             }
             div(classes="horizontal g-md justify-end") {
-                a(href="#", classes="btn") {
+                a(href=application.href(GroupsRouter.Group(GroupsRouter(), group.id, date.scrumdappUrlFormat())), classes="btn") {
                     icon(iconName="cancel", classes="red")
                     +"Ik weet wat ik doe"
                 }
