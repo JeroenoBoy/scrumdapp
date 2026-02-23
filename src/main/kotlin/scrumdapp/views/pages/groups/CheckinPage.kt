@@ -106,9 +106,11 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                 }
             }
 
-            a(href="#own-check-in", classes="btn") {
-                icon(iconName="assignment", classes="green")
-                +"Eigen Check-in"
+            if (groupUser.permissions != UserPermissions.Coach) {
+                a(href="#own-check-in", classes="btn") {
+                    icon(iconName="assignment", classes="green")
+                    +"Eigen Check-in"
+                }
             }
         }
     }
@@ -155,78 +157,81 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
         }
     }
 
-    modal(id="own-check-in") {
-        val checkin = checkins.first { it.userId == groupUser.user.id }
-        h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
-        br()
-        form(
-            classes="vertical g-md flex-1",
-            action=application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
-            method=FormMethod.post
-        ) {
 
-            div(classes="input-group") {
-                label(classes="input-label horizontal align-center g-sm") {
-                    htmlFor="checkin"
-                    icon(iconName="arrow_circle_down", classes="green")
-                    span { +"Check-in" }
-                }
-                checkinSelect("checkin", checkin.checkinStars)
-            }
-
-            div(classes="input-group") {
-                label(classes="input-label horizontal align-center g-sm") {
-                    htmlFor="checkup"
-                    icon(iconName="arrow_circle_up", classes="blue")
-                    span { +"Check-up" }
-                }
-                checkinSelect("checkup", checkin.checkupStars)
-            }
-
+    if (groupUser.permissions != UserPermissions.Coach) {
+        modal(id="own-check-in") {
+            val checkin = checkins.first { it.userId == groupUser.user.id }
+            h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
             br()
+            form(
+                classes="vertical g-md flex-1",
+                action=application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
+                method=FormMethod.post
+            ) {
 
-            label(classes="input-label horizontal align-center g-sm") {
-                htmlFor="comment"
-                icon(iconName="note", classes="red")
-                span { +"Opmerkingen" }
+                div(classes="input-group") {
+                    label(classes="input-label horizontal align-center g-sm") {
+                        htmlFor="checkin"
+                        icon(iconName="arrow_circle_down", classes="green")
+                        span { +"Check-in" }
+                    }
+                    checkinSelect("checkin", checkin.checkinStars)
+                }
+
+                div(classes="input-group") {
+                    label(classes="input-label horizontal align-center g-sm") {
+                        htmlFor="checkup"
+                        icon(iconName="arrow_circle_up", classes="blue")
+                        span { +"Check-up" }
+                    }
+                    checkinSelect("checkup", checkin.checkupStars)
+                }
+
+                br()
+
+                label(classes="input-label horizontal align-center g-sm") {
+                    htmlFor="comment"
+                    icon(iconName="note", classes="red")
+                    span { +"Opmerkingen" }
+                }
+
+                textArea(classes="input no-resize", rows="8") {
+                    name="comment"
+                    +(checkin.comment ?: "")
+                }
+
+                br()
+
+                div(classes="horizontal g-md justify-end") {
+                    a(href="#own-check-in-warning", classes="btn") {
+                        icon(iconName="cancel", classes="gray")
+                        +"Annuleren"
+                    }
+
+                    div(classes="hacky-icon") {
+                        icon(iconName="check", classes="blue")
+                        input(type=InputType.submit, classes="btn") { value = "Toepassen" }
+                    }
+                }
             }
+        }
 
-            textArea(classes="input no-resize", rows="8") {
-                name="comment"
-                +(checkin.comment ?: "")
+        modal(id="own-check-in-warning") {
+            h2 { +"Let op!"}
+            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                b(classes="green") { +"ga terug "}
+                +"om je check-in alsnog op te slaan."
             }
-
-            br()
-
             div(classes="horizontal g-md justify-end") {
-                a(href="#own-check-in-warning", classes="btn") {
-                    icon(iconName="cancel", classes="gray")
-                    +"Annuleren"
+                a(href="#", classes="btn") {
+                    icon(iconName="cancel", classes="red")
+                    +"Ik weet wat ik doe"
                 }
 
-                div(classes="hacky-icon") {
-                    icon(iconName="check", classes="blue")
-                    input(type=InputType.submit, classes="btn") { value = "Toepassen" }
+                a(href="#own-check-in", classes="btn") {
+                    icon(iconName="undo", classes="green")
+                    +"Ga terug"
                 }
-            }
-        }
-    }
-
-    modal(id="own-check-in-warning") {
-        h2 { +"Let op!"}
-        p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
-            b(classes="green") { +"ga terug "}
-            +"om je check-in alsnog op te slaan."
-        }
-        div(classes="horizontal g-md justify-end") {
-            a(href="#", classes="btn") {
-                icon(iconName="cancel", classes="red")
-                +"Ik weet wat ik doe"
-            }
-
-            a(href="#own-check-in", classes="btn") {
-                icon(iconName="undo", classes="green")
-                +"Ga terug"
             }
         }
     }
