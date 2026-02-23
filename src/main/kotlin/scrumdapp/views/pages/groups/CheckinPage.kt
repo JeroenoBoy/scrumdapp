@@ -132,8 +132,8 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                         }
                     }
                     tbody {
-                        tr {
-                            for (checkin in checkins) {
+                        for (checkin in checkins) {
+                            tr {
                                 td(classes="text-ellpise name-field") { +checkin.name }
                                 td(classes="pl-md ") {
                                     presenceSelect(checkin.userId, checkin.presence)
