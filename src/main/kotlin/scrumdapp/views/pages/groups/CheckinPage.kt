@@ -260,7 +260,11 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     icon(iconName="alarm_on", classes="yellow")
                     span { +"Presentie" }
                 }
-                span(classes=checkin.presence!!.color) { +checkin.presence!!.key }
+                if (checkin.presence == null) {
+                    span(classes="gray") { +"---" }
+                } else {
+                    span(classes=checkin.presence!!.color) { +checkin.presence!!.key }
+                }
             }
             div(classes="input-group") {
                 span(classes="input-label horizontal align-center g-sm") {
