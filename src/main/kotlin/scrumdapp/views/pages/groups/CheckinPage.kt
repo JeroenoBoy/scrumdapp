@@ -211,6 +211,9 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     name="comment"
                     +(checkin.comment ?: "")
                 }
+                span(classes="gray text-sm") {
+                    +"Max. 2048 karakters"
+                }
 
                 br()
 

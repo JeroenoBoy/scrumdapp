@@ -95,7 +95,11 @@ class CheckinService(
         }
         if (body.contains("comment")) {
             checkin.comment = body["comment"]
-            if (checkin.comment.isNullOrBlank()) checkin.comment = null
+            if (checkin.comment.isNullOrBlank()) {
+                checkin.comment = null
+            } else if ((checkin.comment?.length ?: 0) > 2048) {
+                throw ValidationException("Een opmerking mag niet meer dan 2048 karakters hebben")
+            }
         }
 
         checkinRepository.saveGroupCheckin(listOf(checkin))
