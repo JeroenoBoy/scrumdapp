@@ -54,48 +54,48 @@ fun Route.groupEditCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
     val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
-    typedGet<GroupsRouter.Group.Edit> { groupEditData ->
-        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
-            throw NoAccessException("Jij hebt niet de rechten om check-ins te managen")
-        }
-
-        val date = groupEditData.parent.getIsoDateParam()
-        val group = call.group
-        val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
-
-        call.respondHtml {
-            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
-                groupPage(application, checkinDates, group, call.groupUser.permissions) {
-                    editableCheckinWidget(application, checkins, group, date)
-                }
-            }
-        }
-    }
-
-    typedPost<GroupsRouter.Group.Edit> { groupEditData ->
-        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
-            throw NoAccessException("Jij hebt niet de rechten om check-ins te beheren")
-        }
-
-        val date = groupEditData.parent.getIsoDateParam()
-        val group = call.group
-        val checkins = checkinRepository.getGroupCheckins(group.id, date)
-        val success = checkinService.handleBatchCheckin(date, checkins, call.receiveParameters())
-
-        if (!success) {
-            val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
-            return@typedPost call.respondHtml {
-                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
-                    groupPage(application, checkinDates, group, call.groupUser.permissions, ValidationException().toExceptionContent()) {
-                        editableCheckinWidget(application, checkins, group, date)
-                    }
-                }
-            }
-        }
-
-        call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
-    }
+//    typedGet<GroupsRouter.Group.Edit> { groupEditData ->
+//        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
+//            throw NoAccessException("Jij hebt niet de rechten om check-ins te managen")
+//        }
+//
+//        val date = groupEditData.parent.getIsoDateParam()
+//        val group = call.group
+//        val checkins = checkinRepository.getGroupCheckins(group.id, date)
+//        val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
+//
+//        call.respondHtml {
+//            dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
+//                groupPage(application, checkinDates, group, call.groupUser.permissions) {
+//                    editableCheckinWidget(application, checkins, group, date)
+//                }
+//            }
+//        }
+//    }
+//
+//    typedPost<GroupsRouter.Group.Edit> { groupEditData ->
+//        if (!ComparePermissions(call.groupUser.permissions, UserPermissions.CheckinManagement)) {
+//            throw NoAccessException("Jij hebt niet de rechten om check-ins te beheren")
+//        }
+//
+//        val date = groupEditData.parent.getIsoDateParam()
+//        val group = call.group
+//        val checkins = checkinRepository.getGroupCheckins(group.id, date)
+//        val success = checkinService.handleBatchCheckin(date, checkins, call.receiveParameters())
+//
+//        if (!success) {
+//            val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
+//            return@typedPost call.respondHtml {
+//                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
+//                    groupPage(application, checkinDates, group, call.groupUser.permissions, ValidationException().toExceptionContent()) {
+//                        editableCheckinWidget(application, checkins, group, date)
+//                    }
+//                }
+//            }
+//        }
+//
+//        call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=groupEditData.parent.date)))
+//    }
 
     route<GroupsRouter.Group.Edit.Presence> {
         typedPost<GroupsRouter.Group.Edit.Presence> { presenceEditData ->
@@ -121,7 +121,8 @@ fun Route.groupEditCheckinRoutes() {
                 throw NoAccessException("Je kan alleen je eigen check-ins editen")
             }
 
-            checkinService.handleUserCheckin(user, group, date, call.receiveParameters())
+            val checkin = checkinRepository.getUserCheckin(user.id, group.id, date) ?: Checkin(user.id, group.id, date)
+            checkinService.handleUserCheckin(checkin, call.receiveParameters())
             call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=checkinEditData.parent.parent.date)))
         }
     }

@@ -96,16 +96,9 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
             if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
-                if (checkins.all { it.presence == null}) {
-                    a(href="#edit-presence", classes="btn") {
-                        icon(iconName="timer", classes="red")
-                        +"Registreer aanwezigheid"
-                    }
-                } else {
-                    a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
-                        icon(iconName = "edit", classes="blue")
-                        +"Pas aan"
-                    }
+                a(href="#edit-presence", classes="btn") {
+                    icon(iconName="timer", classes="red")
+                    +"Registreer aanwezigheid"
                 }
             }
 
@@ -146,7 +139,7 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     }
                 }
                 div(classes="horizontal g-md justify-end") {
-                    a(href="#", classes="btn") {
+                    a(href="#edit-presence-cancel-$id", classes="btn") {
                         icon(iconName="cancel", classes="gray")
                         +"Annuleren"
                     }
@@ -155,6 +148,25 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                         icon(iconName="timer", classes="blue")
                         input(type=InputType.submit, classes="btn") { value = "Versturen" }
                     }
+                }
+            }
+        }
+
+        modal(id="edit-presence-cancel-$id") {
+            h2 { +"Let op!"}
+            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                b(classes="green") { +"ga terug "}
+                +"om je check-in alsnog op te slaan."
+            }
+            div(classes="horizontal g-md justify-end") {
+                a(href=application.href(GroupsRouter.Group(GroupsRouter(), group.id, date.scrumdappUrlFormat())), classes="btn") {
+                    icon(iconName="cancel", classes="red")
+                    +"Ik weet wat ik doe"
+                }
+
+                a(href="#edit-presence", classes="btn") {
+                    icon(iconName="undo", classes="green")
+                    +"Ga terug"
                 }
             }
         }
