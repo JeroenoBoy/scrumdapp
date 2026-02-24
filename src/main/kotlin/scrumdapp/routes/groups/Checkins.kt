@@ -116,7 +116,7 @@ fun Route.groupEditCheckinRoutes() {
                 throw NoAccessException("Je kan alleen je eigen check-ins editen")
             }
 
-            val checkin = checkinRepository.getUserCheckin(user.id, group.id, date) ?: Checkin(user.id, group.id, date)
+            val checkin = checkinRepository.getUserCheckin(user.id, group.id, date) ?: Checkin(group.id, user.id, date)
             checkinService.handleUserCheckin(checkin, call.receiveParameters())
             call.respondRedirect(application.href(GroupsRouter.Group(groupId=group.id, date=checkinEditData.parent.parent.date)))
         }
