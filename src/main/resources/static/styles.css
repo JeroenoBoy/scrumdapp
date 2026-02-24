@@ -215,8 +215,11 @@ hr {
 .modal-content {
     max-width: 600px;
     width: 100%;
-    margin: 20vh auto auto;
     z-index: 1;
+    margin: auto auto;
+    overflow: auto;
+    max-height: calc(100% - var(--gap-xl) * 2);
+    flex-shrink: 0;
 }
 
 .modal-bg {
