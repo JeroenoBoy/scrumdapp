@@ -451,7 +451,7 @@ fun FlowContent.presenceSelect(userId: Int?, presence: Presence?) {
         option(classes="green-dim") {
             value = "2"; if (presence == Presence.VerifiedAbsent) {
             selected = true
-        }; +"Goorloofd Afwezig"
+        }; +"Geoorloofd Afwezig"
         }
         option(classes="red") {
             value = "3"; if (presence == Presence.Absent) {
