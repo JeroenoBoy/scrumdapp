@@ -4,7 +4,6 @@ val h2_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val exposed_kotlinxdatetime_version: String by project
-val project_version: String by project
 
 plugins {
     id("java")
@@ -14,14 +13,10 @@ plugins {
 }
 
 group = "com.jeroenvdg"
-version = project_version
+version = "0.4.0"
 
 application {
     mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
-}
-
-tasks.withType<JavaExec> {
-    environment(Pair("PROJECT_VERSION", project_version))
 }
 
 tasks.withType<Jar> {
