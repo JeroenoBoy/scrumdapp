@@ -80,7 +80,7 @@ h2 {
 }
 
 h3 {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-2md);
     margin: var(--gap-sm) 0 var(--gap-md) 0;
     font-style: italic;
 }
@@ -215,8 +215,11 @@ hr {
 .modal-content {
     max-width: 600px;
     width: 100%;
-    margin: 20vh auto auto;
     z-index: 1;
+    margin: auto auto;
+    overflow: auto;
+    max-height: calc(100% - var(--gap-xl) * 2);
+    flex-shrink: 0;
 }
 
 .modal-bg {
@@ -967,6 +970,10 @@ hr {
 
 .pr-lg {
     padding-right: var(--gap-lg);
+}
+
+.g-sm {
+    gap: var(--gap-sm);
 }
 
 .g-md {

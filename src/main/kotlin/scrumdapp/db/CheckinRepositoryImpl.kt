@@ -37,6 +37,18 @@ class CheckinRepositoryImpl: CheckinRepository {
         }
     }
 
+    override suspend fun getUserCheckin(userId: Int, groupId: Int, date: LocalDate): Checkin? {
+        return dbQuery {
+            GroupCheckins
+                .innerJoin(Users, { GroupCheckins.userId }, { Users.id })
+                .select(GroupCheckins.fields + Users.name)
+                .where {(GroupCheckins.groupId eq groupId) and (GroupCheckins.userId eq userId) and (GroupCheckins.date eq date)}
+                .limit(1)
+                .map { resultRowToCheckin(it) }
+                .firstOrNull()
+        }
+    }
+
     override suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin> {
         return dbQuery {
             UserGroups
@@ -123,6 +135,28 @@ class CheckinRepositoryImpl: CheckinRepository {
                 this[GroupCheckins.checkinStars] = checkin.checkinStars
                 this[GroupCheckins.checkupStars] = checkin.checkupStars
                 this[GroupCheckins.comment] = checkin.comment
+            }
+        }
+    }
+
+    override suspend fun saveUserCheckin(
+        userId: Int,
+        groupId: Int,
+        date: LocalDate,
+        checkin: Int?,
+        checkup: Int?,
+        comment: String?
+    ) {
+        return dbQuery {
+            GroupCheckins.upsert(
+                where = { (GroupCheckins.groupId eq groupId) and (GroupCheckins.userId eq userId) and (GroupCheckins.date eq date) },
+            ) {
+                it[GroupCheckins.groupId] = groupId
+                it[GroupCheckins.userId] = userId
+                it[GroupCheckins.date] = date
+                it[GroupCheckins.checkinStars] = checkin
+                it[GroupCheckins.checkupStars] = checkup
+                it[GroupCheckins.comment] = comment
             }
         }
     }

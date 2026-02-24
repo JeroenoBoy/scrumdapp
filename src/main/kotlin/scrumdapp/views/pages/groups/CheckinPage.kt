@@ -2,6 +2,8 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
+import com.jeroenvdg.scrumdapp.db.GroupUser
+import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
@@ -11,7 +13,9 @@ import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
+import com.jeroenvdg.scrumdapp.views.components.markdownRenderBlock
 import com.jeroenvdg.scrumdapp.views.components.modal
+import com.jeroenvdg.scrumdapp.views.components.renderMarkdown
 import com.jeroenvdg.scrumdapp.views.components.stars
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
@@ -21,11 +25,14 @@ import kotlinx.html.FormMethod
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
+import kotlinx.html.br
+import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
 import kotlinx.html.h3
 import kotlinx.html.input
+import kotlinx.html.label
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.select
@@ -42,7 +49,9 @@ import kotlin.random.Random
 
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate, perms: UserPermissions) {
+fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, checkins: List<Checkin>, group: Group, date: LocalDate) {
+    val id=Random.nextInt(999999)
+
     card {
         h2 { +"Check-in voor "; b { +(date.scrumdappFormat()) } }
 
@@ -53,7 +62,7 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
                     th(classes="text-left pl-md") { +"Presentie" }
                     th { +"Check-in" }
                     th { +"Check-up" }
-                    th(classes="text-right") { +"Opmerkingen" }
+                    th(classes="text-right") { +"Acties" }
                 }
             }
             tbody {
@@ -71,26 +80,233 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
                         td(classes="text-center " + checkinColorMap[checkin.checkupStars ?: 11]) {
                             stars(checkin.checkupStars)
                         }
-                        td(classes="horizontal justify-between align-center max-w-om") {
-                            if (checkin.comment != null) {
-                                div(classes="checkbox-expand px-sm") {
-                                    input(type = InputType.checkBox, classes="noshow")
-                                    span(classes="text-ellipse checkbox-expand-content") {
-                                        +checkin.comment!!
-                                    }
-                                }
+                        td(classes="horizontal justify-end align-center") {
+                            a(href="#user-overview-${checkin.userId}", classes="btn btn-blue") {
+                                +"Meer"
                             }
                         }
                     }
                 }
             }
         }
+
         div(classes="flex-1")
         div(classes="horizontal g-md justify-end") {
-            if (ComparePermissions(perms, UserPermissions.CheckinManagement)) {
-                a(href = application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
-                    icon(iconName = "edit", classes="blue")
-                    +"Pas aan"
+            if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+                a(href="#edit-presence", classes="btn") {
+                    icon(iconName="timer", classes="red")
+                    +"Registreer aanwezigheid"
+                }
+            }
+
+            if (groupUser.permissions != UserPermissions.Coach) {
+                a(href="#own-check-in", classes="btn") {
+                    icon(iconName="assignment", classes="green")
+                    +"Eigen Check-in"
+                }
+            }
+        }
+    }
+
+    if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+        modal(id="edit-presence") {
+            h2 { +"Registreer aanwezigheid voor "; b { +(date.scrumdappFormat()) } }
+            br()
+            form(
+                classes="vertical g-md flex-1",
+                action=application.href(GroupsRouter.Group.Edit.Presence(group.id, date.scrumdappUrlFormat())),
+                method=FormMethod.post
+            ) {
+                table(classes="checkin-table") {
+                    thead {
+                        tr {
+                            th(classes="text-left name-field") { +"Naam" }
+                            th(classes="text-left pl-md") { +"Presentie" }
+                        }
+                    }
+                    tbody {
+                        for (checkin in checkins) {
+                            tr {
+                                td(classes="text-ellpise name-field") { +checkin.name }
+                                td(classes="pl-md ") {
+                                    presenceSelect(checkin.userId, checkin.presence)
+                                }
+                            }
+                        }
+                    }
+                }
+                div(classes="horizontal g-md justify-end") {
+                    a(href="#edit-presence-cancel-$id", classes="btn") {
+                        icon(iconName="cancel", classes="gray")
+                        +"Annuleren"
+                    }
+
+                    div(classes="hacky-icon") {
+                        icon(iconName="timer", classes="blue")
+                        input(type=InputType.submit, classes="btn") { value = "Versturen" }
+                    }
+                }
+            }
+        }
+
+        modal(id="edit-presence-cancel-$id") {
+            h2 { +"Let op!"}
+            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                b(classes="green") { +"ga terug "}
+                +"om je check-in alsnog op te slaan."
+            }
+            div(classes="horizontal g-md justify-end") {
+                a(href="", classes="btn") {
+                    icon(iconName="cancel", classes="red")
+                    +"Ik weet wat ik doe"
+                }
+
+                a(href="#edit-presence", classes="btn") {
+                    icon(iconName="undo", classes="green")
+                    +"Ga terug"
+                }
+            }
+        }
+    }
+
+
+    if (groupUser.permissions != UserPermissions.Coach) {
+        modal(id="own-check-in") {
+            val checkin = checkins.first { it.userId == groupUser.user.id }
+            h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
+            br()
+            form(
+                classes="vertical g-md flex-1",
+                action=application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
+                method=FormMethod.post
+            ) {
+
+                div(classes="input-group") {
+                    label(classes="input-label horizontal align-center g-sm") {
+                        htmlFor="checkin"
+                        icon(iconName="arrow_circle_down", classes="green")
+                        span { +"Check-in" }
+                    }
+                    checkinSelect("checkin", checkin.checkinStars)
+                }
+
+                div(classes="input-group") {
+                    label(classes="input-label horizontal align-center g-sm") {
+                        htmlFor="checkup"
+                        icon(iconName="arrow_circle_up", classes="blue")
+                        span { +"Check-up" }
+                    }
+                    checkinSelect("checkup", checkin.checkupStars)
+                }
+
+                br()
+
+                label(classes="input-label horizontal align-center g-sm") {
+                    htmlFor="comment"
+                    icon(iconName="note", classes="red")
+                    span { +"Opmerkingen" }
+                }
+
+                textArea(classes="input no-resize", rows="8") {
+                    name="comment"
+                    +(checkin.comment ?: "")
+                }
+                span(classes="gray text-sm") {
+                    +"Max. 2048 karakters"
+                }
+
+                br()
+
+                div(classes="horizontal g-md justify-end") {
+                    a(href="#own-check-in-warning-$id", classes="btn") {
+                        icon(iconName="cancel", classes="gray")
+                        +"Annuleren"
+                    }
+
+                    div(classes="hacky-icon") {
+                        icon(iconName="check", classes="blue")
+                        input(type=InputType.submit, classes="btn") { value = "Toepassen" }
+                    }
+                }
+            }
+        }
+
+        modal(id="own-check-in-warning-$id") {
+            h2 { +"Let op!"}
+            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                b(classes="green") { +"ga terug "}
+                +"om je check-in alsnog op te slaan."
+            }
+            div(classes="horizontal g-md justify-end") {
+                a(href="", classes="btn") {
+                    icon(iconName="cancel", classes="red")
+                    +"Ik weet wat ik doe"
+                }
+
+                a(href="#own-check-in", classes="btn") {
+                    icon(iconName="undo", classes="green")
+                    +"Ga terug"
+                }
+            }
+        }
+    }
+
+    for (checkin in checkins) {
+        modal(id="user-overview-${checkin.userId}") {
+            h2 { +"Check-in van ${checkin.name} op ${checkin.date.scrumdappFormat()}" }
+            br()
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="alarm_on", classes="yellow")
+                    span { +"Presentie" }
+                }
+                if (checkin.presence == null) {
+                    span(classes="gray") { +"---" }
+                } else {
+                    span(classes=checkin.presence!!.color) { +checkin.presence!!.key }
+                }
+            }
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="arrow_circle_down", classes="green")
+                    span { +"Check-in" }
+                }
+
+                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
+                    stars(checkin.checkinStars)
+                }
+            }
+
+            div(classes="input-group") {
+                span(classes="input-label horizontal align-center g-sm") {
+                    icon(iconName="arrow_circle_up", classes="blue")
+                    span { +"Check-up" }
+                }
+
+                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
+                    stars(checkin.checkinStars)
+                }
+            }
+
+            br()
+
+            span(classes="input-label horizontal align-center g-sm") {
+                icon(iconName="note", classes="red")
+                span { +"Opmerkingen" }
+            }
+
+            renderMarkdown(checkin.comment ?: "")
+
+            div(classes="horizontal g-md justify-end") {
+                if (checkin.userId == groupUser.user.id) {
+                        a(href="#own-check-in", classes="btn") {
+                            icon(iconName="assignment", classes="green")
+                            +"Pas eigen check-in aan"
+                        }
+                }
+                a(href="", classes="btn") {
+                    icon(iconName="undo", classes="gray")
+                    +"Terug"
                 }
             }
         }
@@ -98,22 +314,6 @@ fun FlowContent.checkinWidget(application: Application, checkins: List<Checkin>,
 }
 
 fun FlowContent.editableCheckinWidget(application: Application, checkins: List<Checkin>, group: Group, date: LocalDate) {
-    fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
-        select(classes="input select-checkin w-full text-ellipse") { this.name=name
-            option(classes="gray") {value=""; if (selectedValue == null) { selected=true }; +"---" }
-            option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected=true }; +"0"}
-            option(classes="red") {value="1"; if (selectedValue == 1) { selected=true }; +"0.5"}
-            option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected=true }; +"1"}
-            option(classes="orange") {value="3"; if (selectedValue == 3) { selected=true }; +"1.5"}
-            option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected=true }; +"2"}
-            option(classes="yellow") {value="5"; if (selectedValue == 5) { selected=true }; +"2.5"}
-            option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected=true }; +"3"}
-            option(classes="green") {value="7"; if (selectedValue == 7) { selected=true }; +"3.5"}
-            option(classes="aqua") {value="8"; if (selectedValue == 8) { selected=true }; +"4"}
-            option(classes="blue") {value="9"; if (selectedValue == 9) { selected=true }; +"4.5"}
-            option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected=true }; +"5"}
-        }
-    }
 
     val isNewCheckin=checkins.isNewCheckin()
     val id=Random.nextInt(999999)
@@ -138,39 +338,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                         tr {
                             td(classes="text-ellpise name-field") { +checkin.name }
                             td(classes="pl-md ") {
-                                select(classes="input select-presence w-full text-ellipse") {
-                                    name = "presence-${checkin.userId}"
-                                    option(classes="gray") {
-                                        value = ""; if (checkin.presence == null) {
-                                        selected = true
-                                    }; +"---"
-                                    }
-                                    option(classes="green") {
-                                        value = "0"; if (checkin.presence == Presence.OnTime) {
-                                        selected = true
-                                    }; +"Op Tijd"
-                                    }
-                                    option(classes="yellow") {
-                                        value = "1"; if (checkin.presence == Presence.Late) {
-                                        selected = true
-                                    }; +"Te Laat"
-                                    }
-                                    option(classes="green-dim") {
-                                        value = "2"; if (checkin.presence == Presence.VerifiedAbsent) {
-                                        selected = true
-                                    }; +"Goorloofd Afwezig"
-                                    }
-                                    option(classes="red") {
-                                        value = "3"; if (checkin.presence == Presence.Absent) {
-                                        selected = true
-                                    }; +"Ongeoorloofd Afwezig"
-                                    }
-                                    option(classes="blue") {
-                                        value = "4"; if (checkin.presence == Presence.Sick) {
-                                        selected = true
-                                    }; +"Ziek"
-                                    }
-                                }
+                                presenceSelect(checkin.userId, checkin.presence)
                             }
                             td {
                                 checkinSelect("checkin-" + checkin.userId, checkin.checkinStars)
@@ -179,15 +347,7 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                                 checkinSelect("checkup-" + checkin.userId, checkin.checkupStars)
                             }
                             td(classes="horizontal justify-between align-center max-w-om relative") {
-                                div(classes="checkbox-expand px-sm absolute") {
-                                    textArea(rows = "5", classes="input checkbox-expand-content no-resize") {
-                                        name = "comment-" + checkin.userId
-                                        placeholder = "Opmerking..."
-                                        if (checkin.comment != null) {
-                                            +checkin.comment!!
-                                        }
-                                    }
-                                }
+                                commentField(checkin.userId, checkin.comment)
                             }
                         }
                     }
@@ -255,5 +415,70 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                 }
             }
         }
+    }
+}
+
+fun FlowContent.commentField(userid: Int?, comment: String?) {
+    div(classes="checkbox-expand px-sm absolute") {
+        textArea(rows = "5", classes="input checkbox-expand-content no-resize") {
+            name = "comment-$userid"
+            placeholder = "Opmerking..."
+            if (comment != null) {
+                +comment
+            }
+        }
+    }
+}
+
+fun FlowContent.presenceSelect(userId: Int?, presence: Presence?) {
+    select(classes="input select-presence w-full text-ellipse") {
+        name = "presence-${userId}"
+        option(classes="gray") {
+            value = ""; if (presence == null) {
+            selected = true
+        }; +"---"
+        }
+        option(classes="green") {
+            value = "0"; if (presence == Presence.OnTime) {
+            selected = true
+        }; +"Op Tijd"
+        }
+        option(classes="yellow") {
+            value = "1"; if (presence == Presence.Late) {
+            selected = true
+        }; +"Te Laat"
+        }
+        option(classes="green-dim") {
+            value = "2"; if (presence == Presence.VerifiedAbsent) {
+            selected = true
+        }; +"Geoorloofd Afwezig"
+        }
+        option(classes="red") {
+            value = "3"; if (presence == Presence.Absent) {
+            selected = true
+        }; +"Ongeoorloofd Afwezig"
+        }
+        option(classes="blue") {
+            value = "4"; if (presence == Presence.Sick) {
+            selected = true
+        }; +"Ziek"
+        }
+    }
+}
+
+fun FlowContent.checkinSelect(name: String, selectedValue: Int?) {
+    select(classes="input select-checkin w-full text-ellipse") { this.name=name
+        option(classes="gray") {value=""; if (selectedValue == null) { selected=true }; +"---" }
+        option(classes="red-dim") {value="0"; if (selectedValue == 0) { selected=true }; +"0"}
+        option(classes="red") {value="1"; if (selectedValue == 1) { selected=true }; +"0.5"}
+        option(classes="orange-dim") {value="2"; if (selectedValue == 2) { selected=true }; +"1"}
+        option(classes="orange") {value="3"; if (selectedValue == 3) { selected=true }; +"1.5"}
+        option(classes="yellow-dim") {value="4"; if (selectedValue == 4) { selected=true }; +"2"}
+        option(classes="yellow") {value="5"; if (selectedValue == 5) { selected=true }; +"2.5"}
+        option(classes="green-dim") {value="6"; if (selectedValue == 6) { selected=true }; +"3"}
+        option(classes="green") {value="7"; if (selectedValue == 7) { selected=true }; +"3.5"}
+        option(classes="aqua") {value="8"; if (selectedValue == 8) { selected=true }; +"4"}
+        option(classes="blue") {value="9"; if (selectedValue == 9) { selected=true }; +"4.5"}
+        option(classes="blue-dim") {value="10"; if (selectedValue == 10) { selected=true }; +"5"}
     }
 }
