@@ -34,7 +34,7 @@ fun Route.createInvitationsRoute() {
         val url = "https://$origin${application.href(Invitations.AcceptInvitations(token = token))}"
 
         call.respondHtml {
-            dashboardLayout(DashboardPageData(group.name, call)) {
+            dashboardLayout(application, DashboardPageData(group.name, call)) {
                 groupPage(application, emptyList(), group, call.groupUser.permissions) {
                     userInviteContent(application, group, url)
                 }

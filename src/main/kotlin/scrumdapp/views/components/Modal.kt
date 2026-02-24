@@ -10,12 +10,19 @@ import kotlinx.html.form
 import kotlinx.html.id
 import kotlinx.html.input
 import kotlinx.html.label
+import kotlinx.html.style
 
 inline fun FlowContent.modal(id: String, crossinline block: DIV.() -> Unit = {}) {
-    dialog(classes="modal") { this.id = id
+    dialog(classes="modal vertical") { this.id = id
         div("modal-bg")
-        div(classes="modal-content card") {
-            block()
+        div(classes="vertical h-full") {
+            div { style = "flex-shrink:2;height:100%" }
+            div { style = "flex-shrink:1;height:100%" }
+            div(classes="modal-content card") {
+                block()
+            }
+            div { style = "flex-shrink:1;height:100%" }
+            div { style = "flex-shrink:1;height:100%" }
         }
     }
 }

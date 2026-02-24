@@ -3,6 +3,8 @@ package com.jeroenvdg.scrumdapp.views
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.views.components.navbar
 import io.ktor.server.application.Application
+import io.ktor.server.config.getAs
+import io.ktor.server.engine.applicationEnvironment
 import io.ktor.server.routing.RoutingCall
 import kotlinx.html.BODY
 import kotlinx.html.FlowContent
@@ -13,6 +15,7 @@ import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.id
 import kotlinx.html.img
+import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.style
 import kotlinx.html.styleLink
@@ -21,12 +24,14 @@ import kotlinx.html.title
 data class PageData(val title: String, val contentFrame: Boolean = false)
 data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "15")
 
-fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
+fun HTML.mainLayout(application: Application, pageData: PageData, builder: BODY.() -> Unit = {}) {
+    lang="nl-NL"
+    val version = application.environment.config.propertyOrNull("app.version")?.getString() ?: "0.0"
     head {
         title("${pageData.title} | Scrumdapp")
-        styleLink("/static/theme.css")
-        styleLink("/static/charts.min.css")
-        styleLink("/static/styles.css")
+        styleLink("/static/theme.css?v=$version")
+        styleLink("/static/charts.min.css?v=$version")
+        styleLink("/static/styles.css?v=$version")
         link("https://fonts.googleapis.com", rel = "preconnect")
         link("https://fonts.gstatic.com", rel = "preconnect")
         styleLink("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined")
@@ -42,8 +47,8 @@ fun HTML.mainLayout(pageData: PageData, builder: BODY.() -> Unit = {}) {
     }
 }
 
-fun HTML.dashboardLayout(pageData: DashboardPageData, builder: FlowContent.() -> Unit = {}) {
-    mainLayout(PageData(pageData.title)) {
+fun HTML.dashboardLayout(application: Application, pageData: DashboardPageData, builder: FlowContent.() -> Unit = {}) {
+    mainLayout(application, PageData(pageData.title)) {
         div { id = "app"
             img(alt="bg-img", src="/static/backgrounds/${pageData.background ?: "15"}.webp", classes="bg-img")
             navbar(pageData.call.application, pageData.call.user)

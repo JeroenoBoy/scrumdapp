@@ -85,7 +85,7 @@ fun Application.configureExceptionService() {
 
             val content = exceptionFromThrowable(throwable)
             call.respondHtml {
-                mainLayout(PageData(content.title ?: "Fout")) {
+                mainLayout(this@configureExceptionService, PageData(content.title ?: "Fout")) {
                     errorPage(content)
                 }
             }

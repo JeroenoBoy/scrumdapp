@@ -127,7 +127,7 @@ suspend fun Application.configureAuthRouting() {
             install(IsLoggedOut)
             get {
                 call.respondHtml {
-                    mainLayout(PageData("Login")) {
+                    mainLayout(application, PageData("Login")) {
                         loginPage(application)
                     }
                 }

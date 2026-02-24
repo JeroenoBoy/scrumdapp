@@ -16,7 +16,10 @@ data class Checkin(
     var checkupStars: Int?,
     var date: LocalDate,
     var comment: String?
-)
+) {
+    constructor(groupId: Int, userId: Int, date: LocalDate) : this(0, groupId, "", userId, null, null, null, date, null)
+}
+
 
 data class PresenceData(
     val checkinId: Int,
@@ -29,12 +32,14 @@ data class PresenceData(
 
 interface CheckinRepository {
     suspend fun getUserCheckins(userId: Int, groupId: Int): List<Checkin>
+    suspend fun getUserCheckin(userId: Int, groupId: Int, date: LocalDate): Checkin?
     suspend fun getGroupCheckins(groupId: Int, date: LocalDate): List<Checkin>
     suspend fun getRecentCheckinDates(groupId: Int, limit: Int = 5): List<LocalDate>
     suspend fun getCheckin(id: Int): Checkin?
     suspend fun createCheckin(checkin: Checkin): Checkin? // Check if this is enough info for post
     suspend fun createGroupCheckin(groupId: Int, checkins: List<Checkin>): List<Checkin>?
     suspend fun saveGroupCheckin(checkins: List<Checkin>)
+    suspend fun saveUserCheckin(userId: Int, groupId: Int, date: LocalDate, checkin: Int?, checkup: Int?, comment: String?)
     suspend fun alterCheckin(checkin: Checkin): Boolean
     suspend fun deleteCheckin(checkin: Checkin): Boolean
 

@@ -29,7 +29,8 @@ import kotlinx.datetime.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30")
+val backgrounds = listOf("1", "1_2", "2", "4", "5", "6", "6_2", "7", "7_2", "8", "9", "10", "14", "14_2", "15", "17", "18", "22", "23", "30", "color_red", "color_aqua", "color_blue", "color_green",
+    "color_orange", "color_purple", "color_gray", "color_bg")
 val dateRegex = Regex("""(\d{4})-(\d{2})-(\d{2})""")
 
 @Resource("groups")
@@ -39,7 +40,13 @@ class GroupsRouter {
     class Group(val parent: GroupsRouter = GroupsRouter(), val groupId: Int, val date: String? = null) {
 
         @Resource("edit")
-        class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))}
+        class Edit(val parent: GroupsRouter.Group) { constructor(groupId: Int, date: String? = null): this(Group(groupId=groupId, date=date))
+            @Resource("{userId}")
+            class User(val parent: Edit, val userId: Int) { constructor(groupId: Int, userId: Int, date: String? = null): this(Edit(groupId, date), userId) }
+
+            @Resource("presence")
+            class Presence(val parent: Edit) { constructor(groupId: Int, date: String? = null): this(Edit(groupId, date))}
+        }
 
         @Resource("export")
         class Export(val parent: GroupsRouter.Group) { constructor(groupId: Int): this(Group(groupId=groupId),)
@@ -133,7 +140,6 @@ suspend fun Application.configureGroupRoutes() {
                 groupCheckinRoutes()
 
                 route<GroupsRouter.Group.Edit> {
-                    install(HasCorrectPerms) { permissions = UserPermissions.CheckinManagement }
                     groupEditCheckinRoutes()
                 }
 

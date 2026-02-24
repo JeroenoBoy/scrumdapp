@@ -13,7 +13,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.YearMonth
-import kotlin.math.min
 import kotlin.text.toIntOrNull
 
 data class CheckinDashboardData(
@@ -63,7 +62,47 @@ class CheckinService(
         } catch(e: Exception) {
             return false
         }
+    }
 
+    suspend fun handleGroupPresence(date: LocalDate, checkins: List<Checkin>, body: Parameters) {
+        for (checkin in checkins) {
+            checkin.date = date
+            if (body.contains("presence-${checkin.userId}")) {
+                val presenceVal = body["presence-${checkin.userId}"]?.toIntOrNull()
+                checkin.presence = if (presenceVal == null) null else enumValues<Presence>()[presenceVal]
+            }
+        }
+
+        try {
+           checkinRepository.saveGroupCheckin(checkins)
+        } catch(e: Exception) {
+            throw ServerFaultException()
+        }
+    }
+
+    suspend fun handleUserCheckin(checkin: Checkin, body: Parameters) {
+        if (body.contains("checkin")) {
+            checkin.checkinStars = body["checkin"]?.toIntOrNull()
+            if (checkin.checkinStars != null) checkin.checkinStars = clamp(checkin.checkinStars!!, 0, 10)
+        }
+        if (body.contains("checkup")) {
+            checkin.checkupStars = body["checkup"]?.toIntOrNull()
+            if (checkin.checkupStars != null) checkin.checkupStars = clamp(checkin.checkupStars!!, 0, 10)
+        }
+        if (body.contains("presence")) {
+            val presenceVal = body["presence"]?.toIntOrNull()
+            checkin.presence = if (presenceVal == null) null else enumValues<Presence>()[presenceVal]
+        }
+        if (body.contains("comment")) {
+            checkin.comment = body["comment"]
+            if (checkin.comment.isNullOrBlank()) {
+                checkin.comment = null
+            } else if ((checkin.comment?.length ?: 0) > 2048) {
+                throw ValidationException("Een opmerking mag niet meer dan 2048 karakters hebben")
+            }
+        }
+
+        checkinRepository.saveGroupCheckin(listOf(checkin))
     }
 
     suspend fun getMonthlyDates(groupId: Int, month: String? = null, year: Int? = null): MonthData {
@@ -94,4 +133,5 @@ class CheckinService(
 
         return MonthData(weekStartDate, weekEndDate, yearMonth, days)
     }
+
 }

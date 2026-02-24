@@ -5,9 +5,12 @@ import com.jeroenvdg.scrumdapp.db.GroupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
 import com.jeroenvdg.scrumdapp.services.TrendsData
+import com.jeroenvdg.scrumdapp.utils.href
 import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.dropdown
 import com.jeroenvdg.scrumdapp.views.components.dropdownItem
+import com.jeroenvdg.scrumdapp.views.components.icon
+import com.jeroenvdg.scrumdapp.views.components.modal
 import io.ktor.server.application.Application
 import io.ktor.server.resources.href
 import kotlinx.html.*
@@ -29,7 +32,9 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
     }
 
     card {
-        h2{ +"Trends" }
+        div(classes="horizontal") {
+            h2 { +"Trends" }
+        }
     }
 
     card {
@@ -47,45 +52,37 @@ fun FlowContent.groupTrendsContent(application: Application, group: Group, trend
                 }
             }
         }
-        div(classes="horizontal g-md") {
-            table(classes="charts-css flex-1 bar stacked show-labels data-spacing-10 datasets-spacing-1 big-label") {
-                style="--labels-size: 8em"
-                thead { }
-                tbody {
-                    for (trend in trends) {
-                        tr {
-                            th(classes="row no-wrap") {
-                                val name = trend.userName.split(" ")
-                                +name.first()
-                                if (name.size > 1) { +" ${name.last().first()}" }
-                            }
-                            td { style="--size: 0"; +" " }
-                            chartWidget(trend.sickCount, "Ziek", "blue-dim")
-                            chartWidget(trend.absentCount, "O.A.", "red-dim")
-                            chartWidget(trend.verifiedAbsentCount, "G.A.", "green-dim")
-                            chartWidget(trend.lateCount, "T.L.", "yellow")
-                            chartWidget(trend.onTimeCount, "O.T.", "green")
+
+        table(classes="charts-css flex-1 bar stacked show-labels data-spacing-10 datasets-spacing-1 big-label colors-presence") {
+            style="--labels-size: 8em"
+            thead { }
+            tbody {
+                for (trend in trends) {
+                    tr {
+                        th(classes="row no-wrap") {
+                            val name = trend.userName.split(" ")
+                            +name.first()
+                            if (name.size > 1) { +" ${name.last().first()}" }
                         }
+                        td { style="--size: 0"; +" " }
+                        chartWidget(trend.sickCount, "Ziek", "blue-dim")
+                        chartWidget(trend.absentCount, "O.A.", "red-dim")
+                        chartWidget(trend.verifiedAbsentCount, "G.A.", "green-dim")
+                        chartWidget(trend.lateCount, "T.L.", "yellow")
+                        chartWidget(trend.onTimeCount, "O.T.", "green")
                     }
                 }
             }
         }
-    }
 
-//    card {
-//        h3 { +"In Detail" }
-//
-//        for (trend in trends) {
-//            div(classes="horizontal px-md align-center") {
-//                span(classes="name-field b-none") {
-//                    +trend.userName
-//                }
-//                a(href=application.href(Group.Trends.User(trend.groupId, trend.userId)), classes="btn btn-blue") {
-//                    +"Meer"
-//                }
-//            }
-//        }
-//    }
+        ul(classes="charts-css legend legend-square legend-inline mt-md colors-presence") {
+            li { +"Ziek"}
+            li { +"O.A. Ongeoorloofd Afwezig"}
+            li { +"G.A. Geoorloofd Afwezig"}
+            li { +"T.L. Te Laat"}
+            li { +"O.T. Op Tijd"}
+        }
+    }
 }
 
 fun FlowContent.groupExportContent(application: Application, currentUser: GroupUser, users: List<GroupUser>) {
