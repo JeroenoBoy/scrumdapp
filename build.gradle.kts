@@ -4,6 +4,8 @@ val h2_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val exposed_kotlinxdatetime_version: String by project
+val project_version: String by project
+
 
 plugins {
     id("java")
@@ -13,7 +15,7 @@ plugins {
 }
 
 group = "com.jeroenvdg"
-version = "0.4.0"
+version = project_version
 
 application {
     mainClass = "com.jeroenvdg.scrumdapp.ApplicationKt"
@@ -22,7 +24,11 @@ application {
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = application.mainClass
+        attributes["Implementation-Version"] = project.version
+        attributes["Specification-Version"] = project.version
     }
+    archiveBaseName.set(project.name)
+    archiveVersion.set(project_version)
 }
 
 dependencies {
