@@ -1,10 +1,13 @@
 package com.jeroenvdg.scrumdapp.views
 
 import com.jeroenvdg.scrumdapp.middleware.user
+import com.jeroenvdg.scrumdapp.services.VersionService
+import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.views.components.navbar
 import io.ktor.server.application.Application
 import io.ktor.server.config.getAs
 import io.ktor.server.engine.applicationEnvironment
+import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.routing.RoutingCall
 import kotlinx.html.BODY
 import kotlinx.html.FlowContent
@@ -26,7 +29,9 @@ data class DashboardPageData(val title: String, val call: RoutingCall, val backg
 
 fun HTML.mainLayout(application: Application, pageData: PageData, builder: BODY.() -> Unit = {}) {
     lang="nl-NL"
-    val version = application.environment.config.propertyOrNull("app.version")?.getString() ?: "0.0"
+
+    val version = application.dependencies.resolveBlocking<VersionService>().version
+
     head {
         title("${pageData.title} | Scrumdapp")
         styleLink("/static/theme.css?v=$version")

@@ -4,6 +4,3 @@ ktor:
       - com.jeroenvdg.scrumdapp.ApplicationKt.module
   deployment:
     port: 3000
-
-app:
-  version: '0.4.1'
