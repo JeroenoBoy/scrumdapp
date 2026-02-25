@@ -105,6 +105,13 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     +"Eigen Check-in"
                 }
             }
+
+            if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
+                    icon(iconName="edit", classes="blue")
+                    +"Pas aan"
+                }
+            }
         }
     }
 
@@ -354,7 +361,10 @@ fun FlowContent.editableCheckinWidget(application: Application, checkins: List<C
                 }
             }
 
-            div(classes="flex-1")
+            p(classes="gray text-sm") {
+                +"Dit menu kan veranderingen overschrijven van andere studenten. Gebruik de eigen check-in & presentie feature als ieder haar eigen check-ins doet"
+            }
+
             div(classes="horizontal g-md items-center") {
                 div(classes="flex-1")
                 a(href = "#confirm-cancel-$id", classes="btn") {
