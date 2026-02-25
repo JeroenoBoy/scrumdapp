@@ -283,8 +283,8 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
                     span { +"Check-up" }
                 }
 
-                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
-                    stars(checkin.checkinStars)
+                span(classes=checkinColorMap[checkin.checkupStars ?: 11]) {
+                    stars(checkin.checkupStars)
                 }
             }
 
