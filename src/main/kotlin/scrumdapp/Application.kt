@@ -18,6 +18,7 @@ import com.jeroenvdg.scrumdapp.services.EnvironmentService
 import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.services.GroupService
 import com.jeroenvdg.scrumdapp.services.TrendsService
+import com.jeroenvdg.scrumdapp.services.VersionService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import io.ktor.client.*
@@ -42,8 +43,16 @@ fun main(args: Array<String>) {
 
 suspend fun Application.module() {
     val env = DotenvService()
+    val versionService = VersionService()
+
+    println("Scrumdapp version - ${versionService.version}")
+
+    dependencies {
+        provide<EnvironmentService> { env }
+        provide<VersionService>{ versionService }
+    }
+
     val httpClient = HttpClient(CIO) { }
-    dependencies { provide<EnvironmentService> { env } }
     val database = initializeDatabase()
     val encryptionService = EncryptionServiceImpl(env)
     val userRepository = UserRepositoryImpl()
