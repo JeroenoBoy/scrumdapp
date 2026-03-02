@@ -57,7 +57,7 @@ class CheckinRepositoryImpl: CheckinRepository {
                 .select(GroupCheckins.fields + UserGroups.groupId + Users.id + Users.name)
                 .where { (UserGroups.groupId eq groupId) and (UserGroups.permissions neq UserPermissions.Coach.id) }
                 .map { Checkin(
-                        id = it.getOrNull(GroupCheckins.id) ?: -1,
+                        id = it.getOrNull(GroupCheckins.id) ?: 0,
                         groupId = it[UserGroups.groupId],
                         name = it[Users.name],
                         userId = it[Users.id],
@@ -126,8 +126,9 @@ class CheckinRepositoryImpl: CheckinRepository {
 
     override suspend fun saveGroupCheckin(checkins: List<Checkin>) {
         return dbQuery {
+            addLogger(StdOutSqlLogger)
             GroupCheckins.batchUpsert(checkins) { checkin ->
-                if (checkin.id != -1) this[GroupCheckins.id] = checkin.id
+                if (checkin.id != 0) this[GroupCheckins.id] = checkin.id
                 this[GroupCheckins.groupId] = checkin.groupId
                 this[GroupCheckins.userId] = checkin.userId
                 this[GroupCheckins.presence] = checkin.presence
