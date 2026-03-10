@@ -25,7 +25,7 @@ import kotlinx.html.styleLink
 import kotlinx.html.title
 
 data class PageData(val title: String, val contentFrame: Boolean = false)
-data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "15")
+data class DashboardPageData(val title: String, val call: RoutingCall, val background: String? = "1")
 
 fun HTML.mainLayout(application: Application, pageData: PageData, builder: BODY.() -> Unit = {}) {
     lang="nl-NL"
