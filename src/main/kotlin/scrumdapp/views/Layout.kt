@@ -55,7 +55,7 @@ fun HTML.mainLayout(application: Application, pageData: PageData, builder: BODY.
 fun HTML.dashboardLayout(application: Application, pageData: DashboardPageData, builder: FlowContent.() -> Unit = {}) {
     mainLayout(application, PageData(pageData.title)) {
         div { id = "app"
-            img(alt="bg-img", src="/static/backgrounds/${pageData.background ?: "15"}.webp", classes="bg-img")
+            img(alt="bg-img", src="/static/backgrounds/${pageData.background ?: "1"}.webp", classes="bg-img")
             navbar(pageData.call.application, pageData.call.user)
             div(classes="nav-height")
             div(classes="spacer-xl")
