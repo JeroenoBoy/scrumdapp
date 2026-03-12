@@ -135,7 +135,7 @@ suspend fun Application.configureGroupRoutes() {
     routing {
         route<GroupsRouter> {
             install(IsLoggedIn)
-            rateLimit(RateLimitName("postLimiter")){
+            rateLimit(RateLimitName("groupCreation")){
                 groupsRoutes()
             }
 
@@ -143,7 +143,7 @@ suspend fun Application.configureGroupRoutes() {
                 install(IsInGroup)
                 groupCheckinRoutes()
 
-                rateLimit(RateLimitName("postLimiter")) {
+                rateLimit(RateLimitName("checkinSubmit")) {
                     route<GroupsRouter.Group.Edit> {
                         groupEditCheckinRoutes()
                     }
