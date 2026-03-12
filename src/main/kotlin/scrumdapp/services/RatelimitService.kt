@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.seconds
 
 fun Application.configureRatelimitService() {
     install(RateLimit) {
-        register(RateLimitName("checkinSubmit")) {
+        register(RateLimitName("postLimiter")) {
             rateLimiter(limit = 1, refillPeriod = 1.seconds )
             requestKey { applicationCall ->
                 applicationCall.user.id
@@ -27,4 +27,3 @@ fun Application.configureRatelimitService() {
         }
     }
 }
-
