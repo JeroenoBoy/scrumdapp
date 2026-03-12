@@ -135,7 +135,9 @@ suspend fun Application.configureGroupRoutes() {
     routing {
         route<GroupsRouter> {
             install(IsLoggedIn)
-            groupsRoutes()
+            rateLimit(RateLimitName("groupCreation")){
+                groupsRoutes()
+            }
 
             route<GroupsRouter.Group> {
                 install(IsInGroup)
