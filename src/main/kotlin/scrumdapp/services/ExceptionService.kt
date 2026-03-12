@@ -40,6 +40,12 @@ class NotFoundException(
     override val title: String = "Pagina niet gevonden"
 ): AppException(code, message, title, log = false)
 
+class TooManyRequestsException(
+    override val message: String = "Je stuurt te veel verzoeken, even geduld",
+    override val code: Int = 429,
+    override val title: String = "Te veel verzoeken",
+): AppException(code, message, title, log=false)
+
 class ServerFaultException(
     override val message: String = "Er is misgegaan, probeer het later opnieuw.",
     override val code: Int = 500,
@@ -95,6 +101,7 @@ fun Application.configureExceptionService() {
             HttpStatusCode.NotFound,
             HttpStatusCode.InternalServerError,
             HttpStatusCode.BadRequest,
+            HttpStatusCode.TooManyRequests,
         ) {call, statusCode ->
             when(statusCode) {
                 HttpStatusCode.NotFound -> {
@@ -102,6 +109,9 @@ fun Application.configureExceptionService() {
                 }
                 HttpStatusCode.BadRequest -> {
                     throw ServerFaultException()
+                }
+                HttpStatusCode.TooManyRequests -> {
+                    throw TooManyRequestsException()
                 }
                 HttpStatusCode.InternalServerError -> {
                     throw ServerFaultException()

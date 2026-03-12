@@ -19,6 +19,7 @@ import com.jeroenvdg.scrumdapp.services.InviteService
 import com.jeroenvdg.scrumdapp.services.GroupService
 import com.jeroenvdg.scrumdapp.services.TrendsService
 import com.jeroenvdg.scrumdapp.services.VersionService
+import com.jeroenvdg.scrumdapp.services.configureRatelimitService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordService
 import com.jeroenvdg.scrumdapp.services.oauth2.discord.DiscordServiceImpl
 import io.ktor.client.*
@@ -107,6 +108,7 @@ suspend fun Application.module() {
 
     install(Resources)
 
+    configureRatelimitService()
     configureExceptionService()
     configureGroupRoutes()
     configureInviteRoutes()
