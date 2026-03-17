@@ -17,6 +17,8 @@ import io.ktor.resources.Resource
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
 import io.ktor.server.plugins.di.dependencies
+import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.routing.routing
 import io.ktor.server.response.respond
@@ -133,14 +135,18 @@ suspend fun Application.configureGroupRoutes() {
     routing {
         route<GroupsRouter> {
             install(IsLoggedIn)
-            groupsRoutes()
+            rateLimit(RateLimitName("groupCreation")){
+                groupsRoutes()
+            }
 
             route<GroupsRouter.Group> {
                 install(IsInGroup)
                 groupCheckinRoutes()
 
-                route<GroupsRouter.Group.Edit> {
-                    groupEditCheckinRoutes()
+                rateLimit(RateLimitName("checkinSubmit")) {
+                    route<GroupsRouter.Group.Edit> {
+                        groupEditCheckinRoutes()
+                    }
                 }
 
                 route<GroupsRouter.Group.Export> {

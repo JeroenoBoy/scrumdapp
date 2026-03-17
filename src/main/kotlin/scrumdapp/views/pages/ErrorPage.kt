@@ -4,7 +4,6 @@ import com.jeroenvdg.scrumdapp.services.ExceptionContent
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.div
-import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.img
 import kotlinx.html.p
@@ -21,3 +20,10 @@ fun FlowContent.errorPage(exception: ExceptionContent) {
     }
 }
 
+fun FlowContent.errorContent(exception: ExceptionContent) {
+    div(classes="card min-w-20 text-center vertical align-center") {
+        img(src = "https://http.cat/${exception.code}", alt = "http-cat-${exception.code}", classes = "max-w-lg card-img")
+        h2(classes = "card-title") { +(exception.title ?: "Oops! Er is misgegaan") }
+        p { +exception.message }
+    }
+}
