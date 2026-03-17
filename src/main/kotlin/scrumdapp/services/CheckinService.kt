@@ -10,6 +10,7 @@ import com.jeroenvdg.scrumdapp.utils.parseMonth
 import io.ktor.http.Parameters
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.YearMonth
@@ -31,6 +32,12 @@ data class CheckinDay(
     val date: LocalDate,
     val hasCheckin: Boolean,
 )
+
+enum class DateEditValue(val editable: Boolean, val canView: Boolean) {
+    Editable(true, true),
+    TooOld(false, true),
+    TooNew(false, false)
+}
 
 class CheckinService(
     private val checkinRepository: CheckinRepository,
@@ -132,6 +139,18 @@ class CheckinService(
         }
 
         return MonthData(weekStartDate, weekEndDate, yearMonth, days)
+    }
+
+    fun canEditCheckin(date: LocalDate): DateEditValue {
+        val now = LocalDate.now()
+        val diff = now.daysUntil(date)
+        if (diff > 1) {
+            return DateEditValue.TooNew
+        }
+        if (diff < -7) {
+            return DateEditValue.TooOld
+        }
+        return DateEditValue.Editable;
     }
 
 }
