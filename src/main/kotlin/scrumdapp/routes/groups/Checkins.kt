@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.middleware.user
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.services.CheckinService
+import com.jeroenvdg.scrumdapp.services.ExceptionContent
 import com.jeroenvdg.scrumdapp.services.NoAccessException
 import com.jeroenvdg.scrumdapp.services.ValidationException
 import com.jeroenvdg.scrumdapp.services.toExceptionContent
@@ -17,6 +18,8 @@ import com.jeroenvdg.scrumdapp.utils.typedGet
 import com.jeroenvdg.scrumdapp.utils.typedPost
 import com.jeroenvdg.scrumdapp.views.DashboardPageData
 import com.jeroenvdg.scrumdapp.views.dashboardLayout
+import com.jeroenvdg.scrumdapp.views.pages.errorContent
+import com.jeroenvdg.scrumdapp.views.pages.errorPage
 import com.jeroenvdg.scrumdapp.views.pages.groups.checkinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.editableCheckinWidget
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
@@ -30,18 +33,31 @@ import io.ktor.server.routing.application
 
 fun Route.groupCheckinRoutes() {
     val checkinRepository = application.dependencies.resolveBlocking<CheckinRepository>()
+    val checkinService = application.dependencies.resolveBlocking<CheckinService>()
 
     typedGet<GroupsRouter.Group> { groupData ->
         val date = groupData.getIsoDateParam()
         val group = call.group
         val groupUser = call.groupUser
-        val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
+
+        val editValue = checkinService.canEditCheckin(date)
+        if (!editValue.canView) {
+            return@typedGet call.respondHtml {
+                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
+                    groupPage(application, checkinDates, group, call.groupUser.permissions) {
+                        errorContent(ExceptionContent(400, "Validatiefout", "Je mag de check-in maximaal maar 1 dag van tevoren invullen", ""))
+                    }
+                }
+            }
+        }
+
+        val checkins = checkinRepository.getGroupCheckins(group.id, date)
 
         call.respondHtml {
             dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
                 groupPage(application, checkinDates, group, groupUser.permissions) {
-                    checkinWidget(application, groupUser, checkins, group, date)
+                    checkinWidget(application, groupUser, checkins, group, date, editValue)
                 }
             }
         }
@@ -59,8 +75,30 @@ fun Route.groupEditCheckinRoutes() {
 
         val date = groupEditData.parent.getIsoDateParam()
         val group = call.group
-        val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val checkinDates = checkinRepository.getRecentCheckinDates(group.id)
+
+        val editValue = checkinService.canEditCheckin(date)
+        if (!editValue.canView) {
+            return@typedGet call.respondHtml {
+                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
+                    groupPage(application, checkinDates, group, call.groupUser.permissions) {
+                        errorContent(ExceptionContent(400, "Validatiefout", "Je mag de check-in maximaal maar 1 dag van tevoren invullen", ""))
+                    }
+                }
+            }
+        }
+
+        if (!editValue.editable) {
+            return@typedGet call.respondHtml {
+                dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
+                    groupPage(application, checkinDates, group, call.groupUser.permissions) {
+                        errorContent(ExceptionContent(400, "Validatiefout", "Je mag de check-in maximaal maar 7 dag terug aanpassen", ""))
+                    }
+                }
+            }
+        }
+
+        val checkins = checkinRepository.getGroupCheckins(group.id, date)
 
         call.respondHtml {
             dashboardLayout(application, DashboardPageData(group.name, call, group.bannerImage)) {
@@ -77,6 +115,11 @@ fun Route.groupEditCheckinRoutes() {
         }
 
         val date = groupEditData.parent.getIsoDateParam()
+        val editValue = checkinService.canEditCheckin(date)
+        if (!editValue.editable) {
+            throw ValidationException("Deze check-in kan niet aangepast worden")
+        }
+
         val group = call.group
         val checkins = checkinRepository.getGroupCheckins(group.id, date)
         val success = checkinService.handleBatchCheckin(date, checkins, call.receiveParameters())
@@ -102,6 +145,11 @@ fun Route.groupEditCheckinRoutes() {
             }
 
             val date = presenceEditData.parent.parent.getIsoDateParam()
+            val editValue = checkinService.canEditCheckin(date)
+            if (!editValue.editable) {
+                throw ValidationException("Deze check-in kan niet aangepast worden")
+            }
+
             val group = call.group
             val checkins = checkinRepository.getGroupCheckins(group.id, date)
             checkinService.handleGroupPresence(date, checkins, call.receiveParameters())
@@ -113,6 +161,11 @@ fun Route.groupEditCheckinRoutes() {
     route<GroupsRouter.Group.Edit.User> {
         typedPost<GroupsRouter.Group.Edit.User> { checkinEditData ->
             val date = checkinEditData.parent.parent.getIsoDateParam()
+            val editValue = checkinService.canEditCheckin(date)
+            if (!editValue.editable) {
+                throw ValidationException("Deze check-in kan niet aangepast worden")
+            }
+
             val user = call.user
             val group = call.group
             if (checkinEditData.userId != user.id) {

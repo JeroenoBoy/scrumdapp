@@ -3,17 +3,16 @@ package com.jeroenvdg.scrumdapp.views.pages.groups
 import com.jeroenvdg.scrumdapp.db.Checkin
 import com.jeroenvdg.scrumdapp.db.Group
 import com.jeroenvdg.scrumdapp.db.GroupUser
-import com.jeroenvdg.scrumdapp.db.User
 import com.jeroenvdg.scrumdapp.middleware.ComparePermissions
 import com.jeroenvdg.scrumdapp.models.Presence
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
+import com.jeroenvdg.scrumdapp.services.DateEditValue
 import com.jeroenvdg.scrumdapp.utils.isNewCheckin
 import com.jeroenvdg.scrumdapp.utils.scrumdappFormat
 import com.jeroenvdg.scrumdapp.utils.scrumdappUrlFormat
 import com.jeroenvdg.scrumdapp.views.components.card
 import com.jeroenvdg.scrumdapp.views.components.icon
-import com.jeroenvdg.scrumdapp.views.components.markdownRenderBlock
 import com.jeroenvdg.scrumdapp.views.components.modal
 import com.jeroenvdg.scrumdapp.views.components.renderMarkdown
 import com.jeroenvdg.scrumdapp.views.components.stars
@@ -26,7 +25,6 @@ import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.br
-import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.form
 import kotlinx.html.h2
@@ -49,7 +47,7 @@ import kotlin.random.Random
 
 val checkinColorMap = listOf("red-dim", "red", "orange-dim", "orange", "yellow-dim", "yellow", "green-dim", "green", "aqua", "blue", "blue-dim", "gray")
 
-fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, checkins: List<Checkin>, group: Group, date: LocalDate) {
+fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, checkins: List<Checkin>, group: Group, date: LocalDate, editValue: DateEditValue) {
     val id=Random.nextInt(999999)
 
     card {
@@ -90,229 +88,237 @@ fun FlowContent.checkinWidget(application: Application, groupUser: GroupUser, ch
             }
         }
 
-        div(classes="flex-1")
-        div(classes="horizontal g-md justify-end") {
-            if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
-                a(href="#edit-presence", classes="btn") {
-                    icon(iconName="timer", classes="red")
-                    +"Registreer aanwezigheid"
+        if (editValue.editable) {
+            div(classes="flex-1")
+            div(classes = "horizontal g-md justify-end") {
+                if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+                    a(href = "#edit-presence", classes = "btn") {
+                        icon(iconName = "timer", classes = "red")
+                        +"Registreer aanwezigheid"
+                    }
+                }
+
+                if (groupUser.permissions != UserPermissions.Coach) {
+                    a(href = "#own-check-in", classes = "btn") {
+                        icon(iconName = "assignment", classes = "green")
+                        +"Eigen Check-in"
+                    }
+                }
+
+                if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+                    a(href = application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes = "btn") {
+                        icon(iconName = "edit", classes = "blue")
+                        +"Pas aan"
+                    }
                 }
             }
-
-            if (groupUser.permissions != UserPermissions.Coach) {
-                a(href="#own-check-in", classes="btn") {
-                    icon(iconName="assignment", classes="green")
-                    +"Eigen Check-in"
-                }
-            }
-
-            if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
-                a(href=application.href(GroupsRouter.Group.Edit(group.id, date.scrumdappUrlFormat())), classes="btn") {
-                    icon(iconName="edit", classes="blue")
-                    +"Pas aan"
-                }
+        } else {
+            p(classes="muted text-right") {
+                +"De check-in kan niet meer aangepast worden"
             }
         }
     }
 
-    if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
-        modal(id="edit-presence") {
-            h2 { +"Registreer aanwezigheid voor "; b { +(date.scrumdappFormat()) } }
-            br()
-            form(
-                classes="vertical g-md flex-1",
-                action=application.href(GroupsRouter.Group.Edit.Presence(group.id, date.scrumdappUrlFormat())),
-                method=FormMethod.post
-            ) {
-                table(classes="checkin-table") {
-                    thead {
-                        tr {
-                            th(classes="text-left name-field") { +"Naam" }
-                            th(classes="text-left pl-md") { +"Presentie" }
-                        }
-                    }
-                    tbody {
-                        for (checkin in checkins) {
+    if (editValue.editable) {
+        if (ComparePermissions(groupUser.permissions, UserPermissions.CheckinManagement)) {
+            modal(id="edit-presence") {
+                h2 { +"Registreer aanwezigheid voor "; b { +(date.scrumdappFormat()) } }
+                br()
+                form(
+                    classes="vertical g-md flex-1",
+                    action=application.href(GroupsRouter.Group.Edit.Presence(group.id, date.scrumdappUrlFormat())),
+                    method=FormMethod.post
+                ) {
+                    table(classes="checkin-table") {
+                        thead {
                             tr {
-                                td(classes="text-ellpise name-field") { +checkin.name }
-                                td(classes="pl-md ") {
-                                    presenceSelect(checkin.userId, checkin.presence)
+                                th(classes="text-left name-field") { +"Naam" }
+                                th(classes="text-left pl-md") { +"Presentie" }
+                            }
+                        }
+                        tbody {
+                            for (checkin in checkins) {
+                                tr {
+                                    td(classes="text-ellpise name-field") { +checkin.name }
+                                    td(classes="pl-md ") {
+                                        presenceSelect(checkin.userId, checkin.presence)
+                                    }
                                 }
                             }
                         }
                     }
+                    div(classes="horizontal g-md justify-end") {
+                        a(href="#edit-presence-cancel-$id", classes="btn") {
+                            icon(iconName="cancel", classes="gray")
+                            +"Annuleren"
+                        }
+
+                        div(classes="hacky-icon") {
+                            icon(iconName="timer", classes="blue")
+                            input(type=InputType.submit, classes="btn") { value = "Versturen" }
+                        }
+                    }
+                }
+            }
+
+            modal(id="edit-presence-cancel-$id") {
+                h2 { +"Let op!"}
+                p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                    b(classes="green") { +"ga terug "}
+                    +"om je check-in alsnog op te slaan."
                 }
                 div(classes="horizontal g-md justify-end") {
-                    a(href="#edit-presence-cancel-$id", classes="btn") {
-                        icon(iconName="cancel", classes="gray")
-                        +"Annuleren"
+                    a(href="", classes="btn") {
+                        icon(iconName="cancel", classes="red")
+                        +"Ik weet wat ik doe"
                     }
 
-                    div(classes="hacky-icon") {
-                        icon(iconName="timer", classes="blue")
-                        input(type=InputType.submit, classes="btn") { value = "Versturen" }
+                    a(href="#edit-presence", classes="btn") {
+                        icon(iconName="undo", classes="green")
+                        +"Ga terug"
                     }
                 }
             }
         }
 
-        modal(id="edit-presence-cancel-$id") {
-            h2 { +"Let op!"}
-            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
-                b(classes="green") { +"ga terug "}
-                +"om je check-in alsnog op te slaan."
-            }
-            div(classes="horizontal g-md justify-end") {
-                a(href="", classes="btn") {
-                    icon(iconName="cancel", classes="red")
-                    +"Ik weet wat ik doe"
-                }
-
-                a(href="#edit-presence", classes="btn") {
-                    icon(iconName="undo", classes="green")
-                    +"Ga terug"
-                }
-            }
-        }
-    }
-
-
-    if (groupUser.permissions != UserPermissions.Coach) {
-        modal(id="own-check-in") {
-            val checkin = checkins.first { it.userId == groupUser.user.id }
-            h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
-            br()
-            form(
-                classes="vertical g-md flex-1",
-                action=application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
-                method=FormMethod.post
-            ) {
-
-                div(classes="input-group") {
-                    label(classes="input-label horizontal align-center g-sm") {
-                        htmlFor="checkin"
-                        icon(iconName="arrow_circle_down", classes="green")
-                        span { +"Check-in" }
-                    }
-                    checkinSelect("checkin", checkin.checkinStars)
-                }
-
-                div(classes="input-group") {
-                    label(classes="input-label horizontal align-center g-sm") {
-                        htmlFor="checkup"
-                        icon(iconName="arrow_circle_up", classes="blue")
-                        span { +"Check-up" }
-                    }
-                    checkinSelect("checkup", checkin.checkupStars)
-                }
-
+        if (groupUser.permissions != UserPermissions.Coach) {
+            modal(id = "own-check-in") {
+                val checkin = checkins.first { it.userId == groupUser.user.id }
+                h2 { +"Eigen check-in voor "; b { +(date.scrumdappFormat()) } }
                 br()
+                form(
+                    classes = "vertical g-md flex-1",
+                    action = application.href(GroupsRouter.Group.Edit.User(group.id, groupUser.user.id, date.scrumdappUrlFormat())),
+                    method = FormMethod.post
+                ) {
 
-                label(classes="input-label horizontal align-center g-sm") {
-                    htmlFor="comment"
-                    icon(iconName="note", classes="red")
-                    span { +"Opmerkingen" }
-                }
-
-                textArea(classes="input no-resize", rows="8") {
-                    name="comment"
-                    +(checkin.comment ?: "")
-                }
-                span(classes="gray text-sm") {
-                    +"Max. 2048 karakters"
-                }
-
-                br()
-
-                div(classes="horizontal g-md justify-end") {
-                    a(href="#own-check-in-warning-$id", classes="btn") {
-                        icon(iconName="cancel", classes="gray")
-                        +"Annuleren"
+                    div(classes = "input-group") {
+                        label(classes = "input-label horizontal align-center g-sm") {
+                            htmlFor = "checkin"
+                            icon(iconName = "arrow_circle_down", classes = "green")
+                            span { +"Check-in" }
+                        }
+                        checkinSelect("checkin", checkin.checkinStars)
                     }
 
-                    div(classes="hacky-icon") {
-                        icon(iconName="check", classes="blue")
-                        input(type=InputType.submit, classes="btn") { value = "Toepassen" }
+                    div(classes = "input-group") {
+                        label(classes = "input-label horizontal align-center g-sm") {
+                            htmlFor = "checkup"
+                            icon(iconName = "arrow_circle_up", classes = "blue")
+                            span { +"Check-up" }
+                        }
+                        checkinSelect("checkup", checkin.checkupStars)
+                    }
+
+                    br()
+
+                    label(classes = "input-label horizontal align-center g-sm") {
+                        htmlFor = "comment"
+                        icon(iconName = "note", classes = "red")
+                        span { +"Opmerkingen" }
+                    }
+
+                    textArea(classes = "input no-resize", rows = "8") {
+                        name = "comment"
+                        +(checkin.comment ?: "")
+                    }
+                    span(classes = "gray text-sm") {
+                        +"Max. 2048 karakters"
+                    }
+
+                    br()
+
+                    div(classes = "horizontal g-md justify-end") {
+                        a(href = "#own-check-in-warning-$id", classes = "btn") {
+                            icon(iconName = "cancel", classes = "gray")
+                            +"Annuleren"
+                        }
+
+                        div(classes = "hacky-icon") {
+                            icon(iconName = "check", classes = "blue")
+                            input(type = InputType.submit, classes = "btn") { value = "Toepassen" }
+                        }
                     }
                 }
             }
-        }
 
-        modal(id="own-check-in-warning-$id") {
-            h2 { +"Let op!"}
-            p { +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
-                b(classes="green") { +"ga terug "}
-                +"om je check-in alsnog op te slaan."
-            }
-            div(classes="horizontal g-md justify-end") {
-                a(href="", classes="btn") {
-                    icon(iconName="cancel", classes="red")
-                    +"Ik weet wat ik doe"
+            modal(id = "own-check-in-warning-$id") {
+                h2 { +"Let op!" }
+                p {
+                    +"Je veranderingen bij je eigen check-in zijn nog niet opgeslagen! Klik op "
+                    b(classes = "green") { +"ga terug " }
+                    +"om je check-in alsnog op te slaan."
                 }
+                div(classes = "horizontal g-md justify-end") {
+                    a(href = "", classes = "btn") {
+                        icon(iconName = "cancel", classes = "red")
+                        +"Ik weet wat ik doe"
+                    }
 
-                a(href="#own-check-in", classes="btn") {
-                    icon(iconName="undo", classes="green")
-                    +"Ga terug"
+                    a(href = "#own-check-in", classes = "btn") {
+                        icon(iconName = "undo", classes = "green")
+                        +"Ga terug"
+                    }
                 }
             }
         }
     }
 
     for (checkin in checkins) {
-        modal(id="user-overview-${checkin.userId}") {
+        modal(id = "user-overview-${checkin.userId}") {
             h2 { +"Check-in van ${checkin.name} op ${checkin.date.scrumdappFormat()}" }
             br()
-            div(classes="input-group") {
-                span(classes="input-label horizontal align-center g-sm") {
-                    icon(iconName="alarm_on", classes="yellow")
+            div(classes = "input-group") {
+                span(classes = "input-label horizontal align-center g-sm") {
+                    icon(iconName = "alarm_on", classes = "yellow")
                     span { +"Presentie" }
                 }
                 if (checkin.presence == null) {
-                    span(classes="gray") { +"---" }
+                    span(classes = "gray") { +"---" }
                 } else {
-                    span(classes=checkin.presence!!.color) { +checkin.presence!!.key }
+                    span(classes = checkin.presence!!.color) { +checkin.presence!!.key }
                 }
             }
-            div(classes="input-group") {
-                span(classes="input-label horizontal align-center g-sm") {
-                    icon(iconName="arrow_circle_down", classes="green")
+            div(classes = "input-group") {
+                span(classes = "input-label horizontal align-center g-sm") {
+                    icon(iconName = "arrow_circle_down", classes = "green")
                     span { +"Check-in" }
                 }
 
-                span(classes=checkinColorMap[checkin.checkinStars ?: 11]) {
+                span(classes = checkinColorMap[checkin.checkinStars ?: 11]) {
                     stars(checkin.checkinStars)
                 }
             }
 
-            div(classes="input-group") {
-                span(classes="input-label horizontal align-center g-sm") {
-                    icon(iconName="arrow_circle_up", classes="blue")
+            div(classes = "input-group") {
+                span(classes = "input-label horizontal align-center g-sm") {
+                    icon(iconName = "arrow_circle_up", classes = "blue")
                     span { +"Check-up" }
                 }
 
-                span(classes=checkinColorMap[checkin.checkupStars ?: 11]) {
+                span(classes = checkinColorMap[checkin.checkupStars ?: 11]) {
                     stars(checkin.checkupStars)
                 }
             }
 
             br()
 
-            span(classes="input-label horizontal align-center g-sm") {
-                icon(iconName="note", classes="red")
+            span(classes = "input-label horizontal align-center g-sm") {
+                icon(iconName = "note", classes = "red")
                 span { +"Opmerkingen" }
             }
 
             renderMarkdown(checkin.comment ?: "")
 
-            div(classes="horizontal g-md justify-end") {
-                if (checkin.userId == groupUser.user.id) {
-                        a(href="#own-check-in", classes="btn") {
-                            icon(iconName="assignment", classes="green")
-                            +"Pas eigen check-in aan"
-                        }
+            div(classes = "horizontal g-md justify-end") {
+                if (checkin.userId == groupUser.user.id && editValue.editable) {
+                    a(href = "#own-check-in", classes = "btn") {
+                        icon(iconName = "assignment", classes = "green")
+                        +"Pas eigen check-in aan"
+                    }
                 }
-                a(href="", classes="btn") {
-                    icon(iconName="undo", classes="gray")
+                a(href = "", classes = "btn") {
+                    icon(iconName = "undo", classes = "gray")
                     +"Terug"
                 }
             }
