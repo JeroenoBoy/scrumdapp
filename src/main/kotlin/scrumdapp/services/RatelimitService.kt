@@ -10,6 +10,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 fun Application.configureRatelimitService() {
+
     install(RateLimit) {
         register(RateLimitName("checkinSubmit")) {
             rateLimiter(limit = 1, refillPeriod = 1.seconds )
