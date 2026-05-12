@@ -8,6 +8,7 @@ import com.jeroenvdg.scrumdapp.routes.groups.clamp
 import com.jeroenvdg.scrumdapp.utils.now
 import com.jeroenvdg.scrumdapp.utils.parseMonth
 import io.ktor.http.Parameters
+import io.ktor.server.plugins.BadRequestException
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
@@ -60,7 +61,14 @@ class CheckinService(
             }
             if (body.contains("comment-${checkin.userId}")) {
                 checkin.comment = body["comment-${checkin.userId}"]
+
+                if (checkin.comment != null && checkin.comment!!.length > 2000) {
+                    throw ValidationException("Maximum input exceeded")
+                }
+
                 if (checkin.comment.isNullOrBlank()) checkin.comment = null
+
+
             }
         }
         try {

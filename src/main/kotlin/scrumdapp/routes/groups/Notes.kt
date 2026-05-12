@@ -7,6 +7,7 @@ import com.jeroenvdg.scrumdapp.middleware.group
 import com.jeroenvdg.scrumdapp.middleware.groupUser
 import com.jeroenvdg.scrumdapp.models.UserPermissions
 import com.jeroenvdg.scrumdapp.routes.groups.GroupsRouter
+import com.jeroenvdg.scrumdapp.services.ValidationException
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.utils.typedGet
@@ -16,6 +17,7 @@ import com.jeroenvdg.scrumdapp.views.dashboardLayout
 import com.jeroenvdg.scrumdapp.views.pages.groups.groupPage
 import io.ktor.resources.href
 import io.ktor.server.html.respondHtml
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.plugins.di.getBlocking
 import io.ktor.server.request.receiveParameters
@@ -65,6 +67,9 @@ fun Route.groupNoteRoutes() {
         typedPost<GroupsRouter.Group.Notes.Edit> {
             val group = call.group
             val notes = call.receiveParameters()["notes"]
+            if (notes != null && notes.length >= 2000) {
+                throw ValidationException("Maximum input exceeded")
+            }
             groupRepository.saveGroupNotes(group.id, notes)
             call.respondRedirect(application.href(GroupsRouter.Group.Notes(group.id)))
         }
