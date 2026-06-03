@@ -9,7 +9,10 @@ class GroupService(
     private val groupRepository: GroupRepository,
 ) {
     suspend fun alterUserPermissions(groupId: Int, permChanges: Map<Int, Int>, user: GroupUser): Boolean {
+        val groupUsers = groupRepository.getGroupUsers(groupId)
         for ((userId, permId) in permChanges) {
+            val target = groupUsers.firstOrNull { it.user.id == userId } ?: return false
+            if (!ComparePermissions(user.permissions, target.permissions)) return false
             if (user.permissions.id < permId) {
                 try {
                     groupRepository.alterGroupMemberPerms(groupId, userId, UserPermissions.get(permId))
