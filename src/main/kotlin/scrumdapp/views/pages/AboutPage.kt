@@ -49,7 +49,7 @@ fun FlowContent.aboutPage() {
 
     div(classes="spacer-lg")
 
-    h2 { +"Met dank aan"}
+    h2 { +"Contributors"}
     ul {
         li { a(href="https://github.com/ValkyrieViolet", classes="a") { target="_blank"; +"ValkyViolet"} }
     }

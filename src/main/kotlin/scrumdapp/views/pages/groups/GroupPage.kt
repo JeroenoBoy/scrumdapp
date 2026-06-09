@@ -19,7 +19,11 @@ import kotlin.random.Random
 
 inline fun FlowContent.groupPage(application: Application, checkins: List<LocalDate>, group: Group, perms: UserPermissions, exception: ExceptionContent? = null, crossinline block: MAIN.() -> Unit = {}) {
     val rng = Random.nextInt(9999999)
+
     h1 { +group.name }
+    div(classes = "card horizontal g-md mb-lg blue") {
+        h2 { +"LET OP! Zorg ervoor dat je je aanwezigheid hebt gedownload via de "; a(href=application.href(GroupsRouter.Group.Trends(group.id)), classes="blue-dim a") {+"trends pagina!"}}
+    }
     div(classes = "horizontal g-lg mb-lg") {
         aside(classes = "vertical relative") {
             div(classes = "vertical g-lg sticky") {
