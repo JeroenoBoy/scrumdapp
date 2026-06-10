@@ -12,13 +12,19 @@ import com.jeroenvdg.scrumdapp.routes.groups.trends.groupTrendsRoutes
 import com.jeroenvdg.scrumdapp.utils.resolveBlocking
 import com.jeroenvdg.scrumdapp.utils.route
 import com.jeroenvdg.scrumdapp.services.ValidationException
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.resources.Resource
 import io.ktor.serialization.JsonConvertException
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.call
 import io.ktor.server.plugins.di.dependencies
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.ratelimit.rateLimit
+import io.ktor.server.request.contentLength
+import io.ktor.server.request.formFieldLimit
+import io.ktor.server.request.header
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.routing.routing
 import io.ktor.server.response.respond
@@ -133,6 +139,13 @@ suspend fun Application.configureGroupRoutes() {
     val groupRepository = dependencies.resolve<GroupRepository>()
 
     routing {
+        intercept(ApplicationCallPipeline.Call) {
+            val contentLength = call.request.header(HttpHeaders.ContentLength)?.toLong()
+            println("Content Length: $contentLength")
+            if (contentLength != null && contentLength > 2500) {
+                throw ValidationException("Exceeded max content length")
+            }
+        }
         route<GroupsRouter> {
             install(IsLoggedIn)
             rateLimit(RateLimitName("groupCreation")){
